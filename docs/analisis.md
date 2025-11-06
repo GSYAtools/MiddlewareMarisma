@@ -64,6 +64,9 @@ username=Con_premium&password=UzUkZTM1Ym4%3D
 ## 6. Nuevo incidente
 
 ## 7. Completar incidencia (Ir a taxonomía)
+![alt text](imagenes/Ir_taxonomia.png)
+### ¿Que se recibe al entrar en esta sección?
+
 
 ## 8. Añadir amenaza
 
