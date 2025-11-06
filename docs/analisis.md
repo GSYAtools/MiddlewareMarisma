@@ -20,8 +20,8 @@
 
 ## 1. Inicio de sesión
 ![alt text](image.png)
-### ¿Que se recibe al entrar en esta sección?
-#### Error de inicio de sesión
+
+### Error de inicio de sesión
 Al intentar capturar las peticiones desde Burpsuite, reCAPTCHA nos lanza el siguiente  error:
 
     &g-recaptcha-response=0cAFcWeA5ihZy-[...]W4GEaPwi&postUrl=%2Flogin%2Fauthenticate
@@ -48,7 +48,10 @@ Connection: keep-alive
 username=Con_premium&password=UzUkZTM1Ym4%3D
 ```
 - Se hace peticion POST a /login/existUser
-- 
+- con los argumentos: username=<usuario>&password=<password_cifrada>
+
+### Respuesta recibida tras iniciar sesión
+
 
 ## 2. Mis proyectos
 
