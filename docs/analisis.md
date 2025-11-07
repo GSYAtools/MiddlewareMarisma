@@ -54,10 +54,49 @@ username=Con_premium&password=UzUkZTM1Ym4%3D
 
 
 ## 2. Mis proyectos
+### Respuesta a la petición de carga de "Obtener Mis Proyectos"
+```
+HTTP/1.1 200 
+X-Frame-Options: DENY
+X-Application-Context: application:production:9003
+Content-Type: application/json;charset=UTF-8
+Date: Fri, 07 Nov 2025 11:36:59 GMT
+Keep-Alive: timeout=20
+Connection: keep-alive
+Content-Length: 28
+
+[{"nombre":"Prueba","id":1}]
+```
+```
+HTTP/1.1 200 
+X-Frame-Options: DENY
+X-Application-Context: application:production:9003
+Content-Type: application/json;charset=UTF-8
+Date: Fri, 07 Nov 2025 11:36:59 GMT
+Keep-Alive: timeout=20
+Connection: keep-alive
+Content-Length: 14
+
+{"proyecto":1}
+```
 
 ## 3. Mis subproyectos
+### Respuesta a la petición de carga de "Obtener Proyecto"
+```
+HTTP/1.1 200 
+X-Frame-Options: DENY
+X-Application-Context: application:production:9003
+Content-Type: application/json;charset=UTF-8
+Date: Fri, 07 Nov 2025 11:44:38 GMT
+Keep-Alive: timeout=20
+Connection: keep-alive
+Content-Length: 412
+
+{"sEcho":null,"iTotalRecords":1,"iTotalDisplayRecords":1,"aaData":[[1,"prueba 1","Agricultura, ganaderia, silvicultura y pesca","Prueba 1","Modelo de Madurez de Ciberseguridad para Gemelos Digitales elaborado por el Industrial IoT Consortium en colaboración con el Digital Twin Consortium","2025-10-08T11:37:38Z","2025-11-07T08:11:51Z",5," <small><i class=\"icofont icofont-tree\"><\/i> Prueba &gt;<\/small>"]]}
+```
 
 ## 4. Flujo de actividad
+### Respuesta a la petición de carga de "Ir a Subproyecto"
 
 ## 5. Incidentes
 
@@ -521,6 +560,34 @@ Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504723$j60$l0$h0
 Connection: keep-alive
 ```
+
+JSON:
+Donde pone vincular activo:
+```
+HTTP/1.1 200 
+X-Frame-Options: DENY
+X-Application-Context: application:production:9003
+Content-Type: application/json;charset=UTF-8
+Date: Fri, 07 Nov 2025 11:48:35 GMT
+Keep-Alive: timeout=20
+Connection: keep-alive
+Content-Length: 1114
+
+{"sEcho":null,"iTotalRecords":1,"iTotalDisplayRecords":1,"aaData":[[1,{"id":1,"estado":"cerrado","cobertura":0.0,"deleted":false,"exito":0.0,"respuestas":[{"id":1},{"id":69},{"id":14},{"id":62},{"id":41},{"id":6},{"id":22},{"id":45},{"id":32},{"id":2},{"id":9},{"id":48},{"id":59},{"id":52},{"id":56},{"id":20},{"id":57},{"id":42},{"id":11},{"id":49},{"id":25},{"id":61},{"id":53},{"id":50},{"id":46},{"id":21},{"id":37},{"id":4},{"id":24},{"id":30},{"id":64},{"id":60},{"id":31},{"id":28},{"id":29},{"id":16},{"id":19},{"id":63},{"id":5},{"id":18},{"id":15},{"id":54},{"id":27},{"id":68},{"id":12},{"id":51},{"id":70},{"id":35},{"id":10},{"id":40},{"id":39},{"id":38},{"id":55},{"id":23},{"id":43},{"id":8},{"id":13},{"id":26},{"id":65},{"id":67},{"id":17},{"id":36},{"id":58},{"id":34},{"id":71},{"id":44},{"id":33},{"id":3},{"id":7},{"id":66},{"id":47}],"nombreGrupoActivos":"Grupo General","incidentesActivo":[{"id":1},{"id":4},{"id":2},{"id":3}],"subproyecto":{"id":1},"activosAuditoria":[{"id":1}],"nombre":"Agrupación CHKL_General [prueba 1]"},"Equipamiento auxiliar","Prueba",null,null,null,null,1,null]]}
+```
+Donde pone vincular control:
+```
+HTTP/1.1 200 
+X-Frame-Options: DENY
+X-Application-Context: application:production:9003
+Content-Type: application/json;charset=UTF-8
+Date: Fri, 07 Nov 2025 11:48:35 GMT
+Keep-Alive: timeout=20
+Connection: keep-alive
+Content-Length: 4855
+
+{"sEcho":null,"iTotalRecords":18,"iTotalDisplayRecords":18,"aaData":[[55,"CMM-01-01-01","Programa de Gestión de la Seguridad","Esta práctica restringe los tipos de cambios permitidos, cuándo se pueden realizar esos cambios, los procesos de aprobación y cómo manejar los escenarios de cambios de emergencia.",null],[56,"CMM-01-01-02","Gestión del Cumplimiento","Esta práctica es necesaria cuando se necesitan requisitos estrictos para el cumplimiento de los estándares de seguridad en evolución.",null],[57,"CMM-01-02-01","Modelado de Amenazas","Esta práctica tiene como objetivo revelar los factores conocidos y específicos que pueden poner en riesgo el funcionamiento de un sistema dado y describir con precisión estos factores.",null],[58,"CMM-01-02-02","Actitud frente al Riesgo","Esta práctica permite a una organización establecer una estrategia para hacer frente a los riesgos de acuerdo con la política de gestión de riesgos, incluidas las condiciones para la aceptación, evasión, evaluación, mitigación y transferencia.",null],[59,"CMM-01-03-01","Gestión de riesgos de la cadena de suministro de productos","Esta práctica tiene como objetivo revelar los factores conocidos y específicos que pueden poner en riesgo el funcionamiento de un sistema dado y describir con precisión estos factores.",null],[60,"CMM-01-03-02","Gestión de Servicios y Dependencias entre Terceros","Esta práctica aborda la necesidad de generar confianza para los socios y terceras partes. La capacidad de tener la seguridad de la confianza de terceros requiere la comprensión de la infraestructura comercial y de confianza y las posibles fuentes de amenazas ocultas.",null],[61,"CMM-02-01-01","Establecimiento y mantenimiento de identidades","Esta práctica ayuda a identificar y restringir quién puede acceder al sistema y sus privilegios.",null],[62,"CMM-02-01-02","Control de Accesos","La política y la implementación de esta práctica permiten que una empresa limite el acceso a los recursos solo a las identidades específicas que requieren acceso y solo al nivel específico necesario para cumplir con los requisitos de la organización.",null],[64,"CMM-02-02-01","Protección Física","Las políticas de esta práctica abordan la seguridad física y la protección de las instalaciones, su gente y los sistemas para evitar robos y garantizar la operación segura continua del equipo.",null],[63,"CMM-02-02-02","Gestión de activos, cambios y configuración","Esta práctica restringe los tipos de cambios permitidos, cuándo se pueden realizar esos cambios, los procesos de aprobación y cómo manejar los escenarios de cambios de emergencia.",null],[65,"CMM-02-03-01","Modelo y Política de Protección de Datos","Esta práctica identifica si existen diferentes categorías de datos y considera los objetivos y reglas específicas para la protección de datos.",null],[66,"CMM-02-03-02","Implementación de Prácticas de Protección de Datos","Esta práctica describe la aplicación preferida de los mecanismos de protección de datos para abordar la confidencialidad, la integridad y la disponibilidad.",null],[67,"CMM-03-01-01","Evaluación de Vulnerabilidades","Esta práctica ayuda a identificar vulnerabilidades, determinar el riesgo que cada vulnerabilidad supone para el organización y desarrollar un plan de remediación priorizado.",null],[68,"CMM-03-01-02","Gestión de Parches","Esta práctica aclara cuándo y con qué frecuencia aplicar los parches de software, establece procedimientos para parches de emergencia y propone mitigaciones adicionales en caso de acceso restringido al sistema u otros problemas relacionados con la aplicación de parches.",null],[69,"CMM-03-02-01","Prácticas de Monitorización","Esta práctica se utiliza para monitorear el estado del sistema, identificar anomalías y ayudar en la resolución de disputas.",null],[70,"CMM-03-02-02","Concienciación sobre el conexto e Intercambio de Información","Esta práctica ayuda a las organizaciones a estar mejor preparadas para responder a las amenazas. Compartir información sobre amenazas mantiene los sistemas actualizados.",null],[71,"CMM-03-03-01","Detección de Eventos y Plan de Respuestas","Esta práctica define qué es un evento de seguridad y cómo detectar y asignar eventos para su investigación, escalarlos según sea necesario y responder adecuadamente.\r\nTambién debe incluir un plan de comunicaciones para compartir información de manera adecuada y oportuna con las partes interesadas.",null],[72,"CMM-03.03-02","Remediación, Recuperación y Continuidad de Operaciones","Esta práctica es una combinación de redundancias técnicas en las que el personal capacitado y la política de continuidad comercial ayudan a una organización a recuperarse rápidamente de un evento para acelerar el regreso a la normalidad.",null]]}
+```
 ## 9. Vincular activo
 ![alt text](imagenes/vincular_activo.png)
 Al pulsar el botón "Vincular activo" nos va a llegar el endpoint que se muestra a continuación y después va a aparecer el cuadro de diálogo de Añadir Activo en el que vamos a tener que introducir las dimensiones. 
@@ -590,7 +657,19 @@ Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=510A6D0C8E31CEAE7E9E874B51848694; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762500456$j60$l0$h0
 Connection: keep-alive
 ```
+Después de añadir las dimensiones obtenemos el JSON:
+```
+HTTP/1.1 200 
+X-Frame-Options: DENY
+X-Application-Context: application:production:9003
+Content-Type: application/json;charset=UTF-8
+Date: Fri, 07 Nov 2025 11:55:25 GMT
+Keep-Alive: timeout=20
+Connection: keep-alive
+Content-Length: 1109
 
+{"sEcho":null,"iTotalRecords":1,"iTotalDisplayRecords":1,"aaData":[[5,{"id":1,"estado":"cerrado","cobertura":0.0,"deleted":false,"exito":0.0,"respuestas":[{"id":64},{"id":66},{"id":2},{"id":21},{"id":43},{"id":4},{"id":11},{"id":20},{"id":14},{"id":10},{"id":53},{"id":30},{"id":47},{"id":68},{"id":29},{"id":62},{"id":56},{"id":65},{"id":36},{"id":50},{"id":23},{"id":41},{"id":5},{"id":25},{"id":44},{"id":28},{"id":59},{"id":57},{"id":67},{"id":16},{"id":32},{"id":1},{"id":9},{"id":40},{"id":13},{"id":12},{"id":46},{"id":69},{"id":3},{"id":49},{"id":48},{"id":51},{"id":52},{"id":6},{"id":26},{"id":70},{"id":24},{"id":31},{"id":38},{"id":61},{"id":27},{"id":33},{"id":34},{"id":35},{"id":7},{"id":17},{"id":19},{"id":60},{"id":42},{"id":45},{"id":54},{"id":63},{"id":15},{"id":39},{"id":22},{"id":55},{"id":58},{"id":8},{"id":71},{"id":37},{"id":18}],"nombreGrupoActivos":"Grupo General","incidentesActivo":[{"id":4},{"id":3},{"id":2},{"id":5},{"id":1}],"subproyecto":{"id":1},"activosAuditoria":[{"id":1}],"nombre":"Agrupación CHKL_General [prueba 1]"},"Equipamiento auxiliar","Prueba","[[A]]",null]]}
+```
 Para cerrar pulsamos el botón "Cerrar" y recargamos la página y al hacer esto nos aparecerían los endpoints anteriores y además la de activos implicados:
 ```
 GET /incidente/cargarTablaActivosImplicados/1?incidente=3&draw=1&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=false&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=false&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=false&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=false&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=2&order%5B0%5D%5Bdir%5D=asc&start=0&length=-1&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1762501352234 HTTP/1.1
@@ -646,6 +725,19 @@ Accept-Encoding: gzip, deflate, br
 Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=510A6D0C8E31CEAE7E9E874B51848694; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762501785$j60$l0$h0
 Connection: keep-alive
+```
+JSON de controles implicados:
+```
+HTTP/1.1 200 
+X-Frame-Options: DENY
+X-Application-Context: application:production:9003
+Content-Type: application/json;charset=UTF-8
+Date: Fri, 07 Nov 2025 12:00:20 GMT
+Keep-Alive: timeout=20
+Connection: keep-alive
+Content-Length: 318
+
+{"sEcho":null,"iTotalRecords":1,"iTotalDisplayRecords":1,"aaData":[[55,"CMM-01-01-01","Programa de Gestión de la Seguridad","Esta práctica restringe los tipos de cambios permitidos, cuándo se pueden realizar esos cambios, los procesos de aprobación y cómo manejar los escenarios de cambios de emergencia.",null]]}
 ```
 ## 12. Ir a conclusión
 ![alt text](imagenes/ir_conclusion.png)
