@@ -222,7 +222,7 @@ Connection: keep-alive
 
 ## 11. Vincular control (para cada control existente)
 ![alt text](imagenes/vincular_control.png)
-###¿Qué se recibe al entrar en esta sección?
+### ¿Qué se recibe al entrar en esta sección?
 ```
 GET /incidente/cargarTablaControlesImplicados/1?incidente=3&draw=2&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=false&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=false&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=1&order%5B0%5D%5Bdir%5D=asc&start=0&length=-1&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1762501352238 HTTP/1.1
 Host: 172.20.48.129:8090
@@ -249,7 +249,7 @@ Connection: keep-alive
 ```
 ## 12. Ir a conclusión
 ![alt text](imagenes/ir_conclusion.png)
-###¿Qué se recibe al entrar en esta sección?
+### ¿Qué se recibe al entrar en esta sección?
 ```
 GET /evento/conclusion/3 HTTP/1.1
 Host: 172.20.48.129:8090
@@ -298,7 +298,7 @@ Connection: keep-alive
 ```
 ## 13. Rellenar formulario, guardar y cerrar
 ![alt text](imagenes/guardar_cerrar.png)
-###¿Qué se recibe al entrar en esta sección?
+### ¿Qué se recibe al entrar en esta sección?
 ```
 POST /evento/save/3 HTTP/1.1
 Host: 172.20.48.129:8090
@@ -417,7 +417,7 @@ Connection: keep-alive
 ## 14. Recalcular (opción 1)
 ![alt text](imagenes/recalcular_1.png)
 Entramos en la sección "Análisis de riesgos" y a continuación pulsamos el botón "Recalcular".
-###¿Qué se recibe al entrar en esta sección?
+### ¿Qué se recibe al entrar en esta sección?
 ```
 POST /analisisRiesgo/generarAnalisisRiesgoMin/1 HTTP/1.1
 Host: 172.20.48.129:8090
@@ -446,6 +446,7 @@ Connection: keep-alive
 ```
 ## 15. Recalcular (opción 2)
 ![alt text](imagenes/recalcular_2.png)
+### ¿Qué se recibe al entrar en esta sección?
 ```
 POST /RSA/recalculateRAjax/1?acam=false&ar=true&pdt=false&vr=6&con=true&po=true&dim=true HTTP/1.1
 Host: 172.20.48.129:8090
@@ -462,6 +463,7 @@ Connection: keep-alive
 ```
 ## 16. Cerrar sesión
 ![alt text](imagenes/cerrar_sesion.png)
+### ¿Qué se recibe al entrar en esta sección?
 ```
 GET /logout/index HTTP/1.1
 Host: 172.20.48.129:8090
