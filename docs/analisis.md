@@ -531,7 +531,7 @@ Content-Length: 712
     ]
 }
 ```
-## 7. Completar incidencia (Ir a taxonomía)
+## 7. Completar incidente (Ir a taxonomía)
 ![alt text](imagenes/Ir_taxonomia.png)
 ### ¿Que se recibe al entrar en esta sección?
 ```
@@ -546,6 +546,7 @@ Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 Cookie: JSESSIONID=3454A8C9F02AF56B72FC6D78CF7C3E87; _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; _gat_UA-97814751-2=1; _gat_gtag_UA_97814751_2=1; _ga_55LR48RTVX=GS2.1.s1762429181$o1$g1$t1762430554$j59$l0$h0
 Connection: keep-alive
 ```
+- Se carga el incidente por id: ```GET /incidente/index/<id>```
 ## 8. Añadir amenaza
 ![alt text](imagenes/anadir_amenaza.png)
 ### Al pulsar el botón de guardar:
@@ -563,6 +564,7 @@ Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=510A6D0C8E31CEAE7E9E874B51848694; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762499999$j60$l0$h0
 Connection: keep-alive
 ```
+- Se guarda la amenaza almacenando la gravedad y el id del incidente y el id del subproyecto por id: ```POST /incidente/guardarGravedad?gravedad=<gravedad_incidente>&incidente=<id_incidente>&subproyecto=<id_subproyecto>```
 ### Se accede a la taxonomía del incidente y carga toda la web
 #### Cargar tabla de controles implicados
 ```
