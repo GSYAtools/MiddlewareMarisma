@@ -1,4 +1,4 @@
-# Análsis del comportamiento lógico de eMARISMA
+# Análisis del comportamiento lógico de eMARISMA
 
 ## Contenido
 1. Inicio de sesión
