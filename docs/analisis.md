@@ -30,7 +30,7 @@ Al intentar capturar las peticiones desde Burpsuite, reCAPTCHA nos lanza el sigu
 1. Instalación de certificado de Burpsuite: soluciona parte del problema. `&g-recaptcha-response=&postUrl=%2Flogin%2Fauthenticate` ahora recaptcha-response viene vacío.
 2. TLS passthrough: `&g-recaptcha-response=0cAFcWeA4Y76O2xa[...]uwAnfk&postUrl=%2Flogin%2Fauthenticate` ahora la respuesta llega completa y con `authenticate`.
 
-### Como iniciar sesión
+### Cómo iniciar sesión
 ```
 POST /login/existUser HTTP/1.1
 Host: 172.20.48.129:8090
@@ -51,9 +51,265 @@ username=Con_premium&password=UzUkZTM1Ym4%3D
 - con los argumentos: username=<usuario>&password=<password_cifrada>
 
 ### Respuesta recibida tras iniciar sesión
+```
+HTTP/1.1 200 
+X-Frame-Options: DENY
+X-Application-Context: application:production:9003
+Content-Type: text/html;charset=UTF-8
+Content-Language: es
+Date: Thu, 06 Nov 2025 11:48:11 GMT
+Keep-Alive: timeout=20
+Connection: keep-alive
+Content-Length: 10963
 
+<!DOCTYPE HTML>
+<html lang="es">
+<head>
+    <meta content="text/html; charset=UTF-8; X-Content-Type-Options=nosniff; X-XSS-Protection: 1; mode=block">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/assets/favicon-964ac669ddb70c019ef531dd0aed5b2d.png" type="image/x-icon">
+    <title>Identifícate</title>
+
+    <script type="text/javascript" src="/assets/jquery/js/jquery.min-fcc54bed9a20031348d8ac4d62f5d2d0.js" ></script>
+
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min-5a1f81d1637da1e1ef027803feeb7b40.css"/>
+    <script type="text/javascript" src="/assets/bootstrap/js/bootstrap.min-e55fb8fd998e9ea45a80b89f6035c1b2.js" ></script>
+
+    <link rel="stylesheet" href="/assets/assets/css/color-4-f8f6ed8ff6b432bf1de53c929b68bce3.css"/>
+    <link rel="stylesheet" href="/assets/assets/css/component-f8e92f44f9e5179b487ca7e1e60f7c3e.css"/>
+    <link rel="stylesheet" href="/assets/assets/css/fancy-buttons-18914b3c853e9daa59c4d837b4cb0002.css"/>
+    <link rel="stylesheet" href="/assets/assets/css/spinkit-aebde4f96bad5952012bd2bde32db86f.css"/>
+    <link rel="stylesheet" href="/assets/assets/css/style-e9a4811e573463fa5b822cddb184caa5.css"/>
+
+    <link rel="stylesheet" href="/assets/assets/icon/icofont/css/icofont-aa2742e4532f5ac0b0aa765339ab7c86.css"/>
+    <link rel="stylesheet" href="/assets/assets/icon/font-awesome/css/font-awesome.min-e2a739fe5aa851c5a4dc99e94504ef51.css"/>
+    <link rel="stylesheet" href="/assets/assets/icon/glyphicons/css/bootstrap-glyphicons.min-5113a3e19ba33f92a310976e9a6b1eed.css"/>
+    <link rel="stylesheet" href="/assets/assets/icon/ionicons/css/ionicons-ffa032d572b50589ad37f081283446d5.css"/>
+    <link rel="stylesheet" href="/assets/assets/icon/linearicons/css/linearicons-d09aabe84e6d0fb66a8df49d1072a4cd.css"/>
+    <link rel="stylesheet" href="/assets/assets/icon/simple-line-icons/css/simple-line-icons-8150ec045e1bd12b1e00745139b7915a.css"/>
+    <link rel="stylesheet" href="/assets/assets/icon/themify-icons/css/themify-icons-d67635f44bd694c5c47232f7c0fb8f1d.css"/>
+
+    <link rel="stylesheet" href="/assets/sweetalert2/css/sweetalert2.min-0d42a0a4aa68e10ed8413c2146028a72.css"/>
+    <script type="text/javascript" src="/assets/sweetalert2/js/sweetalert2.min-411457e7bd3c617040db47636b7f811b.js" ></script>
+
+    <link rel="stylesheet" href="/assets/select2/css/select2.min-426f56552ce56a3217f3b3f1be2dceec.css"/>
+    <script type="text/javascript" src="/assets/select2/js/select2.full.min-362b5a6f27d30323cb7527b0cae0a4ac.js" ></script>
+
+    <style>
+        .alert {
+            margin-bottom: 0 !important;
+            width: 100% !important;
+            text-align: left !important;
+        }
+        ul#country-listbox {
+            color: #495057 !important;
+        }
+        #imgIso {
+            z-index: 99999999999999;
+            position: absolute;
+            width: 100px;
+            bottom: 7px;
+            left: 7px;
+        }
+        #imgSello {
+            z-index: 99999999999999;
+            position: absolute;
+            width: 100px;
+            bottom: 7px;
+            left: 120px;
+        }
+    </style>
+
+    
+        <script src="https://www.google.com/recaptcha/api.js?render=6LdOYd4UAAAAAJp9Z0nvTa8Y9xYqE_q6NHRSGiyq"></script>
+    
+
+    
+    <meta name="layout" content="main-login"/>
+    
+    <link rel="stylesheet" href="/assets/application-83522687ffd906cd13e848b53c0db118.css"/>
+
+</head>
+<body>
+<div id="loading">
+    <div id="loadingSquare">
+        <h2 class="texto-loading">
+            <div class="img-loading" style="margin-bottom: 10px"></div>
+            <span class="texto" id="loadingText">Cargando ...</span>
+        </h2>
+    </div>
+</div>
+
+<img src="/assets/iso_aenor-8b83b87b11130593227a8e5c5dd0a146.png" id="imgIso" />
+<a href="https://www.incibe.es/protege-tu-empresa/catalogo-de-ciberseguridad/listado-empresas/marisma-shield-sl" target="_blank"><img src="/assets/catalogo-sello-8906a193ccd60c1cfdac35d64c562efa.png" id="imgSello" /></a>
+
+    
+<div class="fix-menu">
+    <div class="login p-fixed d-flex text-center bg-primary common-img-bg">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="login-card card-block auth-body">
+                        <div class="text-center">
+                            <img src="/assets/logoEmarisma-82c3c8705f0c83378140919fcd53df26.png" alt="eMarisma" style="width:300px"/>
+                            <div class="col-sm-12 container-client">
+                            </div>
+                        </div>
+
+                        <div class="auth-box">
+                            <form id="form-signin" class="form-signin" action="/login/authenticate" method="POST" autocomplete="off">
+                                <div class="row m-b-20">
+                                    <div class="col-md-12">
+                                        <h3 class="text-left txt-primary">Iniciar Sesión</h3>
+                                    </div>
+                                </div>
+                                <hr/>
+                                
+                                
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="username" id="username" placeholder="Nombre de usuario" />
+                                    <span class="md-line"></span>
+                                </div>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" name="password" id="password" placeholder="Contraseña" onchange="$(this).attr('data-p', window.btoa(this.value))" />
+                                    <span class="md-line"></span>
+                                </div>
+                                <div class="row m-t-25 text-left">
+                                    <div class="col-sm-7 col-xs-12">
+                                        <div class="checkbox-fade fade-in-primary">
+                                            <label>
+                                                <input type="checkbox" name="remember-me" id="remember_me" />
+                                                <span class="cr"><i class="cr-icon icofont icofont-ui-check txt-primary"></i></span>
+                                                <span class="text-inverse">Recuérdame</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-5 col-xs-12 forgot-phone text-right">
+                                        <a href="/senderNewPass/index" class="text-right f-w-600 text-inverse"> ¿Olvidaste tu contraseña?</a>
+                                    </div>
+                                </div>
+                                <div class="row m-t-25">
+                                    <div class="col-md-12">
+                                        <input type="text" class="d-none" id="g-recaptcha-response" name="g-recaptcha-response" />
+                                        <input type="text" class="d-none" id="postUrl" name="postUrl" value="/login/authenticate" />
+                                        <input type="submit" onclick="loading('Cargando ...')" id="submit" value="Entrar" class="btn btn-info btn-md btn-block waves-effect text-center m-b-20" />
+                                    </div>
+                                </div>
+
+                                
+                                    <div class="login-or">
+                                        <hr class="hr-or">
+                                        <span class="span-or">o</span>
+                                    </div>
+
+                                    <div class="row m-t-15">
+                                        <div class="col-md-12">
+                                            <a href="/login/register" onclick="loading('Cargando ...')" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">Registrarme</a>
+                                        </div>
+                                    </div>
+                                
+
+                                <hr style="margin-top: 0px !important;" />
+
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <p class="text-inverse text-left m-b-0">Metodología para análisis de riesgos sistemático basado en modelos asociativos inteligentes</p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        grecaptcha.ready(function() {
+            grecaptcha.execute('6LdOYd4UAAAAAJp9Z0nvTa8Y9xYqE_q6NHRSGiyq', {action: 'authenticate'}).then(function(token) {
+                $("#g-recaptcha-response").val(token);
+            });
+        });
+
+        $.ajax({
+            dataType: 'json',
+            type: "GET",
+            url: "/custom/obtenerLogoCliente",
+            success: function (data) {
+                $.each(data, function(index, value) {
+                    if(value.img != null) {
+                        $('.login-card .text-center .container-client').append('<img src="' + value.img + '"/>');
+                    }
+                });
+            }
+        });
+
+        setTimeout(function() { $('#username').focus() }, 500);
+    });
+
+    $(document).on('click', '#submit', function() {
+        loading('Cargando ...');
+        var username = $('#username').val(), password = $('#password').attr('data-p');
+
+        if (password) {
+            $.ajax({
+                type: "POST",
+                async: false,
+                url: "/login/existUser",
+                data: {"username": username, "password": password},
+                success: function (data) {
+                    if (data.status !== 'ok') {
+                        loading("");
+                        return false;
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+
+<script>
+    function loading(text) {
+        if (text !== null && text !== "" && text !== undefined) {
+            $("#loadingText").text(text);
+            $("#loading").css("display", "block");
+        } else {
+            $("#loading").css("display", "none");
+        }
+    }
+
+    function goBack() {
+        window.location = document.referrer;
+    }
+</script>
+</body>
+</html>
+```
 
 ## 2. Mis proyectos
+![alt text](imagenes/mis_proyectos.png)
+### Acceso al proyecto (por índice)
+
+#### Petición realizada para acceder a proyecto
+
+```
+GET /subproyecto/index/1 HTTP/1.1
+Host: 172.20.48.129:8090
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Referer: http://172.20.48.129:8090/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+Cookie: JSESSIONID=65094DE71CF19DF44DFB7B121D4E9914
+Connection: keep-alive
+```
+
+- Notable que en la petición se cargan por índice `GET /subproyecto/index/<id>`
+
 ### Respuesta a la petición de carga de "Obtener Mis Proyectos"
 ```
 HTTP/1.1 200 
@@ -81,6 +337,26 @@ Content-Length: 14
 ```
 
 ## 3. Mis subproyectos
+![alt text](imagenes/mis_subproyectos.png)
+### Acceso al subproyecto
+
+#### Petición recibida para acceder
+
+```
+GET /subproyecto/flowchart/1 HTTP/1.1
+Host: 172.20.48.129:8090
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Referer: http://172.20.48.129:8090/subproyecto/index/1
+Accept-Encoding: gzip, deflate, br
+Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+Cookie: JSESSIONID=65094DE71CF19DF44DFB7B121D4E9914
+Connection: keep-alive
+```
+
+- Se selecciona el subproyecto por id: `GET /subproyecto/flowchart/<id>`
+
 ### Respuesta a la petición de carga de "Obtener Proyecto"
 ```
 HTTP/1.1 200 
@@ -96,12 +372,25 @@ Content-Length: 412
 ```
 
 ## 4. Flujo de actividad
-### Respuesta a la petición de carga de "Ir a Subproyecto"
+![alt text](imagenes/flujo_actividad.png)
+### Acceso a incidentes
+```
+GET /evento/index/1 HTTP/1.1
+Host: 172.20.48.129:8090
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Referer: http://172.20.48.129:8090/subproyecto/flowchart/1
+Accept-Encoding: gzip, deflate, br
+Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+Cookie: JSESSIONID=5F2FB1A223DD6573A46009F3D1ABBFBB
+Connection: keep-alive
+```
 
 ## 5. Incidentes
+![alt text](imagenes/incidentes.png)
 
-## 6. Nuevo incidente
-### ¿Que se recibe al entrar en esta sección?
+### Clic en "Nueva incidencia"
 ```
 GET /evento/detalle?type=nuevo&a=1&e=0 HTTP/1.1
 Host: 172.20.48.129:8090
@@ -111,91 +400,18 @@ Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/w
 Referer: http://172.20.48.129:8090/evento/index/1
 Accept-Encoding: gzip, deflate, br
 Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _gat_UA-97814751-2=1; _gat_gtag_UA_97814751_2=1; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504143$j22$l0$h0
+Cookie: JSESSIONID=5F2FB1A223DD6573A46009F3D1ABBFBB
 Connection: keep-alive
 ```
-```
-POST /j/collect?v=1&_v=j102&a=1929445183&t=pageview&_s=1&dl=http%3A%2F%2F172.20.48.129%2Fevento%2Fdetalle%3Ftype%3Dnuevo%26a%3D1%26e%3D0&ul=es&dt=eMarisma%20%5BAn%C3%A1lisis%5D&sr=2560x1080&vp=2552x954&_u=SACAAEABEAAAACAAI~&jid=359474725&gjid=1408727147&cid=1791792627.1762429181&uid=con_premium&tid=UA-97814751-2&_gid=1977960298.1762429181&_r=1&_slc=1&gtm=45He5b50n81W72M73Xza200&cd1=con_premium&gcd=13l3l3l2l1l1&dma_cps=syphamo&dma=1&tag_exp=101509157~103116026~103200004~103233427~104527907~104528501~104684208~104684211~104948813~105446120~115480709~115583767~115938465~115938469~116194002~116217636~116217638&npa=1&z=1059090200 HTTP/2
-Host: www.google-analytics.com
-Content-Length: 0
-Sec-Ch-Ua-Platform: "Windows"
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
-Sec-Ch-Ua: "Chromium";v="142", "Microsoft Edge";v="142", "Not_A Brand";v="99"
-Content-Type: text/plain
-Sec-Ch-Ua-Mobile: ?0
-Accept: */*
-Origin: http://172.20.48.129:8090
-Sec-Fetch-Site: cross-site
-Sec-Fetch-Mode: cors
-Sec-Fetch-Dest: empty
-Sec-Fetch-Storage-Access: active
-Referer: http://172.20.48.129:8090/
-Accept-Encoding: gzip, deflate, br
-Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Priority: u=1, i
-```
-```
-POST /sugerencia/cargarSugerencias/1 HTTP/1.1
-Host: 172.20.48.129:8090
-Content-Length: 0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
-Accept: */*
-X-Requested-With: XMLHttpRequest
-Origin: http://172.20.48.129:8090
-Referer: http://172.20.48.129:8090/evento/detalle?type=nuevo&a=1&e=0
-Accept-Encoding: gzip, deflate, br
-Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504209$j60$l0$h0; _gat_UA-97814751-2=1
-Connection: keep-alive
-```
-```
-GET /subproyecto/obtenerProyecto/1 HTTP/1.1
-Host: 172.20.48.129:8090
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
-Accept: */*
-X-Requested-With: XMLHttpRequest
-Referer: http://172.20.48.129:8090/evento/detalle?type=nuevo&a=1&e=0
-Accept-Encoding: gzip, deflate, br
-Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504209$j60$l0$h0; _gat_UA-97814751-2=1
-Connection: keep-alive
-```
-```
-GET /proyecto/obtenerMisProyectos/ HTTP/1.1
-Host: 172.20.48.129:8090
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
-Accept: application/json, text/javascript, */*; q=0.01
-X-Requested-With: XMLHttpRequest
-Referer: http://172.20.48.129:8090/evento/detalle?type=nuevo&a=1&e=0
-Accept-Encoding: gzip, deflate, br
-Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504209$j60$l0$h0; _gat_UA-97814751-2=1
-Connection: keep-alive
-```
-```
-POST /g/collect?v=2&tid=G-55LR48RTVX&gtm=45je5b50v9126092883za200&_p=1762504209515&gcd=13l3l3l2l3l1&npa=1&dma_cps=syphamo&dma=1&ul=es&sr=2560x1080&cid=1791792627.1762429181&are=1&frm=0&pscdl=noapi&_eu=ABAIAAQ&_s=1&tag_exp=101509157~103116026~103200004~103233427~104527907~104528500~104684208~104684211~104948813~105446120~115480709~115583767~115938465~115938469~116217636~116217638&dl=http%3A%2F%2F172.20.48.129%2Fevento%2Fdetalle%3Ftype%3Dnuevo%26a%3D1%26e%3D0&dt=eMarisma%20%5BAn%C3%A1lisis%5D&uid=con_premium&sid=1762499598&sct=2&seg=1&_tu=wAQ&en=page_view&_ee=1&ep.ua_dimension_1=con_premium&tfd=115450 HTTP/2
-Host: region1.google-analytics.com
-Content-Length: 0
-Sec-Ch-Ua-Platform: "Windows"
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
-Sec-Ch-Ua: "Chromium";v="142", "Microsoft Edge";v="142", "Not_A Brand";v="99"
-Sec-Ch-Ua-Mobile: ?0
-Accept: */*
-Origin: http://172.20.48.129:8090
-Sec-Fetch-Site: cross-site
-Sec-Fetch-Mode: no-cors
-Sec-Fetch-Dest: empty
-Sec-Fetch-Storage-Access: active
-Referer: http://172.20.48.129:8090/
-Accept-Encoding: gzip, deflate, br
-Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Priority: u=1, i
-```
-Al guardar:
+
+## 6. Nuevo incidente
+![alt text](imagenes/nuevo_incidente.png)
+
+### Enviar nueva incidencia
 ```
 POST /evento/save HTTP/1.1
 Host: 172.20.48.129:8090
-Content-Length: 159
+Content-Length: 156
 Cache-Control: max-age=0
 Origin: http://172.20.48.129:8090
 Content-Type: application/x-www-form-urlencoded
@@ -205,47 +421,17 @@ Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/w
 Referer: http://172.20.48.129:8090/evento/detalle?type=nuevo&a=1&e=0
 Accept-Encoding: gzip, deflate, br
 Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504260$j9$l0$h0
+Cookie: JSESSIONID=5F2FB1A223DD6573A46009F3D1ABBFBB
 Connection: keep-alive
 
-update=Guardar&id=&version=&subproyecto=1&tipo=detalle&typeAction=nuevo&responsable=Responsable1&date=21%2F11%2F2025&causa=Causa1&descripcion=Descripci%C3%B3n1
+update=Guardar&id=&version=&subproyecto=1&tipo=detalle&typeAction=nuevo&responsable=Responsable&date=07%2F11%2F2025&causa=Causa&descripcion=Descripcion
 ```
+
+### Recuperar ID de la incidencia para ir a la taxonomía
+
+#### Cargar tabla de eventos
 ```
-GET /evento/index/1 HTTP/1.1
-Host: 172.20.48.129:8090
-Cache-Control: max-age=0
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-Referer: http://172.20.48.129:8090/evento/detalle?type=nuevo&a=1&e=0
-Accept-Encoding: gzip, deflate, br
-Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504260$j9$l0$h0
-Connection: keep-alive
-```
-```
-POST /j/collect?v=1&_v=j102&a=918138403&t=pageview&_s=1&dl=http%3A%2F%2F172.20.48.129%2Fevento%2Findex%2F1&ul=es&dt=eMarisma%20%5BAn%C3%A1lisis%5D&sr=2560x1080&vp=2552x954&_u=SACAAEABEAAAACAAI~&jid=350215367&gjid=254149978&cid=1791792627.1762429181&uid=con_premium&tid=UA-97814751-2&_gid=1977960298.1762429181&_r=1&_slc=1&gtm=45He5b50n81W72M73Xza200&cd1=con_premium&gcd=13l3l3l2l1l1&dma_cps=syphamo&dma=1&tag_exp=101509157~103116026~103200004~103233427~104527907~104528500~104684208~104684211~104948813~105391253~115480709~115583767~115938466~115938468~116194002~116217636~116217638&npa=1&z=132497254 HTTP/1.1
-Host: www.google-analytics.com
-Content-Length: 0
-Sec-Ch-Ua-Platform: "Windows"
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
-Sec-Ch-Ua: "Chromium";v="142", "Microsoft Edge";v="142", "Not_A Brand";v="99"
-Content-Type: text/plain
-Sec-Ch-Ua-Mobile: ?0
-Accept: */*
-Origin: http://172.20.48.129:8090
-Sec-Fetch-Site: cross-site
-Sec-Fetch-Mode: cors
-Sec-Fetch-Dest: empty
-Sec-Fetch-Storage-Access: active
-Referer: http://172.20.48.129:8090/
-Accept-Encoding: gzip, deflate, br
-Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Priority: u=1, i
-Connection: keep-alive
-```
-```
-GET /evento/cargarEventoTabla/1?draw=1&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=false&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=1&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=2&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=3&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=4&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=5&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B6%5D%5Bdata%5D=6&columns%5B6%5D%5Bname%5D=&columns%5B6%5D%5Bsearchable%5D=true&columns%5B6%5D%5Borderable%5D=true&columns%5B6%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B6%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B7%5D%5Bdata%5D=7&columns%5B7%5D%5Bname%5D=&columns%5B7%5D%5Bsearchable%5D=true&columns%5B7%5D%5Borderable%5D=true&columns%5B7%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B7%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B8%5D%5Bdata%5D=&columns%5B8%5D%5Bname%5D=&columns%5B8%5D%5Bsearchable%5D=true&columns%5B8%5D%5Borderable%5D=false&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B8%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=1&order%5B0%5D%5Bdir%5D=asc&start=0&length=10&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1762504563290 HTTP/1.1
+GET /evento/cargarEventoTabla/1?draw=1&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=false&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=1&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=2&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=3&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=4&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=5&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B6%5D%5Bdata%5D=6&columns%5B6%5D%5Bname%5D=&columns%5B6%5D%5Bsearchable%5D=true&columns%5B6%5D%5Borderable%5D=true&columns%5B6%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B6%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B7%5D%5Bdata%5D=7&columns%5B7%5D%5Bname%5D=&columns%5B7%5D%5Bsearchable%5D=true&columns%5B7%5D%5Borderable%5D=true&columns%5B7%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B7%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B8%5D%5Bdata%5D=&columns%5B8%5D%5Bname%5D=&columns%5B8%5D%5Bsearchable%5D=true&columns%5B8%5D%5Borderable%5D=false&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B8%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=1&order%5B0%5D%5Bdir%5D=asc&start=0&length=10&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1762511289408 HTTP/1.1
 Host: 172.20.48.129:8090
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
 Accept: application/json, text/javascript, */*; q=0.01
@@ -253,31 +439,97 @@ X-Requested-With: XMLHttpRequest
 Referer: http://172.20.48.129:8090/evento/index/1
 Accept-Encoding: gzip, deflate, br
 Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504260$j9$l0$h0; _gat_UA-97814751-2=1
+Cookie: JSESSIONID=5F2FB1A223DD6573A46009F3D1ABBFBB
 Connection: keep-alive
 ```
+
+#### Respuesta a la petición de carga de eventos
+
 ```
-GET /user/serveImage?userInstance=4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce HTTP/1.1
-Host: 172.20.48.129:8090
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
-Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
-Referer: http://172.20.48.129:8090/evento/index/1
-Accept-Encoding: gzip, deflate, br
-Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504260$j9$l0$h0; _gat_UA-97814751-2=1
+HTTP/1.1 200 
+X-Frame-Options: DENY
+X-Application-Context: application:production:9003
+Content-Type: application/json;charset=UTF-8
+Date: Fri, 07 Nov 2025 10:36:56 GMT
+Keep-Alive: timeout=20
 Connection: keep-alive
-```
-```
-GET /proyecto/obtenerMisProyectos/ HTTP/1.1
-Host: 172.20.48.129:8090
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
-Accept: application/json, text/javascript, */*; q=0.01
-X-Requested-With: XMLHttpRequest
-Referer: http://172.20.48.129:8090/evento/index/1
-Accept-Encoding: gzip, deflate, br
-Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
-Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504260$j9$l0$h0; _gat_UA-97814751-2=1
-Connection: keep-alive
+Content-Length: 712
+
+Content-Length: 712
+
+{
+    "sEcho": null,
+    "iTotalRecords": 6,
+    "iTotalDisplayRecords": 6,
+    "aaData": [
+        [
+            2,
+            "00000012",
+            "2025-11-04T12:32:19Z",
+            "Responsable",
+            "Descripción de la causa de ejemplo",
+            "Causa de ejemplo",
+            "Solución del incidente",
+            "Conclusión del incidente",
+            true
+        ],
+        [
+            3,
+            "00000013",
+            "2025-11-07T07:18:44Z",
+            "Responsable",
+            "Descripción",
+            "Causa incidente",
+            "Solución",
+            "Conclusión",
+            true
+        ],
+        [
+            4,
+            "00000014",
+            "2025-11-07T08:35:40Z",
+            "Responsable1",
+            "Descripción1",
+            "Causa1",
+            null,
+            null,
+            null
+        ],
+        [
+            5,
+            "00000015",
+            "2025-11-07T10:24:15Z",
+            "Responsable",
+            "Descripción",
+            "Causa",
+            null,
+            null,
+            null
+        ],
+        [
+            6,
+            "00000016",
+            "2025-11-07T10:25:32Z",
+            "ejemplo",
+            "sdfsdfsdfsdf",
+            "fsdfsfsf",
+            null,
+            null,
+            null
+        ],
+        [
+            7,
+            "00000017",
+            "2025-11-07T10:28:04Z",
+            "asdsad",
+            "asdasdasdsa",
+            "asdasdasd",
+            null,
+            null,
+            null
+        ]
+    ]
+}
 ```
 ## 7. Completar incidencia (Ir a taxonomía)
 ![alt text](imagenes/Ir_taxonomia.png)
