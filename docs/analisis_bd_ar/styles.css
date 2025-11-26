@@ -1,0 +1,136 @@
+/* styles.css - Versión Final para PDF Formal */
+
+:root {
+    --primary-color: #2c3e50;
+    --accent-color: #3498db;
+    --bg-code: #f5f7f9;
+    --border-color: #dfe2e5;
+    --text-color: #24292e;
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12pt; /* Tamaño estándar para documentos formales */
+    line-height: 1.5;
+    color: var(--text-color);
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* --- Títulos --- */
+h1 {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 10px;
+    margin-top: 2em;
+}
+
+h2 {
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    margin-top: 2em;
+    /* FORZAR SALTO DE PÁGINA ANTES DE CADA APARTADO PRINCIPAL */
+    page-break-before: always; 
+}
+
+h3 {
+    color: #444;
+    margin-top: 1.5em;
+}
+
+/* --- Tablas --- */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+    font-size: 10pt; /* Un poco más pequeño para que quepan muchas columnas */
+    page-break-inside: avoid; /* Evita que una tabla se corte a la mitad si es posible */
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: bold;
+}
+
+tr:nth-child(even) { background-color: #f2f2f2; }
+
+/* --- Código --- */
+pre {
+    background-color: var(--bg-code);
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: Consolas, monospace;
+    font-size: 9pt;
+    white-space: pre-wrap; /* Ajuste de línea para que no se corte en PDF */
+    page-break-inside: avoid;
+}
+
+/* --- Portada (Estilo Específico) --- */
+.cover-page {
+    text-align: center;
+    padding-top: 30%;
+    page-break-after: always; /* Salto de página obligatorio después de la portada */
+}
+
+.cover-title {
+    font-size: 3em;
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.cover-subtitle {
+    font-size: 1.5em;
+    color: #7f8c8d;
+    margin-bottom: 50px;
+}
+
+.cover-author {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 100px;
+}
+
+.cover-date {
+    font-size: 1em;
+    color: #666;
+}
+
+/* --- ROTACIÓN DE PÁGINA (Para tablas anchas) --- */
+
+/* 1. Definimos la estructura de una página A4 Horizontal */
+@page landscape {
+    size: A4 landscape;
+    margin: 15mm; /* Márgenes un poco más estrechos para aprovechar espacio */
+}
+
+/* 2. Clase contenedora que aplicaremos en el Markdown */
+.pagina-horizontal {
+    page: landscape;           /* Le dice al navegador: "Usa la hoja horizontal aquí" */
+    page-break-before: always; /* Fuerza salto de página antes */
+    page-break-after: always;  /* Fuerza salto de página después */
+    width: 100%;
+    display: block;
+}
+
+/* 3. Ajustes específicos para tablas dentro de esa página horizontal */
+.pagina-horizontal table {
+    width: 100% !important; /* Fuerza a ocupar todo el ancho disponible */
+    font-size: 9pt;         /* Reduce un poco la letra si la tabla es gigante */
+}
+
+.pagina-horizontal th, 
+.pagina-horizontal td {
+    white-space: normal;    /* Permite que el texto haga saltos de línea */
+    word-wrap: break-word;  /* Evita que palabras largas rompan la tabla */
+}
