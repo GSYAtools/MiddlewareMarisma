@@ -4,12 +4,15 @@ import json
 import base64
 import httpx
 import urllib.parse
+from . import database # Importamos el nuevo módulo de base deatos
 
 app = FastAPI()
 
 JSON_FIELDS = [
     "threat_id",
     "user_id",
+    "activo_id", # Añadido para la consulta
+    "codigo_amenaza", # Añadido para la consulta
     "device_id",
     "detected_at",
     "threat_type",
@@ -18,6 +21,18 @@ JSON_FIELDS = [
     "actions_taken",
     "status"
 ]
+
+@app.on_event("startup")
+async def startup_event():
+    """Al iniciar la app, crea el pool de conexiones a la BD."""
+    await database.get_db_pool()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Al apagar la app, cierra el pool de conexiones."""
+    if database.pool:
+        database.pool.close()
+        await database.pool.wait_closed()
 
 @app.middleware("http")
 async def middleware(request: Request, call_next):
