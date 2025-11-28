@@ -141,3 +141,27 @@ async def obtener_subproyectos():
     r.raise_for_status()
 
     return r.json()
+
+@app.post("/evento/save")
+async def guardar_incidente():
+    cookies = load_session_cookies()
+
+    cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
+    print(cookie_header)
+
+    url = "http://172.20.48.129:8090/evento/save"
+
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "Cookie": cookie_header
+    }
+
+    content = f"update=Guardar&id=&version=&subproyecto=1&tipo=detalle&typeAction=nuevo&responsable=Responsable4&date=05%2F12%2F2025&causa=Causa4&descripcion=Descripcion4"
+
+    async with httpx.AsyncClient() as client:
+        r = await client.post(url, headers=headers, content=content)
+        print("Redireccion:", r.headers.get("Location"))
+
+    return {"status": "login_attempted"}
