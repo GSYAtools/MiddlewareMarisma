@@ -291,12 +291,26 @@ Content-Length: 10963
 
 ## 2. Mis proyectos
 ![alt text](imagenes/mis_proyectos.png)
+### Acceso al listado de proyectos
+
+#### Petición realizada para acceder al listado de proyectos
+
+```
+GET /proyecto/cargarProyectosTabla...
+```
+
+#### Reespuesta recibida a la petición
+
+```
+{"sEcho":null,"iTotalRecords":1,"iTotalDisplayRecords":1,"aaData":[[1,"Prueba",null,"con_premium","2025-10-08T10:04:40Z","2025-12-03T09:01:01Z"]]}<img width="442" height="37" alt="image" src="https://github.com/user-attachments/assets/e4919a8d-bd32-467c-bd47-1e44da0a459f" />
+```
+
 ### Acceso al proyecto (por índice)
 
 #### Petición realizada para acceder a proyecto
 
 ```
-GET /subproyecto/index/1 HTTP/1.1
+GET /proyecto/index/1 HTTP/1.1
 Host: 172.20.48.129:8090
 Upgrade-Insecure-Requests: 1
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0
@@ -339,6 +353,18 @@ Content-Length: 14
 ## 3. Mis subproyectos
 ![alt text](imagenes/mis_subproyectos.png)
 ### Acceso al subproyecto
+
+#### Petición realizada para acceder al listado de subproyectos
+
+```
+GET /subproyecto/cargarSubproyectosTabla...
+```
+
+#### Reespuesta recibida a la petición
+
+```
+{"sEcho":null,"iTotalRecords":1,"iTotalDisplayRecords":1,"aaData":[[1,"prueba 1","Agricultura, ganaderia, silvicultura y pesca","Prueba 1","Modelo de Madurez de Ciberseguridad para Gemelos Digitales elaborado por el Industrial IoT Consortium en colaboración con el Digital Twin Consortium","2025-10-08T11:37:38Z","2025-11-26T11:19:17Z",5," <small><i class=\"icofont icofont-tree\"><\/i> Prueba &gt;<\/small>"]]}
+```
 
 #### Petición recibida para acceder
 
@@ -407,7 +433,7 @@ Connection: keep-alive
 ## 6. Nuevo incidente
 ![alt text](imagenes/nuevo_incidente.png)
 
-### Enviar nueva incidencia
+### Guardar nueva incidencia
 ```
 POST /evento/save HTTP/1.1
 Host: 172.20.48.129:8090
@@ -564,6 +590,36 @@ Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=510A6D0C8E31CEAE7E9E874B51848694; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762499999$j60$l0$h0
 Connection: keep-alive
 ```
+
+#### Respuesta al realizar la petición
+```
+{"msg":"ok"}
+```
+
+#### Petición realizada para añadir una amenaza
+
+```
+POST /incidente/guardarAmenaza/169
+```
+
+#### Respuesta al realizar la petición
+
+```
+{"idIncidente":17,"nombreAmenaza":"Alteración de secuencia","gravedad":"leve","msg":"ok"}
+```
+
+#### Petición realizada para cargar el incidente
+
+```
+GET /incidente/cargarIncidente/12
+```
+
+#### Respuesta al realizar la petición
+
+```
+{"inciID":12,"amenaza":169,"gravedad":"leve"}
+```
+
 - Se guarda la amenaza almacenando la gravedad y el id del incidente y el id del subproyecto por id: ```POST /incidente/guardarGravedad?gravedad=<gravedad_incidente>&incidente=<id_incidente>&subproyecto=<id_subproyecto>```
 ### Se accede a la taxonomía del incidente y carga toda la web
 #### Cargar tabla de controles implicados
@@ -579,6 +635,13 @@ Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _gat_UA-97814751-2=1; _gat_gtag_UA_97814751_2=1; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504723$j60$l0$h0
 Connection: keep-alive
 ```
+
+#### Respuesta al realizar la petición
+
+```
+{"sEcho":null,"iTotalRecords":1,"iTotalDisplayRecords":1,"aaData":[[55,"CMM-01-01-01","Programa de Gestión de la Seguridad","Esta práctica restringe los tipos de cambios permitidos, cuándo se pueden realizar esos cambios, los procesos de aprobación y cómo manejar los escenarios de cambios de emergencia.",null]]}
+```
+
 #### Cargar tabla de activos implicados
 ```
 GET /incidente/cargarTablaActivosImplicados/1?incidente=0&draw=1&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=false&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=false&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=false&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=false&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=2&order%5B0%5D%5Bdir%5D=asc&start=0&length=-1&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1762504723764 HTTP/1.1
@@ -592,6 +655,13 @@ Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _gat_UA-97814751-2=1; _gat_gtag_UA_97814751_2=1; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504723$j60$l0$h0
 Connection: keep-alive
 ```
+
+#### Respuesta al realizar la petición
+
+```
+{"sEcho":null,"iTotalRecords":3,"iTotalDisplayRecords":3,"aaData":[[13,{"id":1,"estado":"cerrado","cobertura":0.0,"deleted":false,"exito":0.0,"respuestas":[{"id":18},{"id":15},{"id":43},{"id":10},{"id":29},{"id":71},{"id":31},{"id":9},{"id":68},{"id":54},{"id":60},{"id":23},{"id":14},{"id":40},{"id":22},{"id":7},{"id":17},{"id":32},{"id":39},{"id":44},{"id":59},{"id":51},{"id":24},{"id":57},{"id":25},{"id":12},{"id":58},{"id":4},{"id":37},{"id":2},{"id":28},{"id":67},{"id":20},{"id":52},{"id":19},{"id":65},{"id":21},{"id":34},{"id":63},{"id":38},{"id":48},{"id":26},{"id":27},{"id":47},{"id":36},{"id":8},{"id":1},{"id":70},{"id":16},{"id":3},{"id":61},{"id":6},{"id":5},{"id":13},{"id":41},{"id":35},{"id":30},{"id":56},{"id":33},{"id":64},{"id":62},{"id":69},{"id":55},{"id":53},{"id":66},{"id":49},{"id":50},{"id":42},{"id":45},{"id":11},{"id":46}],"nombreGrupoActivos":"Grupo General","incidentesActivo":[{"id":5},{"id":13},{"id":10},{"id":7},{"id":9},{"id":14},{"id":15},{"id":4},{"id":12},{"id":11},{"id":6},{"id":1},{"id":3},{"id":2}],"subproyecto":{"id":1},"activosAuditoria":[{"id":1}],"nombre":"Agrupación CHKL_General [prueba 1]"},"Equipamiento auxiliar","Equipamiento Auxiliar","[[A]]",null],[14,{"id":1,"estado":"cerrado","cobertura":0.0,"deleted":false,"exito":0.0,"respuestas":[{"id":18},{"id":15},{"id":43},{"id":10},{"id":29},{"id":71},{"id":31},{"id":9},{"id":68},{"id":54},{"id":60},{"id":23},{"id":14},{"id":40},{"id":22},{"id":7},{"id":17},{"id":32},{"id":39},{"id":44},{"id":59},{"id":51},{"id":24},{"id":57},{"id":25},{"id":12},{"id":58},{"id":4},{"id":37},{"id":2},{"id":28},{"id":67},{"id":20},{"id":52},{"id":19},{"id":65},{"id":21},{"id":34},{"id":63},{"id":38},{"id":48},{"id":26},{"id":27},{"id":47},{"id":36},{"id":8},{"id":1},{"id":70},{"id":16},{"id":3},{"id":61},{"id":6},{"id":5},{"id":13},{"id":41},{"id":35},{"id":30},{"id":56},{"id":33},{"id":64},{"id":62},{"id":69},{"id":55},{"id":53},{"id":66},{"id":49},{"id":50},{"id":42},{"id":45},{"id":11},{"id":46}],"nombreGrupoActivos":"Grupo General","incidentesActivo":[{"id":5},{"id":13},{"id":10},{"id":7},{"id":9},{"id":14},{"id":15},{"id":4},{"id":12},{"id":11},{"id":6},{"id":1},{"id":3},{"id":2}],"subproyecto":{"id":1},"activosAuditoria":[{"id":1}],"nombre":"Agrupación CHKL_General [prueba 1]"},"Equipamiento auxiliar","Equipamiento Auxiliar","[[A]]",null],[15,{"id":1,"estado":"cerrado","cobertura":0.0,"deleted":false,"exito":0.0,"respuestas":[{"id":18},{"id":15},{"id":43},{"id":10},{"id":29},{"id":71},{"id":31},{"id":9},{"id":68},{"id":54},{"id":60},{"id":23},{"id":14},{"id":40},{"id":22},{"id":7},{"id":17},{"id":32},{"id":39},{"id":44},{"id":59},{"id":51},{"id":24},{"id":57},{"id":25},{"id":12},{"id":58},{"id":4},{"id":37},{"id":2},{"id":28},{"id":67},{"id":20},{"id":52},{"id":19},{"id":65},{"id":21},{"id":34},{"id":63},{"id":38},{"id":48},{"id":26},{"id":27},{"id":47},{"id":36},{"id":8},{"id":1},{"id":70},{"id":16},{"id":3},{"id":61},{"id":6},{"id":5},{"id":13},{"id":41},{"id":35},{"id":30},{"id":56},{"id":33},{"id":64},{"id":62},{"id":69},{"id":55},{"id":53},{"id":66},{"id":49},{"id":50},{"id":42},{"id":45},{"id":11},{"id":46}],"nombreGrupoActivos":"Grupo General","incidentesActivo":[{"id":5},{"id":13},{"id":10},{"id":7},{"id":9},{"id":14},{"id":15},{"id":4},{"id":12},{"id":11},{"id":6},{"id":1},{"id":3},{"id":2}],"subproyecto":{"id":1},"activosAuditoria":[{"id":1}],"nombre":"Agrupación CHKL_General [prueba 1]"},"Equipamiento auxiliar","Equipamiento Auxiliar","[[A]]",null]]}
+```
+
 #### Cargar tabla de controles no implicados
 ```
 GET /incidente/cargarTablaControlesNoImplicados/1?incidente=0&draw=1&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=false&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=false&columns%5B4%5D%5Borderable%5D=false&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=false&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=1&order%5B0%5D%5Bdir%5D=asc&start=0&length=-1&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1762504723765 HTTP/1.1
@@ -605,6 +675,13 @@ Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _gat_UA-97814751-2=1; _gat_gtag_UA_97814751_2=1; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504723$j60$l0$h0
 Connection: keep-alive
 ```
+
+#### Respuesta al realizar la petición
+
+```
+{"sEcho":null,"iTotalRecords":17,"iTotalDisplayRecords":17,"aaData":[[56,"CMM-01-01-02","Gestión del Cumplimiento","Esta práctica es necesaria cuando se necesitan requisitos estrictos para el cumplimiento de los estándares de seguridad en evolución.",null],[57,"CMM-01-02-01","Modelado de Amenazas","Esta práctica tiene como objetivo revelar los factores conocidos y específicos que pueden poner en riesgo el funcionamiento de un sistema dado y describir con precisión estos factores.",null],[58,"CMM-01-02-02","Actitud frente al Riesgo","Esta práctica permite a una organización establecer una estrategia para hacer frente a los riesgos de acuerdo con la política de gestión de riesgos, incluidas las condiciones para la aceptación, evasión, evaluación, mitigación y transferencia.",null],[59,"CMM-01-03-01","Gestión de riesgos de la cadena de suministro de productos","Esta práctica tiene como objetivo revelar los factores conocidos y específicos que pueden poner en riesgo el funcionamiento de un sistema dado y describir con precisión estos factores.",null],[60,"CMM-01-03-02","Gestión de Servicios y Dependencias entre Terceros","Esta práctica aborda la necesidad de generar confianza para los socios y terceras partes. La capacidad de tener la seguridad de la confianza de terceros requiere la comprensión de la infraestructura comercial y de confianza y las posibles fuentes de amenazas ocultas.",null],[61,"CMM-02-01-01","Establecimiento y mantenimiento de identidades","Esta práctica ayuda a identificar y restringir quién puede acceder al sistema y sus privilegios.",null],[62,"CMM-02-01-02","Control de Accesos","La política y la implementación de esta práctica permiten que una empresa limite el acceso a los recursos solo a las identidades específicas que requieren acceso y solo al nivel específico necesario para cumplir con los requisitos de la organización.",null],[64,"CMM-02-02-01","Protección Física","Las políticas de esta práctica abordan la seguridad física y la protección de las instalaciones, su gente y los sistemas para evitar robos y garantizar la operación segura continua del equipo.",null],[63,"CMM-02-02-02","Gestión de activos, cambios y configuración","Esta práctica restringe los tipos de cambios permitidos, cuándo se pueden realizar esos cambios, los procesos de aprobación y cómo manejar los escenarios de cambios de emergencia.",null],[65,"CMM-02-03-01","Modelo y Política de Protección de Datos","Esta práctica identifica si existen diferentes categorías de datos y considera los objetivos y reglas específicas para la protección de datos.",null],[66,"CMM-02-03-02","Implementación de Prácticas de Protección de Datos","Esta práctica describe la aplicación preferida de los mecanismos de protección de datos para abordar la confidencialidad, la integridad y la disponibilidad.",null],[67,"CMM-03-01-01","Evaluación de Vulnerabilidades","Esta práctica ayuda a identificar vulnerabilidades, determinar el riesgo que cada vulnerabilidad supone para el organización y desarrollar un plan de remediación priorizado.",null],[68,"CMM-03-01-02","Gestión de Parches","Esta práctica aclara cuándo y con qué frecuencia aplicar los parches de software, establece procedimientos para parches de emergencia y propone mitigaciones adicionales en caso de acceso restringido al sistema u otros problemas relacionados con la aplicación de parches.",null],[69,"CMM-03-02-01","Prácticas de Monitorización","Esta práctica se utiliza para monitorear el estado del sistema, identificar anomalías y ayudar en la resolución de disputas.",null],[70,"CMM-03-02-02","Concienciación sobre el conexto e Intercambio de Información","Esta práctica ayuda a las organizaciones a estar mejor preparadas para responder a las amenazas. Compartir información sobre amenazas mantiene los sistemas actualizados.",null],[71,"CMM-03-03-01","Detección de Eventos y Plan de Respuestas","Esta práctica define qué es un evento de seguridad y cómo detectar y asignar eventos para su investigación, escalarlos según sea necesario y responder adecuadamente.\r\nTambién debe incluir un plan de comunicaciones para compartir información de manera adecuada y oportuna con las partes interesadas.",null],[72,"CMM-03.03-02","Remediación, Recuperación y Continuidad de Operaciones","Esta práctica es una combinación de redundancias técnicas en las que el personal capacitado y la política de continuidad comercial ayudan a una organización a recuperarse rápidamente de un evento para acelerar el regreso a la normalidad.",null]]}
+```
+
 #### Cargar tabla de activos no implicados
 ```
 GET /incidente/cargarTablaActivosNoImplicados/1?incidente=0&draw=1&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=false&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=4&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=false&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=5&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=false&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B6%5D%5Bdata%5D=&columns%5B6%5D%5Bname%5D=&columns%5B6%5D%5Bsearchable%5D=true&columns%5B6%5D%5Borderable%5D=true&columns%5B6%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B6%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B7%5D%5Bdata%5D=&columns%5B7%5D%5Bname%5D=&columns%5B7%5D%5Bsearchable%5D=true&columns%5B7%5D%5Borderable%5D=true&columns%5B7%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B7%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B8%5D%5Bdata%5D=&columns%5B8%5D%5Bname%5D=&columns%5B8%5D%5Bsearchable%5D=true&columns%5B8%5D%5Borderable%5D=true&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B8%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B9%5D%5Bdata%5D=9&columns%5B9%5D%5Bname%5D=&columns%5B9%5D%5Bsearchable%5D=false&columns%5B9%5D%5Borderable%5D=true&columns%5B9%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B9%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B10%5D%5Bdata%5D=&columns%5B10%5D%5Bname%5D=&columns%5B10%5D%5Bsearchable%5D=true&columns%5B10%5D%5Borderable%5D=false&columns%5B10%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B10%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=2&order%5B0%5D%5Bdir%5D=asc&start=0&length=-1&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1762504723763 HTTP/1.1
@@ -618,6 +695,13 @@ Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=F929DEE0D51EB6F2E5C6CEDF693917CA; _gat_UA-97814751-2=1; _gat_gtag_UA_97814751_2=1; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762504723$j60$l0$h0
 Connection: keep-alive
 ```
+
+#### Respuesta al realizar la petición
+
+```
+{"sEcho":null,"iTotalRecords":0,"iTotalDisplayRecords":0,"aaData":[]}
+```
+
 #### Guardar amenaza
 ```
 POST /incidente/guardarAmenaza/170 HTTP/1.1
@@ -680,6 +764,12 @@ Connection: keep-alive
 ```
 Tras pulsar el botón, va a aparecer el cuadro de diálogo de Añadir Activo en el que vamos a tener que introducir las dimensiones. 
 
+#### Respuesta al realizar la petición
+
+```
+{"dim":{"19":16},"activo":13,"msg":"ok"}
+```
+
 ## 10. Rellenar formulario de dimensiones y guardar
 ![alt text](imagenes/formulario_dimensiones.png)
 Al rellenar las dimensiones:
@@ -695,6 +785,37 @@ Accept-Language: es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
 Cookie: _ga=GA1.1.1791792627.1762429181; _gid=GA1.1.1977960298.1762429181; JSESSIONID=510A6D0C8E31CEAE7E9E874B51848694; _ga_55LR48RTVX=GS2.1.s1762499598$o2$g1$t1762500456$j60$l0$h0
 Connection: keep-alive
 ```
+
+#### Respuesta al realizar la petición
+
+```
+{"msg":"creado","activo":16}
+```
+
+#### Petición realizada para vincular un control
+
+```
+GET /incidente/vincularControl
+```
+
+#### Respuesta al realizar la petición
+
+```
+{"msg":"noVinculado"}
+```
+
+#### Petición para recalcular
+
+```
+POST /recalculate
+```
+
+#### Respuesta al realizar la petición
+
+```
+{"mensaje":"ok"}
+```
+
 #### Cargar tabla de controles implicados
 ```
 GET /incidente/cargarTablaControlesImplicados/1?incidente=3&draw=4&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=false&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=false&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=1&order%5B0%5D%5Bdir%5D=asc&start=0&length=-1&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1762500456161 HTTP/1.1
