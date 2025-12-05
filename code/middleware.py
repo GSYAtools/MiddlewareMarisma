@@ -11,8 +11,8 @@ app = FastAPI()
 JSON_FIELDS = [
     "threat_id",
     "user_id",
-    "activo_id", # Añadido para la consulta
-    "codigo_amenaza", # Añadido para la consulta
+    "activo_id", # Añadido para la consulta (no son del json original)
+    "codigo_amenaza", # Añadido para la consulta (no son del json original)
     "device_id",
     "detected_at",
     "threat_type",
