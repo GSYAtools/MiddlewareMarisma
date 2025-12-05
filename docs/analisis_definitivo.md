@@ -30,6 +30,66 @@ Al intentar capturar las peticiones desde Burpsuite, reCAPTCHA nos lanza el sigu
 1. Instalación de certificado de Burpsuite: soluciona parte del problema. `&g-recaptcha-response=&postUrl=%2Flogin%2Fauthenticate` ahora recaptcha-response viene vacío.
 2. TLS passthrough: `&g-recaptcha-response=0cAFcWeA4Y76O2xa[...]uwAnfk&postUrl=%2Flogin%2Fauthenticate` ahora la respuesta llega completa y con `authenticate`.
 
+### Iniciar sesión
+Para iniciar sesión utiliza tres endpoints, en primer lugar el endpoint de la página del formulario de login:
+```
+GET /login/auth HTTP/1.1
+Host: 172.20.48.129:8090
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Accept-Encoding: gzip, deflate, br
+Accept-Language: es-ES,es;q=0.9
+Cookie: _ga=GA1.1.1975039891.1762334083; _gid=GA1.1.1892053111.1764845776; JSESSIONID=871D3CB08998BE10814A05873A667FDE; _gat_UA-97814751-2=1; _gat_gtag_UA_97814751_2=1; _ga_55LR48RTVX=GS2.1.s1764924195$o19$g1$t1764924702$j41$l0$h0
+Connection: keep-alive
+```
+
+Después pasa al siguiente endpoint en el que se le pasa el usuario y contraseña, la contraseña codificada en base 64:
+
+```
+POST /login/existUser HTTP/1.1
+Host: 172.20.48.129:8090
+Content-Length: 48
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+Accept: */*
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Origin: http://172.20.48.129:8090
+Referer: http://172.20.48.129:8090/login/auth
+Accept-Encoding: gzip, deflate, br
+Accept-Language: es-ES,es;q=0.9
+Cookie: _ga=GA1.1.1975039891.1762334083; _gid=GA1.1.1892053111.1764845776; JSESSIONID=DF52D649E84DB875DB9FD00D921C4AE1; _ga_55LR48RTVX=GS2.1.s1764924195$o19$g0$t1764924200$j55$l0$h0
+Connection: keep-alive
+
+username=uclm_user&password=d30nRCQyVm5Ocis5fic0
+```
+
+Y, por último, el endpoint en el que se comprueba que autentica al usuario, en el que de nuevo se envían usuario y contraseña, en este caso convirtiendo la contraseña a URL encoding, y enviando también la URL del endpoint:
+
+```
+POST /login/authenticate HTTP/1.1
+Host: 172.20.48.129:8090
+Content-Length: 87
+Cache-Control: max-age=0
+Origin: http://172.20.48.129:8090
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Referer: http://172.20.48.129:8090/login/auth
+Accept-Encoding: gzip, deflate, br
+Accept-Language: es-ES,es;q=0.9
+Cookie: _ga=GA1.1.1975039891.1762334083; _gid=GA1.1.1892053111.1764845776; JSESSIONID=DF52D649E84DB875DB9FD00D921C4AE1; _ga_55LR48RTVX=GS2.1.s1764924195$o19$g0$t1764924200$j55$l0$h0
+Connection: keep-alive
+
+username=uclm_user&password=w%7D%27D%242VnNr%2B9%7E%274&postUrl=%2Flogin%2Fauthenticate
+```
+
+### Respuesta al inciar sesión
+
+De los endpoints anteriores, el que realiza el inicio de sesión es el POST /login/authenticate, cuando se ejecuta, la respuesta recibida es el código HTTP 302, que nos indica que se ha producido una redirección, en este caso se redirige al siguiente endpoint del flujo que estamos siguiendo.
+
 ### Cómo iniciar sesión
 ```
 POST /login/existUser HTTP/1.1
