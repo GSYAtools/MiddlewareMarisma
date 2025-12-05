@@ -356,7 +356,16 @@ Content-Length: 10963
 #### Petición realizada para acceder al listado de proyectos
 
 ```
-GET /proyecto/cargarProyectosTabla...
+GET /proyecto/cargarProyectosTabla/?draw=1&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=false&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=1&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=2&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=3&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=4&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=false&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=5&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=false&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B6%5D%5Bdata%5D=6&columns%5B6%5D%5Bname%5D=&columns%5B6%5D%5Bsearchable%5D=false&columns%5B6%5D%5Borderable%5D=false&columns%5B6%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B6%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=1&order%5B0%5D%5Bdir%5D=asc&start=0&length=10&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1764240795903 HTTP/1.1
+Host: 172.20.48.129:8090
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+Accept: application/json, text/javascript, */*; q=0.01
+X-Requested-With: XMLHttpRequest
+Referer: http://172.20.48.129:8090/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: es-ES,es;q=0.9
+Cookie: _ga=GA1.1.1975039891.1762334083; _gid=GA1.1.2030846257.1764155102; _ga_55LR48RTVX=GS2.1.s1764157309$o8$g1$t1764157397$j60$l0$h0; JSESSIONID=8BBA5D3298379D647E6A17283D6A8CA3
+Connection: keep-alive
 ```
 
 #### Reespuesta recibida a la petición
@@ -417,7 +426,16 @@ Content-Length: 14
 #### Petición realizada para acceder al listado de subproyectos
 
 ```
-GET /subproyecto/cargarSubproyectosTabla...
+GET /subproyecto/cargarSubproyectosTabla/1?draw=1&columns%5B0%5D%5Bdata%5D=&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=false&columns%5B0%5D%5Borderable%5D=false&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=1&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=false&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=2&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=3&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=4&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B5%5D%5Bdata%5D=5&columns%5B5%5D%5Bname%5D=&columns%5B5%5D%5Bsearchable%5D=true&columns%5B5%5D%5Borderable%5D=true&columns%5B5%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B5%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B6%5D%5Bdata%5D=6&columns%5B6%5D%5Bname%5D=&columns%5B6%5D%5Bsearchable%5D=true&columns%5B6%5D%5Borderable%5D=true&columns%5B6%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B6%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B7%5D%5Bdata%5D=7&columns%5B7%5D%5Bname%5D=&columns%5B7%5D%5Bsearchable%5D=true&columns%5B7%5D%5Borderable%5D=true&columns%5B7%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B7%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B8%5D%5Bdata%5D=8&columns%5B8%5D%5Bname%5D=&columns%5B8%5D%5Bsearchable%5D=true&columns%5B8%5D%5Borderable%5D=true&columns%5B8%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B8%5D%5Bsearch%5D%5Bregex%5D=false&order%5B0%5D%5Bcolumn%5D=1&order%5B0%5D%5Bdir%5D=asc&start=0&length=10&search%5Bvalue%5D=&search%5Bregex%5D=false&_=1764326998069 HTTP/1.1
+Host: 172.20.48.129:8090
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+Accept: application/json, text/javascript, */*; q=0.01
+X-Requested-With: XMLHttpRequest
+Referer: http://172.20.48.129:8090/subproyecto/index/1
+Accept-Encoding: gzip, deflate, br
+Accept-Language: es-ES,es;q=0.9
+Cookie: _ga=GA1.1.1975039891.1762334083; _gid=GA1.1.2030846257.1764155102; JSESSIONID=E65CE4F01A4BDE23D6CDF72119C427C0; _gat_UA-97814751-2=1; _gat_gtag_UA_97814751_2=1; _ga_55LR48RTVX=GS2.1.s1764325655$o12$g1$t1764326998$j41$l0$h0
+Connection: keep-alive
 ```
 
 #### Reespuesta recibida a la petición
@@ -855,7 +873,16 @@ Connection: keep-alive
 #### Petición realizada para vincular un control
 
 ```
-GET /incidente/vincularControl
+GET /incidente/vincularControl?control=55&incidente=12 HTTP/1.1
+Host: 172.20.48.129:8090
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+Accept: */*
+X-Requested-With: XMLHttpRequest
+Referer: http://172.20.48.129:8090/incidente/index/15
+Accept-Encoding: gzip, deflate, br
+Accept-Language: es-ES,es;q=0.9
+Cookie: _ga=GA1.1.1975039891.1762334083; _gid=GA1.1.752744704.1764587052; JSESSIONID=C450591B3FE735972298EE226A10041F; _ga_55LR48RTVX=GS2.1.s1764660951$o14$g1$t1764660964$j47$l0$h0
+Connection: keep-alive
 ```
 
 #### Respuesta al realizar la petición
@@ -867,7 +894,18 @@ GET /incidente/vincularControl
 #### Petición para recalcular
 
 ```
-POST /recalculate
+POST /RSA/recalculateRAjax/1?acam=false&ar=true&pdt=false&vr=6&con=true&po=true&dim=true HTTP/1.1
+Host: 172.20.48.129:8090
+Content-Length: 0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+Accept: */*
+X-Requested-With: XMLHttpRequest
+Origin: http://172.20.48.129:8090
+Referer: http://172.20.48.129:8090/evento/index/1
+Accept-Encoding: gzip, deflate, br
+Accept-Language: es-ES,es;q=0.9
+Cookie: _ga=GA1.1.1975039891.1762334083; _gid=GA1.1.752744704.1764587052; JSESSIONID=C450591B3FE735972298EE226A10041F; _ga_55LR48RTVX=GS2.1.s1764660951$o14$g1$t1764662027$j60$l0$h0
+Connection: keep-alive
 ```
 
 #### Respuesta al realizar la petición
