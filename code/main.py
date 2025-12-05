@@ -10,12 +10,16 @@ def load_session_cookies():
     
 @app.get("/proyectos")
 async def obtener_proyectos():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/proyecto/cargarProyectosTabla/"
+    url = f"{url_ar}/proyecto/cargarProyectosTabla/"
 
     params = {
         "draw": "1",
@@ -52,12 +56,16 @@ async def obtener_proyectos():
 
 @app.get("/subproyectos/1")
 async def obtener_subproyectos():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/subproyecto/cargarSubproyectosTabla/1"
+    url = f"{url_ar}/subproyecto/cargarSubproyectosTabla/1"
 
     params = {
         "draw": "1",
@@ -144,12 +152,16 @@ async def obtener_subproyectos():
 
 @app.post("/evento/save")
 async def guardar_incidente():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/evento/save"
+    url = f"{url_ar}/evento/save"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -168,12 +180,16 @@ async def guardar_incidente():
 
 @app.get("/eventos/1")
 async def obtener_eventos():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/evento/cargarEventoTabla/1"
+    url = f"{url_ar}/evento/cargarEventoTabla/1"
 
     params = {
         "draw": "1",
@@ -270,12 +286,16 @@ async def obtener_eventos():
 
 @app.post("/incidente/guardarGravedad")
 async def guardar_gravedad():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/incidente/guardarGravedad"
+    url = f"{url_ar}/incidente/guardarGravedad"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -295,12 +315,16 @@ async def guardar_gravedad():
 
 @app.post("/incidente/guardarAmenaza/169")
 async def guardar_amenaza():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/incidente/guardarAmenaza/169"
+    url = f"{url_ar}/incidente/guardarAmenaza/169"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -321,12 +345,16 @@ async def guardar_amenaza():
 
 @app.get("/incidente/cargarIncidente/12")
 async def cargar_incidente():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/incidente/cargarIncidente/12"
+    url = f"{url_ar}/incidente/cargarIncidente/12"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -344,12 +372,16 @@ async def cargar_incidente():
 
 @app.get("/incidente/cargarTablaControlesNoImplicados/1")
 async def obtener_controlesNoImplicados():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/incidente/cargarTablaControlesNoImplicados/1"
+    url = f"{url_ar}/incidente/cargarTablaControlesNoImplicados/1"
 
     params = {
         "incidente": "12",
@@ -435,12 +467,16 @@ async def obtener_controlesNoImplicados():
 
 @app.get("/incidente/cargarTablaActivosNoImplicados/1")
 async def obtener_activosNoImplicados():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/incidente/cargarTablaActivosNoImplicados/1"
+    url = f"{url_ar}/incidente/cargarTablaActivosNoImplicados/1"
 
     params = {
         "incidente": "12",
@@ -552,12 +588,16 @@ async def obtener_activosNoImplicados():
 
 @app.get("/incidente/cargarTablaControlesImplicados/1")
 async def obtener_controlesImplicados():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/incidente/cargarTablaControlesImplicados/1"
+    url = f"{url_ar}/incidente/cargarTablaControlesImplicados/1"
 
     params = {
         "incidente": "12",
@@ -666,12 +706,16 @@ async def obtener_controlesImplicados():
 
 @app.get("/incidente/cargarTablaActivosImplicados/1")
 async def obtener_activosImplicados():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/incidente/cargarTablaActivosImplicados/1"
+    url = f"{url_ar}/incidente/cargarTablaActivosImplicados/1"
 
     params = {
         "incidente": "12",
@@ -744,12 +788,16 @@ async def obtener_activosImplicados():
 
 @app.get("/incidente/cargarDimensionesClear")
 async def cargar_dimensionesClear():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/incidente/cargarDimensionesClear?activo=1&incidente=12"
+    url = f"{url_ar}/incidente/cargarDimensionesClear?activo=1&incidente=12"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -767,12 +815,16 @@ async def cargar_dimensionesClear():
 
 @app.get("/incidente/vincularActivo")
 async def vincular_activo():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/incidente/vincularActivo?dimension=19&activo=&incidente=12&porcentaje=16&vincular=true&activoAux=1"
+    url = f"{url_ar}/incidente/vincularActivo?dimension=19&activo=&incidente=12&porcentaje=16&vincular=true&activoAux=1"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -790,12 +842,16 @@ async def vincular_activo():
 
 @app.get("/incidente/vincularControl")
 async def vincular_control():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/incidente/vincularControl?control=55&incidente=12"
+    url = f"{url_ar}/incidente/vincularControl?control=55&incidente=12"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -813,12 +869,16 @@ async def vincular_control():
 
 '''@app.get("/evento/conclusion")
 async def ir_a_conclusion():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/evento/conclusion/15"
+    url = f"{url_ar}/evento/conclusion/15"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -835,12 +895,16 @@ async def ir_a_conclusion():
 
 '''@app.post("/evento/save/15")
 async def guardar_y_cerrar():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/evento/save/15"
+    url = f"{url_ar}/evento/save/15"
 
     data = {
         "save": "Guardar",
@@ -870,12 +934,16 @@ async def guardar_y_cerrar():
 
 @app.post("/recalculate")
 async def recalcular():
+    with open("config.json", "r") as file:
+        config = json.load(file)
+    url_ar = config["URL_AR"]
+    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = "http://172.20.48.129:8090/RSA/recalculateRAjax/1?acam=false&ar=true&pdt=false&vr=6&con=true&po=true&dim=true"
+    url = f"{url_ar}/RSA/recalculateRAjax/1?acam=false&ar=true&pdt=false&vr=6&con=true&po=true&dim=true"
 
     headers = {
         "User-Agent": "Mozilla/5.0",

@@ -72,6 +72,7 @@ async def login():
     
     username = config["username"]
     password = config["password"]
+    url_ar = config["URL_AR"]
     login_form_url = config["login_form_url"]
     existUser_url = config["existUser_url"]
     authenticate_url = config["authenticate_url"]
@@ -80,27 +81,27 @@ async def login():
     password_encoded = urllib.parse.quote_plus(password_b64)
 
     headers_existUser = {
-        "Host": "172.20.48.129:8090",
+        "Host": url_ar.replace("http://", ""),
         "X-Requested-With": "XMLHttpRequest",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0",
         "Accept": "*/*",
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "Origin": "http://172.20.48.129:8090",
-        "Referer": "http://172.20.48.129:8090/login/auth",
+        "Origin": url_ar,
+        "Referer": f"{url_ar}/login/auth",
         "Accept-Encoding": "gzip, deflate, br",
         "Accept-Language": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
         "Connection": "keep-alive"
     }
 
     headers_authenticate = {
-        "Host": "172.20.48.129:8090",
+        "Host": url_ar.replace("http://", ""),
         "Cache-Control": "max-age=0",
-        "Origin": "http://172.20.48.129:8090",
+        "Origin": url_ar,
         "Content-Type": "application/x-www-form-urlencoded",
         "Upgrade-Insecure-Requests": "1",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "Referer": "http://172.20.48.129:8090/login/auth",
+        "Referer": f"{url_ar}/login/auth",
         "Accept-Encoding": "gzip, deflate, br",
         "Accept-Language": "es-ES,es;q=0.9",
         "Connection": "keep-alive"

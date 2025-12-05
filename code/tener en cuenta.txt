@@ -1,2 +1,0 @@
-- para comprobar que se produce una incidencia, revisar la base de datos
-- cada vez que se introduce un dato revisar que se introduce en la base de datos y en caso de discrepancia aparece un error

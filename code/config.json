@@ -1,6 +1,7 @@
 {
     "username": "Con_premium",
     "password": "S5$e35bn",
+    "URL_AR": "http://172.20.48.129:8090",
     "login_url": "http://172.20.48.129:8090/login/existUser",
     "db_host": "172.20.48.129",
     "db_port": 3306,
