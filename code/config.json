@@ -1,5 +1,11 @@
 {
     "username": "Con_premium",
     "password": "S5$e35bn",
-    "login_url": "http://172.20.48.129:8090/login/existUser"
+    "login_url": "http://172.20.48.129:8090/login/existUser",
+    "db_host": "172.20.48.129",
+    "db_port": 3306,
+    "db_user": "ar_marisma",
+    "db_password": "M33aarIsmmmA",
+    "db_name": "ar_marisma",
+    "subproyecto_id": "1"
 }
