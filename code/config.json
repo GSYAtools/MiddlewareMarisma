@@ -1,12 +1,19 @@
 {
-    "username": "Con_premium",
-    "password": "S5$e35bn",
-    "URL_AR": "http://172.20.48.129:8090",
+    "username": "uclm_user",
+    "password": "w}'D$2VnNr+9~'4",
     "login_url": "http://172.20.48.129:8090/login/existUser",
     "db_host": "172.20.48.129",
     "db_port": 3306,
     "db_user": "ar_marisma",
     "db_password": "M33aarIsmmmA",
     "db_name": "ar_marisma",
-    "subproyecto_id": "1"
+    "subproyecto_id": "1",
+    "proyecto_id": "1",
+    "evento_fuente": "Prueba",
+    "gravedad_evento": "2",
+    "incidente": "12",
+    "control": "55",
+    "dimension": "19",
+    "porcentaje_dimension": "16",
+    "activo": "13"
 }

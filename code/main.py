@@ -1,5 +1,7 @@
 import json
 import httpx
+import base64
+import urllib.parse
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -8,18 +10,68 @@ def load_session_cookies():
     with open("session.json", "r") as file:
         return json.load(file)
     
+def load_config():
+    with open("config.json", "r") as file:
+        return json.load(file)
+    
+@app.post("/login/existUser")
+async def exist_user():
+    url = "http://172.20.48.129:8090/login/existUser"
+    config = load_config()
+
+    username = config["username"]
+    password = config["password"]
+
+    password_b64 = base64.b64encode(password.encode("utf-8")).decode("utf-8")
+    password_encoded = urllib.parse.quote_plus(password_b64)
+
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Accept": "*/*",
+    }
+
+    content = f"username={username}&password={password_encoded}"
+
+    async with httpx.AsyncClient() as client:
+        r = await client.post(url, headers=headers, content=content)
+
+    return {"status": r.status_code}
+
+@app.post("/login/authenticate")
+async def exist_user():
+    url = "http://172.20.48.129:8090/login/authenticate"
+    config = load_config()
+
+    username = config["username"]
+    password = config["password"]
+
+    password_encoded = urllib.parse.quote(password)
+
+    postUrl = "/login/authenticate"
+
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    }
+
+    content = f"username={username}&password={password_encoded}&postUrl={postUrl}"
+
+    async with httpx.AsyncClient() as client:
+        r = await client.post(url, headers=headers, content=content)
+        print("Redireccion:", r.headers.get("Location"))
+
+    return {"status": r.status_code}
+    
 @app.get("/proyectos")
 async def obtener_proyectos():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/proyecto/cargarProyectosTabla/"
+    url = "http://172.20.48.129:8090/proyecto/cargarProyectosTabla/"
 
     params = {
         "draw": "1",
@@ -54,18 +106,14 @@ async def obtener_proyectos():
 
     return r.json()
 
-@app.get("/subproyectos/1")
+@app.get("/subproyectos/1") # El 1 es el índice del subproyecto
 async def obtener_subproyectos():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/subproyecto/cargarSubproyectosTabla/1"
+    url = "http://172.20.48.129:8090/subproyecto/cargarSubproyectosTabla/1"
 
     params = {
         "draw": "1",
@@ -152,16 +200,12 @@ async def obtener_subproyectos():
 
 @app.post("/evento/save")
 async def guardar_incidente():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/evento/save"
+    url = "http://172.20.48.129:8090/evento/save"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -170,7 +214,7 @@ async def guardar_incidente():
         "Cookie": cookie_header
     }
 
-    content = f"update=Guardar&id=&version=&subproyecto=1&tipo=detalle&typeAction=nuevo&responsable=Responsable4&date=05%2F12%2F2025&causa=Causa4&descripcion=Descripcion4"
+    content = f"update=Guardar&id=&version=&subproyecto=1&tipo=detalle&typeAction=nuevo&responsable=Responsable5&date=05%2F12%2F2025&causa=Causa5&descripcion=Descripcion5" # Necesita el índice del subproyecto y rellenar los datos que sean necesarios registrar para guardar un nuevo incidente
 
     async with httpx.AsyncClient() as client:
         r = await client.post(url, headers=headers, content=content)
@@ -180,16 +224,12 @@ async def guardar_incidente():
 
 @app.get("/eventos/1")
 async def obtener_eventos():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/evento/cargarEventoTabla/1"
+    url = "http://172.20.48.129:8090/evento/cargarEventoTabla/1"
 
     params = {
         "draw": "1",
@@ -286,16 +326,12 @@ async def obtener_eventos():
 
 @app.post("/incidente/guardarGravedad")
 async def guardar_gravedad():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/incidente/guardarGravedad"
+    url = "http://172.20.48.129:8090/incidente/guardarGravedad"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -304,7 +340,7 @@ async def guardar_gravedad():
         "Cookie": cookie_header
     }
 
-    content = f"gravedad=Grave&incidente=3&subproyecto=1"
+    content = f"gravedad=Grave&incidente=3&subproyecto=1" # Necesita el índice del subproyecto y rellenar la gravedad
 
     async with httpx.AsyncClient() as client:
         r = await client.post(url, headers=headers, content=content)
@@ -313,18 +349,14 @@ async def guardar_gravedad():
 
     return r.json()
 
-@app.post("/incidente/guardarAmenaza/169")
+@app.post("/incidente/guardarAmenaza/169") # Nº de la amenaza
 async def guardar_amenaza():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/incidente/guardarAmenaza/169"
+    url = "http://172.20.48.129:8090/incidente/guardarAmenaza/169"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -334,7 +366,7 @@ async def guardar_amenaza():
         "Cookie": cookie_header
     }
 
-    content = f"gravedad=leve&evento=16"
+    content = f"gravedad=leve&evento=16" 
 
     async with httpx.AsyncClient() as client:
         r = await client.post(url, headers=headers, content=content)
@@ -343,18 +375,14 @@ async def guardar_amenaza():
 
     return r.json()
 
-@app.get("/incidente/cargarIncidente/12")
+@app.get("/incidente/cargarIncidente/12") # Necesita el índice del incidente
 async def cargar_incidente():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/incidente/cargarIncidente/12"
+    url = "http://172.20.48.129:8090/incidente/cargarIncidente/12"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -370,18 +398,14 @@ async def cargar_incidente():
 
     return r.json()
 
-@app.get("/incidente/cargarTablaControlesNoImplicados/1")
+@app.get("/incidente/cargarTablaControlesNoImplicados/1") 
 async def obtener_controlesNoImplicados():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/incidente/cargarTablaControlesNoImplicados/1"
+    url = "http://172.20.48.129:8090/incidente/cargarTablaControlesNoImplicados/1"
 
     params = {
         "incidente": "12",
@@ -467,19 +491,15 @@ async def obtener_controlesNoImplicados():
 
 @app.get("/incidente/cargarTablaActivosNoImplicados/1")
 async def obtener_activosNoImplicados():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/incidente/cargarTablaActivosNoImplicados/1"
+    url = "http://172.20.48.129:8090/incidente/cargarTablaActivosNoImplicados/1"
 
     params = {
-        "incidente": "12",
+        "incidente": "12", # Índice del incidente
         "draw": "2",
 
         "columns[0][data]": "0",
@@ -588,16 +608,12 @@ async def obtener_activosNoImplicados():
 
 @app.get("/incidente/cargarTablaControlesImplicados/1")
 async def obtener_controlesImplicados():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/incidente/cargarTablaControlesImplicados/1"
+    url = "http://172.20.48.129:8090/incidente/cargarTablaControlesImplicados/1"
 
     params = {
         "incidente": "12",
@@ -706,16 +722,12 @@ async def obtener_controlesImplicados():
 
 @app.get("/incidente/cargarTablaActivosImplicados/1")
 async def obtener_activosImplicados():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/incidente/cargarTablaActivosImplicados/1"
+    url = "http://172.20.48.129:8090/incidente/cargarTablaActivosImplicados/1"
 
     params = {
         "incidente": "12",
@@ -788,16 +800,12 @@ async def obtener_activosImplicados():
 
 @app.get("/incidente/cargarDimensionesClear")
 async def cargar_dimensionesClear():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/incidente/cargarDimensionesClear?activo=1&incidente=12"
+    url = "http://172.20.48.129:8090/incidente/cargarDimensionesClear?activo=1&incidente=12" # Necesita nº de activo e id del incidente
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -815,16 +823,12 @@ async def cargar_dimensionesClear():
 
 @app.get("/incidente/vincularActivo")
 async def vincular_activo():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/incidente/vincularActivo?dimension=19&activo=&incidente=12&porcentaje=16&vincular=true&activoAux=1"
+    url = "http://172.20.48.129:8090/incidente/vincularActivo?dimension=19&activo=&incidente=12&porcentaje=16&vincular=true&activoAux=1" # Nº dimensión, activo, incidente, porcentaje 
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -842,16 +846,12 @@ async def vincular_activo():
 
 @app.get("/incidente/vincularControl")
 async def vincular_control():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/incidente/vincularControl?control=55&incidente=12"
+    url = "http://172.20.48.129:8090/incidente/vincularControl?control=55&incidente=12" # Nº del control y del incidente
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -869,16 +869,12 @@ async def vincular_control():
 
 '''@app.get("/evento/conclusion")
 async def ir_a_conclusion():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/evento/conclusion/15"
+    url = "http://172.20.48.129:8090/evento/conclusion/15"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -895,16 +891,12 @@ async def ir_a_conclusion():
 
 '''@app.post("/evento/save/15")
 async def guardar_y_cerrar():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/evento/save/15"
+    url = "http://172.20.48.129:8090/evento/save/15"
 
     data = {
         "save": "Guardar",
@@ -934,16 +926,12 @@ async def guardar_y_cerrar():
 
 @app.post("/recalculate")
 async def recalcular():
-    with open("config.json", "r") as file:
-        config = json.load(file)
-    url_ar = config["URL_AR"]
-    
     cookies = load_session_cookies()
 
     cookie_header = "; ".join([f"{k}={v}" for k, v in cookies.items()])
     print(cookie_header)
 
-    url = f"{url_ar}/RSA/recalculateRAjax/1?acam=false&ar=true&pdt=false&vr=6&con=true&po=true&dim=true"
+    url = "http://172.20.48.129:8090/RSA/recalculateRAjax/1?acam=false&ar=true&pdt=false&vr=6&con=true&po=true&dim=true"
 
     headers = {
         "User-Agent": "Mozilla/5.0",
