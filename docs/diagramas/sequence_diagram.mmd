@@ -1,0 +1,38 @@
+%%{init: {'theme': 'default'}}%%
+sequenceDiagram
+    autonumber
+    actor U as User
+    participant API as API Middleware
+    participant DB as Logging SQLite
+    participant Ext as eMarisma / SQL Server
+
+    note over U, API: Use Case 1: New Incident
+
+    U->>API: New Incident Call
+    activate API
+    
+    %% Include: Store Incident Log
+    API->>DB: Store Incident Log
+    
+    %% Include: Process Call
+    rect rgb(240, 248, 255)
+        note right of API: Process Call
+        API->>Ext: Query/Interact with External Systems
+        Ext-->>API: Data Return
+        
+        %% Include: Generate Output -> Include: Store Risk Analysis Log
+        note right of API: Generate Output
+        API->>DB: Store Risk Analysis Log (RA)
+    end
+    
+    API-->>U: Confirmation (Incident Created)
+    deactivate API
+
+    note over U, API: Use Case 2: Retrieve Results
+
+    U->>API: Request Incident Results
+    activate API
+    API->>DB: Query Results (RA Logs)
+    DB-->>API: Return Data
+    API-->>U: Return Results
+    deactivate API

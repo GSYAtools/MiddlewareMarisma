@@ -1,0 +1,45 @@
+%%{init: {'theme': 'default'}}%%
+graph LR
+    %% Definición de estilos
+    classDef actorStyle fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef dbStyle fill:#eee,stroke:#333,stroke-width:2px;
+    classDef systemStyle fill:#cce5ff,stroke:#333,stroke-width:2px;
+    classDef ucStyle fill:#fff,stroke:#333,stroke-width:1px;
+
+    %% Actors and External Systems
+    User((User)):::actorStyle
+    DB[(Logging SQLite)]:::dbStyle
+    Sys_eMarisma[eMarisma]:::systemStyle
+    Sys_SQL[SQL Server]:::systemStyle
+
+    %% Subgraph to group system use cases
+    subgraph "API Middleware"
+        UC_NewIncident(New Incident):::ucStyle
+        UC_RetrieveResults(Retrieve Incident Results):::ucStyle
+        
+        UC_LogIncident(Store Incident Log):::ucStyle
+        UC_ProcessCall(Process Call):::ucStyle
+        UC_GenerateOutput(Generate Output):::ucStyle
+        UC_LogRA(Store Risk Analysis Log):::ucStyle
+    end
+
+    %% Main Actor Relationships
+    User --> UC_NewIncident
+    User --> UC_RetrieveResults
+
+    %% <<include>> Relationships for New Incident
+    UC_NewIncident -.->|<< include >>| UC_LogIncident
+    UC_NewIncident -.->|<< include >>| UC_ProcessCall
+
+    %% Process Call Relationships
+    UC_ProcessCall -.->|<< include >>| UC_GenerateOutput
+    UC_ProcessCall <--> Sys_eMarisma
+    UC_ProcessCall <--> Sys_SQL
+
+    %% Generate Output Relationships
+    UC_GenerateOutput -.->|<< include >>| UC_LogRA
+
+    %% Database (Logging) Interactions
+    UC_LogIncident --> DB
+    UC_LogRA --> DB
+    UC_RetrieveResults <--> DB
