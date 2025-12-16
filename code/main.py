@@ -39,7 +39,7 @@ async def exist_user():
     return {"status": r.status_code}
 
 @app.post("/login/authenticate")
-async def exist_user():
+async def authenticate():
     url = "http://172.20.48.129:8090/login/authenticate"
     config = load_config()
 
