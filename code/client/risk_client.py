@@ -36,9 +36,6 @@ class RiskClient:
             "User-Agent": "Mozilla/5.0",
             "Accept": "*/*",
         }
-        cookie_header = self._cookie_header()
-        if cookie_header:
-            h["Cookie"] = cookie_header
         if extra:
             h.update(extra)
         return h
@@ -89,9 +86,17 @@ class RiskClient:
         path = f"/subproyecto/cargarSubproyectosTabla/{subproject_id}"
         return await self.get(path, params=params)
 
-    async def save_event(self, content: str) -> httpx.Response:
+    async def guardar_evento(self, content: str) -> httpx.Response:
         path = "/evento/save"
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        }
         return await self.post(path, content=content, extra_headers=headers)
 
-    # añade más wrappers según necesites...
+    async def obtener_eventos(self, subproyect_id: int, params: Dict[str, Any] | None = None) -> httpx.Response:
+        path = f"/evento/cargarEventoTabla/{subproyect_id}"
+        return await self.get(path, params=params)

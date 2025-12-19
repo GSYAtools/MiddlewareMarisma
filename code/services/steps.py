@@ -2,21 +2,23 @@
 from typing import Any, Dict, List
 from client.risk_client import RiskClient
 import logging
+from config.loader import load_config
+import urllib.parse
 
 logger = logging.getLogger("services.steps")
 
+# --- Steps individuales ---
+
 async def step_login_exist(client: RiskClient) -> Dict[str, Any]:
     r = await client.exist_user()
-    return {"step": "exist_user", "status": r.status_code, "ok": r.is_success}
+    return {"step": "exist_user", "status": r.status_code, "ok": getattr(r, "is_success", True)}
 
 async def step_authenticate(client: RiskClient) -> Dict[str, Any]:
     r = await client.authenticate()
-    # Ejemplo: analizar redirección
     location = r.headers.get("Location")
     return {"step": "authenticate", "status": r.status_code, "location": location}
 
 async def step_get_projects(client: RiskClient) -> Dict[str, Any]:
-    # parámetros por defecto, puedes parametrizar desde config
     params = {
         "draw": "1",
         "start": "0",
@@ -27,21 +29,246 @@ async def step_get_projects(client: RiskClient) -> Dict[str, Any]:
     r.raise_for_status()
     return {"step": "cargar_proyectos", "body": r.json()}
 
-async def step_get_subprojects(client: RiskClient, subproject_id: int = 1) -> Dict[str, Any]:
-    params = {"draw": "1", "start": "0", "length": "10", "search[value]": ""}
+async def step_get_subprojects(client: RiskClient, subproject_id: int = 2) -> Dict[str, Any]:
+    params = {
+        "draw": "1",
+
+        "columns[0][data]": "",
+        "columns[0][searchable]": "false",
+        "columns[0][orderable]": "false",
+        "columns[0][search][value]": "",
+        "columns[0][search][regex]": "false",
+
+        "columns[1][data]": "1",
+        "columns[1][searchable]": "false",
+        "columns[1][orderable]": "true",
+        "columns[1][search][value]": "",
+        "columns[1][search][regex]": "false",
+
+        "columns[2][data]": "2",
+        "columns[2][searchable]": "true",
+        "columns[2][orderable]": "true",
+        "columns[2][search][value]": "",
+        "columns[2][search][regex]": "false",
+
+        "columns[3][data]": "3",
+        "columns[3][searchable]": "true",
+        "columns[3][orderable]": "true",
+        "columns[3][search][value]": "",
+        "columns[3][search][regex]": "false",
+
+        "columns[4][data]": "4",
+        "columns[4][searchable]": "true",
+        "columns[4][orderable]": "true",
+        "columns[4][search][value]": "",
+        "columns[4][search][regex]": "false",
+
+        "columns[5][data]": "5",
+        "columns[5][searchable]": "true",
+        "columns[5][orderable]": "true",
+        "columns[5][search][value]": "",
+        "columns[5][search][regex]": "false",
+
+        "columns[6][data]": "6",
+        "columns[6][searchable]": "true",
+        "columns[6][orderable]": "true",
+        "columns[6][search][value]": "",
+        "columns[6][search][regex]": "false",
+
+        "columns[7][data]": "7",
+        "columns[7][searchable]": "true",
+        "columns[7][orderable]": "true",
+        "columns[7][search][value]": "",
+        "columns[7][search][regex]": "false",
+
+        "columns[8][data]": "8",
+        "columns[8][searchable]": "true",
+        "columns[8][orderable]": "true",
+        "columns[8][search][value]": "",
+        "columns[8][search][regex]": "false",
+
+        "order[0][column]": "1",
+        "order[0][dir]": "asc",
+
+        "start": "0",
+        "length": "10",
+
+        "search[value]": "",
+        "search[regex]": "false"
+    }
     r = await client.cargar_subproyectos(subproject_id, params=params)
     r.raise_for_status()
     return {"step": "cargar_subproyectos", "subproject_id": subproject_id, "body": r.json()}
 
-# flow explícito (ordenado)
+async def step_guardar_incidente(client: RiskClient) -> Dict[str, Any]:
+    settings = load_config()
+    event_data = settings.new_event
+
+    if not event_data:
+        raise ValueError("No se han encontrado datos de evento")
+
+    content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in event_data.items()])
+    content = "update=Guardar&id=&version=&" + content
+
+    r = await client.guardar_evento(content=content)
+    return {"step": "guardar_incidente", "status": getattr(r, "status_code", 200)}
+
+async def step_obtener_eventos(client: RiskClient, subproject_id: int = 3) -> Dict[str, Any]:
+    params = {
+        "draw": "1",
+
+        "columns[0][data]": "0",
+        "columns[0][name]": "",
+        "columns[0][searchable]": "false",
+        "columns[0][orderable]": "true",
+        "columns[0][search][value]": "",
+        "columns[0][search][regex]": "false",
+
+        "columns[1][data]": "1",
+        "columns[1][name]": "",
+        "columns[1][searchable]": "true",
+        "columns[1][orderable]": "true",
+        "columns[1][search][value]": "",
+        "columns[1][search][regex]": "false",
+
+        "columns[2][data]": "2",
+        "columns[2][name]": "",
+        "columns[2][searchable]": "true",
+        "columns[2][orderable]": "true",
+        "columns[2][search][value]": "",
+        "columns[2][search][regex]": "false",
+
+        "columns[3][data]": "3",
+        "columns[3][name]": "",
+        "columns[3][searchable]": "true",
+        "columns[3][orderable]": "true",
+        "columns[3][search][value]": "",
+        "columns[3][search][regex]": "false",
+
+        "columns[4][data]": "4",
+        "columns[4][name]": "",
+        "columns[4][searchable]": "true",
+        "columns[4][orderable]": "true",
+        "columns[4][search][value]": "",
+        "columns[4][search][regex]": "false",
+
+        "columns[5][data]": "5",
+        "columns[5][name]": "",
+        "columns[5][searchable]": "true",
+        "columns[5][orderable]": "true",
+        "columns[5][search][value]": "",
+        "columns[5][search][regex]": "false",
+
+        "columns[6][data]": "6",
+        "columns[6][name]": "",
+        "columns[6][searchable]": "true",
+        "columns[6][orderable]": "true",
+        "columns[6][search][value]": "",
+        "columns[6][search][regex]": "false",
+
+        "columns[7][data]": "7",
+        "columns[7][name]": "",
+        "columns[7][searchable]": "true",
+        "columns[7][orderable]": "true",
+        "columns[7][search][value]": "",
+        "columns[7][search][regex]": "false",
+
+        "columns[8][data]": "",
+        "columns[8][name]": "",
+        "columns[8][searchable]": "true",
+        "columns[8][orderable]": "false",
+        "columns[8][search][value]": "",
+        "columns[8][search][regex]": "false",
+
+        "order[0][column]": "1",
+        "order[0][dir]": "asc",
+
+        "start": "0",
+        "length": "10",
+
+        "search[value]": "",
+        "search[regex]": "false",
+    }
+    
+    r = await client.obtener_eventos(subproject_id, params=params)
+    return {"step": "obtener_eventos", "status_code": r.status_code,
+        "headers": dict(r.headers),
+        "body": r.json() if r.headers.get("content-type", "").startswith("application/json") else r.text
+    }
+
+'''async def step_guardar_gravedad(client: RiskClient) -> Dict[str, Any]:
+    r = await client.guardar_gravedad()
+    r.raise_for_status()
+    return {"step": "guardar_gravedad", "body": r.json()}
+
+async def step_guardar_amenaza(client: RiskClient) -> Dict[str, Any]:
+    r = await client.guardar_amenaza()
+    r.raise_for_status()
+    return {"step": "guardar_amenaza", "body": r.json()}
+
+async def step_cargar_incidente(client: RiskClient) -> Dict[str, Any]:
+    r = await client.cargar_incidente()
+    r.raise_for_status()
+    return {"step": "cargar_incidente", "body": r.json()}
+
+async def step_obtener_controlesNoImplicados(client: RiskClient) -> Dict[str, Any]:
+    r = await client.obtener_controlesNoImplicados()
+    r.raise_for_status()
+    return {"step": "controles_no_implicados", "body": r.json()}
+
+async def step_obtener_activosNoImplicados(client: RiskClient) -> Dict[str, Any]:
+    r = await client.obtener_activosNoImplicados()
+    r.raise_for_status()
+    return {"step": "activos_no_implicados", "body": r.json()}
+
+async def step_obtener_controlesImplicados(client: RiskClient) -> Dict[str, Any]:
+    r = await client.obtener_controlesImplicados()
+    r.raise_for_status()
+    return {"step": "controles_implicados", "body": r.json()}
+
+async def step_obtener_activosImplicados(client: RiskClient) -> Dict[str, Any]:
+    r = await client.obtener_activosImplicados()
+    r.raise_for_status()
+    return {"step": "activos_implicados", "body": r.json()}
+
+async def step_cargar_dimensionesClear(client: RiskClient) -> Dict[str, Any]:
+    r = await client.cargar_dimensionesClear()
+    r.raise_for_status()
+    return {"step": "cargar_dimensionesClear", "body": r.json()}
+
+async def step_vincular_activo(client: RiskClient) -> Dict[str, Any]:
+    r = await client.vincular_activo()
+    r.raise_for_status()
+    return {"step": "vincular_activo", "body": r.json()}
+
+async def step_vincular_control(client: RiskClient) -> Dict[str, Any]:
+    r = await client.vincular_control()
+    r.raise_for_status()
+    return {"step": "vincular_control", "body": r.json()}
+
+async def step_recalcular(client: RiskClient) -> Dict[str, Any]:
+    r = await client.recalcular()
+    r.raise_for_status()
+    return {"step": "recalcular", "body": r.json()}'''
+
+# --- Flow completo ---
 async def run_all_flow(client: RiskClient) -> List[Dict[str, Any]]:
     results = []
-
-    # Orden explícito - añade o quita pasos según necesites
     results.append(await step_login_exist(client))
     results.append(await step_authenticate(client))
     results.append(await step_get_projects(client))
-    results.append(await step_get_subprojects(client, subproject_id=1))
-
-    # Añade más pasos mapeando las funciones anteriores
+    results.append(await step_get_subprojects(client))
+    results.append(await step_guardar_incidente(client))
+    results.append(await step_obtener_eventos(client, subproject_id=3))
+    '''results.append(await step_guardar_gravedad(client))
+    results.append(await step_guardar_amenaza(client))
+    results.append(await step_cargar_incidente(client))
+    results.append(await step_obtener_controlesNoImplicados(client))
+    results.append(await step_obtener_activosNoImplicados(client))
+    results.append(await step_obtener_controlesImplicados(client))
+    results.append(await step_obtener_activosImplicados(client))
+    results.append(await step_cargar_dimensionesClear(client))
+    results.append(await step_vincular_activo(client))
+    results.append(await step_vincular_control(client))
+    results.append(await step_recalcular(client))'''
     return results

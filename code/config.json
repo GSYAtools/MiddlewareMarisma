@@ -7,7 +7,7 @@
     "db_user": "ar_marisma",
     "db_password": "M33aarIsmmmA",
     "db_name": "ar_marisma",
-    "subproyecto_id": "1",
+    "subproyecto_id": "2",
     "proyecto_id": "1",
     "evento_fuente": "Prueba",
     "gravedad_evento": "2",
@@ -15,5 +15,14 @@
     "control": "55",
     "dimension": "19",
     "porcentaje_dimension": "16",
-    "activo": "13"
+    "activo": "13",
+    "new_event": {
+        "subproyecto": "3",
+        "tipo": "detalle",
+        "typeAction": "nuevo",
+        "responsable": "Responsable7",
+        "date": "20/12/2025",
+        "causa": "Causa6",
+        "descripcion": "Descripcion6"
+    }
 }
