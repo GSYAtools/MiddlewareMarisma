@@ -89,14 +89,37 @@ class RiskClient:
     async def guardar_evento(self, content: str) -> httpx.Response:
         path = "/evento/save"
 
-
         headers = {
             "User-Agent": "Mozilla/5.0",
             "Content-Type": "application/x-www-form-urlencoded",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
         }
+
         return await self.post(path, content=content, extra_headers=headers)
 
     async def obtener_eventos(self, subproyect_id: int, params: Dict[str, Any] | None = None) -> httpx.Response:
         path = f"/evento/cargarEventoTabla/{subproyect_id}"
         return await self.get(path, params=params)
+
+    async def guardar_gravedad(self, content: str) -> httpx.Response:
+        path = f"/incidente/guardarGravedad"
+        
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        }
+
+        return await self.post(path, content=content, extra_headers=headers)
+    
+    async def guardar_amenaza(self, id_amenaza: int, content: str) -> httpx.Response:
+        path = f"/incidente/guardarAmenaza/{id_amenaza}"
+        
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "Accept": "*/*"
+        }
+
+        return await self.post(path, content=content, extra_headers=headers)

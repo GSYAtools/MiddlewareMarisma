@@ -24,5 +24,14 @@
         "date": "20/12/2025",
         "causa": "Causa6",
         "descripcion": "Descripcion6"
+    },
+    "new_gravedad": {
+        "gravedad": "grave",
+        "incidente": "18",
+        "subproyecto": "3"
+    },
+    "new_amenaza": {
+        "gravedad": "grave",
+        "evento": "19"
     }
 }

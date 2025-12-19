@@ -58,7 +58,7 @@ async def eventos_route(subproject_id: int = 3, client: RiskClient = Depends(get
     finally:
         await client.shutdown()
 
-'''@router.post("/incidente/guardarGravedad")
+@router.post("/incidente/guardarGravedad")
 async def guardar_gravedad_route(client: RiskClient = Depends(get_client)):
     await client.startup()
     try:
@@ -66,15 +66,15 @@ async def guardar_gravedad_route(client: RiskClient = Depends(get_client)):
     finally:
         await client.shutdown()
 
-@router.post("/incidente/guardarAmenaza/{amenaza_id}")
-async def guardar_amenaza_route(client: RiskClient = Depends(get_client)):
+@router.post("/incidente/guardarAmenaza/{id_amenaza}")
+async def guardar_amenaza_route(client: RiskClient = Depends(get_client), id_amenaza: int = 690):
     await client.startup()
     try:
-        return await steps.step_guardar_amenaza(client)
+        return await steps.step_guardar_amenaza(client, id_amenaza=id_amenaza)
     finally:
         await client.shutdown()
 
-@router.get("/incidente/cargarIncidente/{incidente_id}")
+'''@router.get("/incidente/cargarIncidente/{incidente_id}")
 async def cargar_incidente_route(client: RiskClient = Depends(get_client)):
     await client.startup()
     try:

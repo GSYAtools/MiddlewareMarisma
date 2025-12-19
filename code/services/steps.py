@@ -196,17 +196,32 @@ async def step_obtener_eventos(client: RiskClient, subproject_id: int = 3) -> Di
         "body": r.json() if r.headers.get("content-type", "").startswith("application/json") else r.text
     }
 
-'''async def step_guardar_gravedad(client: RiskClient) -> Dict[str, Any]:
-    r = await client.guardar_gravedad()
-    r.raise_for_status()
-    return {"step": "guardar_gravedad", "body": r.json()}
+async def step_guardar_gravedad(client: RiskClient) -> Dict[str, Any]:
+    settings = load_config()
+    data = settings.new_gravedad
 
-async def step_guardar_amenaza(client: RiskClient) -> Dict[str, Any]:
-    r = await client.guardar_amenaza()
+    if not data:
+        raise ValueError("No se han encontrado datos de evento")
+
+    content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in data.items()])
+
+    r = await client.guardar_gravedad(content=content)
+    return {"step": "guardar_gravedad", "status": getattr(r, "status_code", 200)}
+
+async def step_guardar_amenaza(client: RiskClient, id_amenaza: int = 690) -> Dict[str, Any]:
+    settings = load_config()
+    data = settings.new_amenaza
+
+    if not data:
+        raise ValueError("No se han encontrado datos de evento")
+
+    content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in data.items()])
+
+    r = await client.guardar_amenaza(id_amenaza, content=content)
     r.raise_for_status()
     return {"step": "guardar_amenaza", "body": r.json()}
 
-async def step_cargar_incidente(client: RiskClient) -> Dict[str, Any]:
+'''async def step_cargar_incidente(client: RiskClient) -> Dict[str, Any]:
     r = await client.cargar_incidente()
     r.raise_for_status()
     return {"step": "cargar_incidente", "body": r.json()}
@@ -260,9 +275,9 @@ async def run_all_flow(client: RiskClient) -> List[Dict[str, Any]]:
     results.append(await step_get_subprojects(client))
     results.append(await step_guardar_incidente(client))
     results.append(await step_obtener_eventos(client, subproject_id=3))
-    '''results.append(await step_guardar_gravedad(client))
+    results.append(await step_guardar_gravedad(client))
     results.append(await step_guardar_amenaza(client))
-    results.append(await step_cargar_incidente(client))
+    '''results.append(await step_cargar_incidente(client))
     results.append(await step_obtener_controlesNoImplicados(client))
     results.append(await step_obtener_activosNoImplicados(client))
     results.append(await step_obtener_controlesImplicados(client))

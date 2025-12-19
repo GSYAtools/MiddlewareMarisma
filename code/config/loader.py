@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     password: str = ""
     timeout_seconds: int = 30
     new_event: Dict[str, Any] = {}
+    new_gravedad: Dict[str, Any] = {}
+    new_amenaza: Dict[str, Any] = {}
 
     class Config:
         env_prefix = "RISK_"
