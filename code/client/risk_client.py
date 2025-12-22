@@ -48,12 +48,19 @@ class RiskClient:
         r = await self._client.get(url, headers=headers, params=params)
         return r
 
-    async def post(self, path: str, content: Any = None, data: Any = None, extra_headers: Dict[str, str] | None = None) -> httpx.Response:
+    async def post(self, path: str, *, content: Any = None, data: Any = None, files: Any = None, extra_headers: Dict[str, str]| None = None) -> httpx.Response:
         url = f"{self.base_url}{path}"
         headers = self._default_headers(extra_headers)
         assert self._client is not None, "client not started"
-        logger.debug("POST %s data=%s", url, data or content)
-        r = await self._client.post(url, headers=headers, content=content, data=data)
+        #logger.debug("POST %s data=%s", url, data or content)
+        logger.debug(
+            "POST %s | content=%s | data=%s | files=%s",
+            url,
+            bool(content),
+            bool(data),
+            bool(files),
+        )
+        r = await self._client.post(url, headers=headers, content=content, data=data, files=files)
         return r
 
     # Wrappers para acciones del proyecto (ejemplos, adaptables)
@@ -133,14 +140,14 @@ class RiskClient:
         }
         return await self.get(path, extra_headers=headers)
 
-    async def guardar_y_cerrar_evento(self, id_evento: int, content: str) -> httpx.Response:
+    async def guardar_y_cerrar_evento(self, id_evento: int, files: dict) -> httpx.Response:
         path = f"/evento/save/{id_evento}"
         headers = {
             "User-Agent": "Mozilla/5.0",
-            "Content-Type": "application/x-www-form-urlencoded",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
         }
-        return await self.post(path, content=content, extra_headers=headers)
+        
+        return await self.post(path, files=files, extra_headers=headers)
 
     async def cargar_incidente(self, incidente_id: int) -> httpx.Response:
         path = f"/incidente/cargarIncidente/{incidente_id}"

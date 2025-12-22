@@ -327,21 +327,21 @@ async def step_obtener_activosImplicados(client: RiskClient, incidente_id: int =
 
 async def step_cargar_dimensionesClear(client: RiskClient, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
     if params is None:
-        params = {"activo": "1", "incidente": "12"}
+        params = {"activo": "11", "incidente": "18"}
     r = await client.cargar_dimensionesClear(params)
     r.raise_for_status()
     return {"step": "cargar_dimensionesClear", "body": r.json()}
 
 async def step_vincular_activo(client: RiskClient, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
     if params is None:
-        params = {"dimension": "19", "activo": "", "incidente": "12", "porcentaje": "16", "vincular": "true", "activoAux": "1"}
+        params = {"dimension": "143", "activo": "", "incidente": "18", "porcentaje": "97", "vincular": "true", "activoAux": "11"}
     r = await client.vincular_activo(params)
     r.raise_for_status()
     return {"step": "vincular_activo", "body": r.json()}
 
 async def step_vincular_control(client: RiskClient, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
     if params is None:
-        params = {"control": "55", "incidente": "12"}
+        params = {"control": "1716", "incidente": "18"}
     r = await client.vincular_control(params)
     r.raise_for_status()
     return {"step": "vincular_control", "body": r.json()}
@@ -360,23 +360,40 @@ async def step_recalcular(client: RiskClient) -> Dict[str, Any]:
     r.raise_for_status()
     return {"step": "recalcular", "body": r.json()}
 
-async def step_ir_a_conclusion(client: RiskClient, id_evento: int = 15) -> Dict[str, Any]:
+async def step_ir_a_conclusion(client: RiskClient, id_evento: int = 19) -> Dict[str, Any]:
     r = await client.ir_a_conclusion(id_evento)
     r.raise_for_status()
-    return {"step": "ir_a_conclusion", "body": r.json()}
+    return {"step": "ir_a_conclusion", "status_code": r.status_code}#, "body": r.json()}
 
-async def step_guardar_y_cerrar(client: RiskClient, id_evento: int = 15) -> Dict[str, Any]:
+async def step_guardar_y_cerrar(client: RiskClient, id_evento: int = 19) -> Dict[str, Any]:
     settings = load_config()
     data = settings.new_conclusion
     
     if not data:
         raise ValueError("No se han encontrado datos de conclusion")
         
-    content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in data.items()])
+    '''content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in data.items()])
+    print(content)'''
+
+    files = {
+            "save": (None, "Guardar"),
+            "id": (None, "15"),
+            "version": (None, "3"),
+            "subproyecto": (None, "1"),
+            "tipo": (None, "conclusion"),
+            "cerrar": (None, "true"),
+            "coste": (None, "11.00€"),
+            "myCurrency": (None, "EUR"),
+            "solucion": (None, "Solución"),
+            "conclusion": (None, "Conclusión"),
+            "evidencias[]": ("", b"", "application/octet-stream"),
+        }
     
-    r = await client.guardar_y_cerrar_evento(id_evento, content=content)
-    r.raise_for_status()
-    return {"step": "guardar_y_cerrar", "body": r.json()}
+    r = await client.guardar_y_cerrar_evento(id_evento, files=files)
+    #r.raise_for_status()
+    return {"step": "guardar_y_cerrar",
+    "status": r.status_code,
+    "redirect": r.headers.get("Location")}
 
 # --- Flow completo ---
 async def run_all_flow(client: RiskClient) -> List[Dict[str, Any]]:
@@ -397,5 +414,7 @@ async def run_all_flow(client: RiskClient) -> List[Dict[str, Any]]:
     results.append(await step_cargar_dimensionesClear(client))
     results.append(await step_vincular_activo(client))
     results.append(await step_vincular_control(client))
+    results.append(await step_ir_a_conclusion(client))
+    results.append(await step_guardar_y_cerrar(client))
     results.append(await step_recalcular(client))
     return results

@@ -33,5 +33,17 @@
     "new_amenaza": {
         "gravedad": "grave",
         "evento": "19"
+    },
+    "new_conclusion": {
+        "save": "Guardar",
+        "id": "15",
+        "version": "3",
+        "subproyecto": "1",
+        "tipo": "conclusion",
+        "cerrar": "true",
+        "coste": "11.00€",
+        "myCurrency": "EUR",
+        "solucion": "Solución3",
+        "conclusion": "Conclusión3"
     }
 }
