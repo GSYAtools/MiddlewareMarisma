@@ -221,50 +221,162 @@ async def step_guardar_amenaza(client: RiskClient, id_amenaza: int = 690) -> Dic
     r.raise_for_status()
     return {"step": "guardar_amenaza", "body": r.json()}
 
-'''async def step_cargar_incidente(client: RiskClient) -> Dict[str, Any]:
-    r = await client.cargar_incidente()
+async def step_cargar_incidente(client: RiskClient, incidente_id: int = 18) -> Dict[str, Any]:
+    r = await client.cargar_incidente(incidente_id)
     r.raise_for_status()
     return {"step": "cargar_incidente", "body": r.json()}
 
-async def step_obtener_controlesNoImplicados(client: RiskClient) -> Dict[str, Any]:
-    r = await client.obtener_controlesNoImplicados()
+async def step_obtener_controlesNoImplicados(client: RiskClient, incidente_id: int = 18) -> Dict[str, Any]:
+    params = {
+        "incidente": str(incidente_id),
+        "draw": "2",
+        "columns[0][data]": "0", "columns[0][name]": "", "columns[0][searchable]": "false", "columns[0][orderable]": "true", "columns[0][search][value]": "", "columns[0][search][regex]": "false",
+        "columns[1][data]": "", "columns[1][name]": "", "columns[1][searchable]": "true", "columns[1][orderable]": "true", "columns[1][search][value]": "", "columns[1][search][regex]": "false",
+        "columns[2][data]": "", "columns[2][name]": "", "columns[2][searchable]": "true", "columns[2][orderable]": "true", "columns[2][search][value]": "", "columns[2][search][regex]": "false",
+        "columns[3][data]": "", "columns[3][name]": "", "columns[3][searchable]": "true", "columns[3][orderable]": "true", "columns[3][search][value]": "", "columns[3][search][regex]": "false",
+        "columns[4][data]": "", "columns[4][name]": "", "columns[4][searchable]": "false", "columns[4][orderable]": "false", "columns[4][search][value]": "", "columns[4][search][regex]": "false",
+        "columns[5][data]": "", "columns[5][name]": "", "columns[5][searchable]": "true", "columns[5][orderable]": "false", "columns[5][search][value]": "", "columns[5][search][regex]": "false",
+        "columns[6][data]": "6", "columns[6][name]": "", "columns[6][searchable]": "true", "columns[6][orderable]": "true", "columns[6][search][value]": "", "columns[6][search][regex]": "false",
+        "order[0][column]": "1",
+        "order[0][dir]": "asc",
+        "start": "0",
+        "length": "-1",
+        "search[value]": "",
+        "search[regex]": "false",
+        "_": "1764588130734"
+    }
+    r = await client.obtener_controlesNoImplicados(params)
     r.raise_for_status()
     return {"step": "controles_no_implicados", "body": r.json()}
 
-async def step_obtener_activosNoImplicados(client: RiskClient) -> Dict[str, Any]:
-    r = await client.obtener_activosNoImplicados()
+async def step_obtener_activosNoImplicados(client: RiskClient, incidente_id: int = 18) -> Dict[str, Any]:
+    params = {
+        "incidente": str(incidente_id),
+        "draw": "2",
+        "columns[0][data]": "0", "columns[0][name]": "", "columns[0][searchable]": "false", "columns[0][orderable]": "true", "columns[0][search][value]": "", "columns[0][search][regex]": "false",
+        "columns[1][data]": "", "columns[1][name]": "", "columns[1][searchable]": "true", "columns[1][orderable]": "true", "columns[1][search][value]": "", "columns[1][search][regex]": "false",
+        "columns[2][data]": "", "columns[2][name]": "", "columns[2][searchable]": "true", "columns[2][orderable]": "true", "columns[2][search][value]": "", "columns[2][search][regex]": "false",
+        "columns[3][data]": "", "columns[3][name]": "", "columns[3][searchable]": "true", "columns[3][orderable]": "true", "columns[3][search][value]": "", "columns[3][search][regex]": "false",
+        "columns[4][data]": "4", "columns[4][name]": "", "columns[4][searchable]": "false", "columns[4][orderable]": "true", "columns[4][search][value]": "", "columns[4][search][regex]": "false",
+        "columns[5][data]": "5", "columns[5][name]": "", "columns[5][searchable]": "false", "columns[5][orderable]": "true", "columns[5][search][value]": "", "columns[5][search][regex]": "false",
+        "columns[6][data]": "", "columns[6][name]": "", "columns[6][searchable]": "true", "columns[6][orderable]": "true", "columns[6][search][value]": "", "columns[6][search][regex]": "false",
+        "columns[7][data]": "", "columns[7][name]": "", "columns[7][searchable]": "true", "columns[7][orderable]": "true", "columns[7][search][value]": "", "columns[7][search][regex]": "false",
+        "columns[8][data]": "", "columns[8][name]": "", "columns[8][searchable]": "true", "columns[8][orderable]": "true", "columns[8][search][value]": "", "columns[8][search][regex]": "false",
+        "columns[9][data]": "9", "columns[9][name]": "", "columns[9][searchable]": "false", "columns[9][orderable]": "true", "columns[9][search][value]": "", "columns[9][search][regex]": "false",
+        "columns[10][data]": "", "columns[10][name]": "", "columns[10][searchable]": "true", "columns[10][orderable]": "false", "columns[10][search][value]": "", "columns[10][search][regex]": "false",
+        "order[0][column]": "2",
+        "order[0][dir]": "asc",
+        "start": "0",
+        "length": "-1",
+        "search[value]": "",
+        "search[regex]": "false",
+        "_": "1764588130735"
+    }
+    r = await client.obtener_activosNoImplicados(params)
     r.raise_for_status()
     return {"step": "activos_no_implicados", "body": r.json()}
 
-async def step_obtener_controlesImplicados(client: RiskClient) -> Dict[str, Any]:
-    r = await client.obtener_controlesImplicados()
-    r.raise_for_status()
+async def step_obtener_controlesImplicados(client: RiskClient, incidente_id: int = 18) -> Dict[str, Any]:
+    params = {
+        "incidente": str(incidente_id),
+        "draw": "2",
+        "columns[0][data]": "0", "columns[0][name]": "", "columns[0][searchable]": "false", "columns[0][orderable]": "true", "columns[0][search][value]": "", "columns[0][search][regex]": "false",
+        "columns[1][data]": "", "columns[1][name]": "", "columns[1][searchable]": "true", "columns[1][orderable]": "true", "columns[1][search][value]": "", "columns[1][search][regex]": "false",
+        "columns[2][data]": "", "columns[2][name]": "", "columns[2][searchable]": "true", "columns[2][orderable]": "true", "columns[2][search][value]": "", "columns[2][search][regex]": "false",
+        "columns[3][data]": "", "columns[3][name]": "", "columns[3][searchable]": "true", "columns[3][orderable]": "true", "columns[3][search][value]": "", "columns[3][search][regex]": "false",
+        "columns[4][data]": "4", "columns[4][name]": "", "columns[4][searchable]": "false", "columns[4][orderable]": "true", "columns[4][search][value]": "", "columns[4][search][regex]": "false",
+        "columns[5][data]": "5", "columns[5][name]": "", "columns[5][searchable]": "false", "columns[5][orderable]": "true", "columns[5][search][value]": "", "columns[5][search][regex]": "false",
+        "columns[6][data]": "", "columns[6][name]": "", "columns[6][searchable]": "true", "columns[6][orderable]": "true", "columns[6][search][value]": "", "columns[6][search][regex]": "false",
+        "columns[7][data]": "", "columns[7][name]": "", "columns[7][searchable]": "true", "columns[7][orderable]": "true", "columns[7][search][value]": "", "columns[7][search][regex]": "false",
+        "columns[8][data]": "", "columns[8][name]": "", "columns[8][searchable]": "true", "columns[8][orderable]": "true", "columns[8][search][value]": "", "columns[8][search][regex]": "false",
+        "columns[9][data]": "9", "columns[9][name]": "", "columns[9][searchable]": "false", "columns[9][orderable]": "true", "columns[9][search][value]": "", "columns[9][search][regex]": "false",
+        "columns[10][data]": "", "columns[10][name]": "", "columns[10][searchable]": "true", "columns[10][orderable]": "false", "columns[10][search][value]": "", "columns[10][search][regex]": "false",
+        "order[0][column]": "2",
+        "order[0][dir]": "asc",
+        "start": "0",
+        "length": "-1",
+        "search[value]": "",
+        "search[regex]": "false",
+        "_": "1764588130735"
+    }
+    r = await client.obtener_controlesImplicados(params)
+    #r.raise_for_status()
     return {"step": "controles_implicados", "body": r.json()}
 
-async def step_obtener_activosImplicados(client: RiskClient) -> Dict[str, Any]:
-    r = await client.obtener_activosImplicados()
+async def step_obtener_activosImplicados(client: RiskClient, incidente_id: int = 18) -> Dict[str, Any]:
+    params = {
+        "incidente": str(incidente_id),
+        "draw": "2",
+        "columns[0][data]": "0", "columns[0][name]": "", "columns[0][searchable]": "false", "columns[0][orderable]": "true", "columns[0][search][value]": "", "columns[0][search][regex]": "false",
+        "columns[1][data]": "", "columns[1][name]": "", "columns[1][searchable]": "true", "columns[1][orderable]": "true", "columns[1][search][value]": "", "columns[1][search][regex]": "false",
+        "columns[2][data]": "", "columns[2][name]": "", "columns[2][searchable]": "true", "columns[2][orderable]": "true", "columns[2][search][value]": "", "columns[2][search][regex]": "false",
+        "columns[3][data]": "", "columns[3][name]": "", "columns[3][searchable]": "true", "columns[3][orderable]": "false", "columns[3][search][value]": "", "columns[3][search][regex]": "false",
+        "columns[4][data]": "", "columns[4][name]": "", "columns[4][searchable]": "true", "columns[4][orderable]": "false", "columns[4][search][value]": "", "columns[4][search][regex]": "false",
+        "columns[5][data]": "", "columns[5][name]": "", "columns[5][searchable]": "true", "columns[5][orderable]": "false", "columns[5][search][value]": "", "columns[5][search][regex]": "false",
+        "order[0][column]": "2",
+        "order[0][dir]": "asc",
+        "start": "0",
+        "length": "-1",
+        "search[value]": "",
+        "search[regex]": "false",
+        "_": "1764588130737"
+    }
+    r = await client.obtener_activosImplicados(params)
     r.raise_for_status()
     return {"step": "activos_implicados", "body": r.json()}
 
-async def step_cargar_dimensionesClear(client: RiskClient) -> Dict[str, Any]:
-    r = await client.cargar_dimensionesClear()
+async def step_cargar_dimensionesClear(client: RiskClient, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    if params is None:
+        params = {"activo": "1", "incidente": "12"}
+    r = await client.cargar_dimensionesClear(params)
     r.raise_for_status()
     return {"step": "cargar_dimensionesClear", "body": r.json()}
 
-async def step_vincular_activo(client: RiskClient) -> Dict[str, Any]:
-    r = await client.vincular_activo()
+async def step_vincular_activo(client: RiskClient, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    if params is None:
+        params = {"dimension": "19", "activo": "", "incidente": "12", "porcentaje": "16", "vincular": "true", "activoAux": "1"}
+    r = await client.vincular_activo(params)
     r.raise_for_status()
     return {"step": "vincular_activo", "body": r.json()}
 
-async def step_vincular_control(client: RiskClient) -> Dict[str, Any]:
-    r = await client.vincular_control()
+async def step_vincular_control(client: RiskClient, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    if params is None:
+        params = {"control": "55", "incidente": "12"}
+    r = await client.vincular_control(params)
     r.raise_for_status()
     return {"step": "vincular_control", "body": r.json()}
 
 async def step_recalcular(client: RiskClient) -> Dict[str, Any]:
-    r = await client.recalcular()
+    params = {
+        "acam": "false",
+        "ar": "true",
+        "pdt": "false",
+        "vr": "6",
+        "con": "true",
+        "po": "true",
+        "dim": "true"
+    }
+    r = await client.recalcular(params)
     r.raise_for_status()
-    return {"step": "recalcular", "body": r.json()}'''
+    return {"step": "recalcular", "body": r.json()}
+
+async def step_ir_a_conclusion(client: RiskClient, id_evento: int = 15) -> Dict[str, Any]:
+    r = await client.ir_a_conclusion(id_evento)
+    r.raise_for_status()
+    return {"step": "ir_a_conclusion", "body": r.json()}
+
+async def step_guardar_y_cerrar(client: RiskClient, id_evento: int = 15) -> Dict[str, Any]:
+    settings = load_config()
+    data = settings.new_conclusion
+    
+    if not data:
+        raise ValueError("No se han encontrado datos de conclusion")
+        
+    content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in data.items()])
+    
+    r = await client.guardar_y_cerrar_evento(id_evento, content=content)
+    r.raise_for_status()
+    return {"step": "guardar_y_cerrar", "body": r.json()}
 
 # --- Flow completo ---
 async def run_all_flow(client: RiskClient) -> List[Dict[str, Any]]:
@@ -277,7 +389,7 @@ async def run_all_flow(client: RiskClient) -> List[Dict[str, Any]]:
     results.append(await step_obtener_eventos(client, subproject_id=3))
     results.append(await step_guardar_gravedad(client))
     results.append(await step_guardar_amenaza(client))
-    '''results.append(await step_cargar_incidente(client))
+    results.append(await step_cargar_incidente(client))
     results.append(await step_obtener_controlesNoImplicados(client))
     results.append(await step_obtener_activosNoImplicados(client))
     results.append(await step_obtener_controlesImplicados(client))
@@ -285,5 +397,5 @@ async def run_all_flow(client: RiskClient) -> List[Dict[str, Any]]:
     results.append(await step_cargar_dimensionesClear(client))
     results.append(await step_vincular_activo(client))
     results.append(await step_vincular_control(client))
-    results.append(await step_recalcular(client))'''
+    results.append(await step_recalcular(client))
     return results

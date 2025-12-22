@@ -123,3 +123,94 @@ class RiskClient:
         }
 
         return await self.post(path, content=content, extra_headers=headers)
+
+    async def ir_a_conclusion(self, id_evento: int) -> httpx.Response:
+        path = f"/evento/conclusion/{id_evento}"
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "X-Requested-With": "XMLHttpRequest",
+        }
+        return await self.get(path, extra_headers=headers)
+
+    async def guardar_y_cerrar_evento(self, id_evento: int, content: str) -> httpx.Response:
+        path = f"/evento/save/{id_evento}"
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        }
+        return await self.post(path, content=content, extra_headers=headers)
+
+    async def cargar_incidente(self, incidente_id: int) -> httpx.Response:
+        path = f"/incidente/cargarIncidente/{incidente_id}"
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "*/*",
+            "X-Requested-With": "XMLHttpRequest",
+        }
+        return await self.get(path, extra_headers=headers)
+
+    async def obtener_controlesNoImplicados(self, params: Dict[str, Any], context_id: int = 3) -> httpx.Response:
+        path = f"/incidente/cargarTablaControlesNoImplicados/{context_id}"
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "X-Requested-With": "XMLHttpRequest",
+        }
+        return await self.get(path, params=params, extra_headers=headers)
+
+    async def obtener_activosNoImplicados(self, params: Dict[str, Any], context_id: int = 3) -> httpx.Response:
+        path = f"/incidente/cargarTablaActivosNoImplicados/{context_id}"
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "X-Requested-With": "XMLHttpRequest",
+        }
+        return await self.get(path, params=params, extra_headers=headers)
+
+    async def obtener_controlesImplicados(self, params: Dict[str, Any], context_id: int = 3) -> httpx.Response:
+        path = f"/incidente/cargarTablaControlesImplicados/{context_id}"
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "X-Requested-With": "XMLHttpRequest",
+        }
+        return await self.get(path, params=params, extra_headers=headers)
+
+    async def obtener_activosImplicados(self, params: Dict[str, Any], context_id: int = 3) -> httpx.Response:
+        path = f"/incidente/cargarTablaActivosImplicados/{context_id}"
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "X-Requested-With": "XMLHttpRequest",
+        }
+        return await self.get(path, params=params, extra_headers=headers)
+
+    async def cargar_dimensionesClear(self, params: Dict[str, Any]) -> httpx.Response:
+        path = "/incidente/cargarDimensionesClear"
+        headers = {"X-Requested-With": "XMLHttpRequest", "Accept": "*/*"}
+        return await self.get(path, params=params, extra_headers=headers)
+
+    async def vincular_activo(self, params: Dict[str, Any]) -> httpx.Response:
+        path = "/incidente/vincularActivo"
+        headers = {"X-Requested-With": "XMLHttpRequest", "Accept": "*/*"}
+        return await self.get(path, params=params, extra_headers=headers)
+
+    async def vincular_control(self, params: Dict[str, Any]) -> httpx.Response:
+        path = "/incidente/vincularControl"
+        headers = {"X-Requested-With": "XMLHttpRequest", "Accept": "*/*"}
+        return await self.get(path, params=params, extra_headers=headers)
+
+    async def recalcular(self, params: Dict[str, Any], context_id: int = 3) -> httpx.Response:
+        path = f"/RSA/recalculateRAjax/{context_id}"
+        # Construct query string manually as post doesn't support params in our wrapper
+        query = urllib.parse.urlencode(params)
+        full_path = f"{path}?{query}"
+        
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "X-Requested-With": "XMLHttpRequest", 
+            "Accept": "*/*"
+        }
+        return await self.post(full_path, data=None, extra_headers=headers)
