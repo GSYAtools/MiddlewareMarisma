@@ -74,7 +74,7 @@ async def guardar_amenaza_route(client: RiskClient = Depends(get_client), id_ame
     finally:
         await client.shutdown()
 
-'''@router.get("/incidente/cargarIncidente/{incidente_id}")
+@router.get("/incidente/cargarIncidente/{incidente_id}")
 async def cargar_incidente_route(client: RiskClient = Depends(get_client)):
     await client.startup()
     try:
@@ -147,7 +147,7 @@ async def recalcular_route(client: RiskClient = Depends(get_client)):
     try:
         return await steps.step_recalcular(client)
     finally:
-        await client.shutdown()'''
+        await client.shutdown()
 
 # --- Flow completo ---
 @router.post("/run_all")
