@@ -1,7 +1,7 @@
 # app.py
 import logging
 from fastapi import FastAPI
-from routes.step_routes import router
+from routes.routes import router
 from config.loader import load_config
 from client.risk_client import RiskClient
 from middleware.custom_middleware import CustomMiddleware
