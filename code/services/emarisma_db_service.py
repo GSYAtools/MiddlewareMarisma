@@ -44,65 +44,22 @@ async def get_db_connection():
     async with db_pool.acquire() as conn:
         yield conn
 
-async def get_risk_analysis(conn: aiomysql.Connection, activo_id: int, codigo_amenaza: str):
+async def get_proyecto_id_by_name(name: str) -> int:
     """
-    Ejecuta la lógica de consultas para obtener el análisis de riesgo.
+    Obtiene el ID del proyecto por nombre.
     """
-    global db_config_cache
-    if db_config_cache is None:
-        db_config_cache = load_db_config()
+    async with get_db_connection() as conn:
+        async with conn.cursor(aiomysql.DictCursor) as cursor:
+            await cursor.execute("SELECT id FROM proyectos WHERE nombre = %s", (name,))
+            result = await cursor.fetchone()
+            return result['id'] if result else None
 
-    subproyecto_id = int(db_config_cache['subproyecto_id'])
-
-    activo_amenaza_id = None
-
-    # 1. Primera consulta para obtener activo_amenaza_id
-    query_get_id = """
-        SELECT 
-            am.id AS activo_amenaza_id
-        FROM ar_marisma.activo_amenaza am
-            INNER JOIN ar_marisma.amenaza_instanciada ami ON am.amenaza_instanciada_id = ami.id
-        WHERE 
-            ami.subproyecto_id = %s
-            AND am.activo_id = %s
-            AND ami.codigo = %s
-            AND am.deleted = 0
-            AND ami.deleted = 0;
+async def get_subproyecto_id_by_name(name: str) -> int:
     """
-    async with conn.cursor(aiomysql.DictCursor) as cursor:
-        await cursor.execute(query_get_id, (subproyecto_id, activo_id, int(codigo_amenaza)))
-        result = await cursor.fetchone()
-        if result:
-            activo_amenaza_id = int(result['activo_amenaza_id'])
-
-    if not activo_amenaza_id:
-        return None # O lanzar una excepción si se prefiere
-
-    # 2. Segunda consulta principal
-    query_main = """
-        SELECT 
-            ami.subproyecto_id,
-            ar.activo_amenaza_id,
-            act.nombre AS nombre_activo,
-            act.valor_estrategico,
-            ami.codigo AS codigo_amenaza,
-            ami.nombre AS nombre_amenaza,
-            ar.riesgo_inherente,
-            ar.impacto_total,
-            ar.vulnerabilidad,
-            ar.riesgo AS riesgo_residual,
-            ar.valor_riesgo AS nivel_riesgo
-        FROM ar_marisma.analisis_riesgo ar
-            INNER JOIN ar_marisma.activo_amenaza am ON ar.activo_amenaza_id = am.id
-            INNER JOIN ar_marisma.activo act ON am.activo_id = act.id
-            INNER JOIN ar_marisma.amenaza_instanciada ami ON am.amenaza_instanciada_id = ami.id
-        WHERE 
-            ar.deleted = 0 
-            AND am.deleted = 0
-            AND ami.subproyecto_id = %s
-            AND ar.activo_amenaza_id = %s;
+    Obtiene el ID del subproyecto por nombre.
     """
-    async with conn.cursor(aiomysql.DictCursor) as cursor:
-        await cursor.execute(query_main, (subproyecto_id, activo_amenaza_id))
-        analysis_result = await cursor.fetchone()
-        return analysis_result
+    async with get_db_connection() as conn:
+        async with conn.cursor(aiomysql.DictCursor) as cursor:
+            await cursor.execute("SELECT id FROM subproyectos WHERE nombre = %s", (name,))
+            result = await cursor.fetchone()
+            return result['id'] if result else None

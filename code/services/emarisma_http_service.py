@@ -4,6 +4,7 @@ from client.risk_client import RiskClient
 import logging
 from config.loader import load_config
 import urllib.parse
+from services.emarisma_db_service import get_subproyecto_id_by_name
 
 logger = logging.getLogger("services.steps")
 
@@ -29,7 +30,7 @@ async def step_get_projects(client: RiskClient) -> Dict[str, Any]:
     r.raise_for_status()
     return {"step": "cargar_proyectos", "body": r.json()}
 
-async def step_get_subprojects(client: RiskClient, subproject_id: int = 2) -> Dict[str, Any]:
+async def step_get_subprojects(client: RiskClient, subproject_id: int) -> Dict[str, Any]:
     params = {
         "draw": "1",
 
@@ -113,7 +114,7 @@ async def step_guardar_incidente(client: RiskClient) -> Dict[str, Any]:
     r = await client.guardar_evento(content=content)
     return {"step": "guardar_incidente", "status": getattr(r, "status_code", 200)}
 
-async def step_obtener_eventos(client: RiskClient, subproject_id: int = 3) -> Dict[str, Any]:
+async def step_obtener_eventos(client: RiskClient, subproject_id: int) -> Dict[str, Any]:
     params = {
         "draw": "1",
 
@@ -396,14 +397,14 @@ async def step_guardar_y_cerrar(client: RiskClient, id_evento: int = 19) -> Dict
     "redirect": r.headers.get("Location")}
 
 # --- Flow completo ---
-async def run_all_flow(client: RiskClient) -> List[Dict[str, Any]]:
+async def run_all_flow(client: RiskClient, data: Dict[str, Any], proyecto_id: int, subproyecto_id: int) -> List[Dict[str, Any]]:
     results = []
     results.append(await step_login_exist(client))
     results.append(await step_authenticate(client))
     results.append(await step_get_projects(client))
-    results.append(await step_get_subprojects(client))
+    results.append(await step_get_subprojects(client, subproyecto_id))
     results.append(await step_guardar_incidente(client))
-    results.append(await step_obtener_eventos(client, subproject_id=3))
+    results.append(await step_obtener_eventos(client, subproyecto_id))
     results.append(await step_guardar_gravedad(client))
     results.append(await step_guardar_amenaza(client))
     results.append(await step_cargar_incidente(client))
