@@ -1,17 +1,28 @@
 # app.py
 import logging
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from routes.routes import router
 from config.loader import load_config
 from client.risk_client import RiskClient
 from middleware.custom_middleware import CustomMiddleware
+from services.internal_db_service import init_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("app")
 
 settings = load_config()  # carga config.json o variables de entorno
 print("---- APP.PY CARGADO ----")
-app = FastAPI(title="Risk API Refactorizada")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await init_db()
+    logger.info("Base de datos interna inicializada")
+    yield
+    # Shutdown (si es necesario)
+
+app = FastAPI(title="Risk API Refactorizada", lifespan=lifespan)
 
 # Añade middleware opcional
 app.add_middleware(CustomMiddleware, enable_logging=True)
