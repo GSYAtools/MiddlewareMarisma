@@ -11,12 +11,28 @@ class IncidentRequest(BaseModel):
     threat_id: str
     user_id: str
     device_id: str
-    detected_at: str
+    detected_at: str  # Formato ISO, ej. "2024-10-14T12:37:00Z"
     threat_type: str
     threat_description: str
     severity: str
     actions_taken: str
     status: str
+
+    """
+    Ejemplo de JSON para la petición:
+    {
+      "threat_id": "T123456",
+      "user_id": "user123",
+      "device_id": "deviceABC",
+      "detected_at": "2024-10-14T12:37:00Z",
+      "threat_type": "DDoS",
+      "threat_description": "Description of the DDoS",
+      "severity": "high",
+      "actions_taken": "Access revoked, device quarantined",
+      "status": "mitigated"
+    }
+    Nota: user_id se usa como responsable, detected_at se convierte a dd/MM/yyyy para date, threat_description para descripcion.
+    """
 
 router = APIRouter()
 
@@ -43,8 +59,8 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
     await update_emarisma_data(request_id, emarisma_data)
     
     # Ejecutar el flujo completo con el JSON de datos asociados
-    incident_id = await steps.run_all_flow(client, data_dict, emarisma_data)
-    return {"request_id": request_id, "incident_id": incident_id}
+    await steps.run_all_flow(client, data_dict, emarisma_data)
+    return {"request_id": request_id}
 
 @router.get("/retrive_incident/{incident_id}")
 async def retrive_incident(incident_id: str, client: RiskClient = Depends(get_client)):

@@ -5,6 +5,7 @@ import logging
 from config.loader import load_config
 import urllib.parse
 from services.emarisma_db_service import get_subproyecto_id_by_name
+from datetime import datetime
 
 logger = logging.getLogger("services.steps")
 
@@ -101,12 +102,23 @@ async def step_get_subprojects(client: RiskClient, subproject_id: int) -> Dict[s
     r.raise_for_status()
     return {"step": "cargar_subproyectos", "subproject_id": subproject_id, "body": r.json()}
 
-async def step_guardar_incidente(client: RiskClient) -> Dict[str, Any]:
+async def step_guardar_incidente(client: RiskClient, user_id: str, detected_at: str, threat_description: str, emarisma_data: Dict[str, Any]) -> Dict[str, Any]:
     settings = load_config()
-    event_data = settings.new_event
-
-    if not event_data:
-        raise ValueError("No se han encontrado datos de evento")
+    
+    # Convertir detected_at a dd/MM/yyyy
+    detected_at_dt = datetime.fromisoformat(detected_at.replace('Z', '+00:00'))
+    date_str = detected_at_dt.strftime('%d/%m/%Y')
+    
+    # Construir event_data dinámicamente
+    event_data = {
+        "subproyecto": str(emarisma_data['subproyecto_id']),
+        "tipo": settings.new_event['tipo'],
+        "typeAction": settings.new_event['typeAction'],
+        "responsable": user_id,
+        "date": date_str,
+        "causa": settings.new_event['causa'],
+        "descripcion": threat_description
+    }
 
     content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in event_data.items()])
     content = "update=Guardar&id=&version=&" + content
@@ -403,7 +415,7 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     results.append(await step_authenticate(client))
     results.append(await step_get_projects(client))
     results.append(await step_get_subprojects(client, emarisma_data['subproyecto_id']))
-    results.append(await step_guardar_incidente(client))
+    results.append(await step_guardar_incidente(client, data['user_id'], data['detected_at'], data['threat_description'], emarisma_data))
     results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id']))
     results.append(await step_guardar_gravedad(client))
     results.append(await step_guardar_amenaza(client))
