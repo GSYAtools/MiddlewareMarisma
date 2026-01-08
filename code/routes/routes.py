@@ -1,9 +1,21 @@
 # routes/routes.py
 from fastapi import APIRouter, Depends
+from pydantic import BaseModel
 from client.risk_client import RiskClient
 import services.emarisma_http_service as steps
 from config.loader import load_config
 from services.internal_db_service import save_request
+
+class IncidentRequest(BaseModel):
+    threat_id: str
+    user_id: str
+    device_id: str
+    detected_at: str
+    threat_type: str
+    threat_description: str
+    severity: str
+    actions_taken: str
+    status: str
 
 router = APIRouter()
 
@@ -11,11 +23,13 @@ def get_client(settings = Depends(load_config)):
     return RiskClient(settings)
 
 @router.post("/new_incident")
-async def new_incident(data: dict, client: RiskClient = Depends(get_client)):
+async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_client)):
+    # Convertir a dict para guardar
+    data_dict = data.dict()
     # Primero, guardar la request en la DB interna
-    request_id = await save_request(data)
+    request_id = await save_request(data_dict)
     # Luego, ejecutar el flujo completo
-    incident_id = await steps.run_all_flow(client, data)
+    incident_id = await steps.run_all_flow(client, data_dict)
     return {"request_id": request_id, "incident_id": incident_id}
 
 @router.get("/retrive_incident/{incident_id}")
