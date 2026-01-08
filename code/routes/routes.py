@@ -35,15 +35,15 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
     proyecto_id = await get_proyecto_id_by_name(settings.proyecto_name)
     subproyecto_id = await get_subproyecto_id_by_name(settings.subproyecto_name)
     
-    # Guardar IDs como datos asociados en DB interna
+    # Construir JSON con datos asociados
     emarisma_data = {
         "proyecto_id": proyecto_id,
         "subproyecto_id": subproyecto_id
     }
     await update_emarisma_data(request_id, emarisma_data)
     
-    # Ejecutar el flujo completo con los IDs
-    incident_id = await steps.run_all_flow(client, data_dict, proyecto_id, subproyecto_id)
+    # Ejecutar el flujo completo con el JSON de datos asociados
+    incident_id = await steps.run_all_flow(client, data_dict, emarisma_data)
     return {"request_id": request_id, "incident_id": incident_id}
 
 @router.get("/retrive_incident/{incident_id}")

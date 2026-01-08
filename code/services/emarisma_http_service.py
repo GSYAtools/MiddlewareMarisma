@@ -397,14 +397,14 @@ async def step_guardar_y_cerrar(client: RiskClient, id_evento: int = 19) -> Dict
     "redirect": r.headers.get("Location")}
 
 # --- Flow completo ---
-async def run_all_flow(client: RiskClient, data: Dict[str, Any], proyecto_id: int, subproyecto_id: int) -> List[Dict[str, Any]]:
+async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: Dict[str, Any]) -> List[Dict[str, Any]]:
     results = []
     results.append(await step_login_exist(client))
     results.append(await step_authenticate(client))
     results.append(await step_get_projects(client))
-    results.append(await step_get_subprojects(client, subproyecto_id))
+    results.append(await step_get_subprojects(client, emarisma_data['subproyecto_id']))
     results.append(await step_guardar_incidente(client))
-    results.append(await step_obtener_eventos(client, subproyecto_id))
+    results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id']))
     results.append(await step_guardar_gravedad(client))
     results.append(await step_guardar_amenaza(client))
     results.append(await step_cargar_incidente(client))
