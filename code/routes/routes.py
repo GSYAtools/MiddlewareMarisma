@@ -6,6 +6,9 @@ import services.emarisma_http_service as steps
 from config.loader import load_config
 from services.internal_db_service import save_request, update_emarisma_data
 from services.emarisma_db_service import get_proyecto_id_by_name, get_subproyecto_id_by_name
+import logging
+
+logger = logging.getLogger(__name__)
 
 class IncidentRequest(BaseModel):
     threat_id: str
@@ -43,14 +46,18 @@ def get_client(settings = Depends(load_config)):
 
 @router.post("/new_incident")
 async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_client)):
+    logger.info(f"Recibida petición new_incident: {data.dict()}")
     # Convertir a dict para guardar
     data_dict = data.dict()
     # Primero, guardar la request en la DB interna
     request_id = await save_request(data_dict)
+    logger.info(f"Request guardada con ID: {request_id}")
     
     # Recuperar IDs por nombre desde la petición
+    logger.info(f"Buscando IDs para proyecto: {data.proyecto_name}, subproyecto: {data.subproyecto_name}")
     proyecto_id = await get_proyecto_id_by_name(data.proyecto_name)
     subproyecto_id = await get_subproyecto_id_by_name(data.subproyecto_name)
+    logger.info(f"IDs obtenidos - Proyecto: {proyecto_id}, Subproyecto: {subproyecto_id}")
     
     # Construir JSON con datos asociados
     emarisma_data = {
@@ -58,9 +65,12 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
         "subproyecto_id": subproyecto_id
     }
     await update_emarisma_data(request_id, emarisma_data)
+    logger.info(f"Datos emarisma actualizados para request_id: {request_id}")
     
     # Ejecutar el flujo completo con el JSON de datos asociados
+    logger.info("Iniciando flujo completo")
     await steps.run_all_flow(client, data_dict, emarisma_data)
+    logger.info("Flujo completo terminado")
     return {"request_id": request_id}
 
 @router.get("/retrive_incident/{incident_id}")

@@ -65,24 +65,27 @@ class RiskClient:
 
     # Wrappers para acciones del proyecto (ejemplos, adaptables)
     async def exist_user(self) -> httpx.Response:
-        path = "/login/existUser"
         cfg = self.settings
-        # password_b64 = quote_plus(cfg.password.encode("utf-8").hex())  # nota: mantenemos la codificación original si hace falta
         password_b64 = base64.b64encode(cfg.password.encode("utf-8")).decode("utf-8")
         password_encoded = urllib.parse.quote_plus(password_b64)
-        # original used base64+urlencode; adapt as necessary
         content = f"username={cfg.username}&password={password_encoded}"
         headers = {"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "Accept": "*/*"}
-        return await self.post(path, content=content, extra_headers=headers)
+        async with httpx.AsyncClient(base_url=self.base_url) as client:
+            r = await client.post("/login/existUser", content=content, headers=headers)
+            return r
 
     async def authenticate(self) -> httpx.Response:
-        path = "/login/authenticate"
         cfg = self.settings
         password_encoded = urllib.parse.quote(cfg.password)
         postUrl = "/login/authenticate"
         content = f"username={cfg.username}&password={password_encoded}&postUrl={postUrl}"
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        return await self.post(path, content=content, extra_headers=headers)
+        async with httpx.AsyncClient(base_url=self.base_url) as temp_client:
+            r = await temp_client.post("/login/authenticate", content=content, headers=headers)
+            if r.status_code in (200, 302):
+                # Set the client for future requests
+                self._client = httpx.AsyncClient(base_url=self.base_url, cookies=r.cookies)
+            return r
 
     # métodos genéricos para endpoints existentes
     async def cargar_proyectos(self, params: Dict[str, Any] | None = None) -> httpx.Response:
