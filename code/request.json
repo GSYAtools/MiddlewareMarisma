@@ -9,5 +9,6 @@
   "actions_taken": "Bloquear enlace y alertar al usuario",
   "status": "resolved",
   "proyecto_name": "Di4SPDS",
-  "subproyecto_name": "SmartHome"
+  "subproyecto_name": "SmartHome",
+  "causa": "causa provisional"
 }

@@ -16,8 +16,7 @@
     "activo": "13",
     "new_event": {
         "tipo": "detalle",
-        "typeAction": "nuevo",
-        "causa": "causa provisional"
+        "typeAction": "nuevo"
     },
     "new_gravedad": {
         "gravedad": "grave",

@@ -22,6 +22,7 @@ class IncidentRequest(BaseModel):
     status: str
     proyecto_name: str
     subproyecto_name: str
+    causa: str
 
     """
     Ejemplo de JSON para la petición:

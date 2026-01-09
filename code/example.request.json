@@ -9,5 +9,6 @@
   "actions_taken": "Quarantine device and notify user",
   "status": "active",
   "proyecto_name": "Di4SPDS",
-  "subproyecto_name": "SmartHome"
+  "subproyecto_name": "SmartHome",
+  "causa": "causa provisional"
 }

@@ -116,7 +116,7 @@ async def step_guardar_incidente(client: RiskClient, user_id: str, detected_at: 
         "typeAction": settings.new_event['typeAction'],
         "responsable": user_id,
         "date": date_str,
-        "causa": settings.new_event['causa'],
+        "causa": data_dict['causa'],
         "descripcion": threat_description
     }
 
