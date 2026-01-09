@@ -228,9 +228,10 @@ async def step_guardar_gravedad(client: RiskClient, data_dict: Dict[str, Any], e
     r = await client.guardar_gravedad(content=content)
     return {"step": "guardar_gravedad", "status": getattr(r, "status_code", 200)}
 
-async def step_guardar_amenaza(client: RiskClient, id_amenaza: int = 690) -> Dict[str, Any]:
+async def step_guardar_amenaza(client: RiskClient, emarisma_data: Dict[str, Any]) -> Dict[str, Any]:
     settings = load_config()
     data = settings.new_amenaza
+    id_amenaza = emarisma_data['tipo_amenaza_instanciada_id']
 
     if not data:
         raise ValueError("No se han encontrado datos de evento")
@@ -432,9 +433,9 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     logger.info("Ejecutando step_obtener_eventos")
     results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id'])) # HASTA AQUI FUNCIONA
     logger.info("Ejecutando step_guardar_gravedad")
-    results.append(await step_guardar_gravedad(client, data_dict, emarisma_data))
+    results.append(await step_guardar_gravedad(client, data, emarisma_data))
     logger.info("Ejecutando step_guardar_amenaza")
-    results.append(await step_guardar_amenaza(client))
+    results.append(await step_guardar_amenaza(client, emarisma_data)) # esta sin probar
     logger.info("Ejecutando step_cargar_incidente")
     results.append(await step_cargar_incidente(client))
     logger.info("Ejecutando step_obtener_controlesNoImplicados")

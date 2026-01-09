@@ -79,3 +79,24 @@ async def get_subproyecto_id_by_name(name: str) -> int:
     except Exception as e:
         logger.warning(f"Error al buscar subproyecto '{name}': {e}. Usando ID dummy 1 para testing.")
         return 1
+
+async def get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre(subproyecto_id: int, nombre: str) -> int:
+    """
+    Obtiene el tipo_amenaza_instanciada_id de la tabla amenaza_instanciada por subproyecto_id y nombre.
+    """
+    logger.info(f"Buscando tipo_amenaza_instanciada_id para subproyecto_id: {subproyecto_id}, nombre: {nombre}")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(
+                    "SELECT tipo_amenaza_instanciada_id FROM amenaza_instanciada WHERE subproyecto_id = %s AND nombre = %s AND deleted = 0",
+                    (subproyecto_id, nombre)
+                )
+                result = await cursor.fetchone()
+                tipo_amenaza_id = result['tipo_amenaza_instanciada_id'] if result else None
+                logger.info(f"tipo_amenaza_instanciada_id encontrado: {tipo_amenaza_id}")
+                return tipo_amenaza_id
+    except Exception as e:
+        logger.warning(f"Error al buscar tipo_amenaza_instanciada_id para subproyecto '{subproyecto_id}', nombre '{nombre}': {e}. Usando ID dummy 690 para testing.")
+        return 690

@@ -5,7 +5,7 @@ from client.risk_client import RiskClient
 import services.emarisma_http_service as steps
 from config.loader import load_config
 from services.internal_db_service import save_request, update_emarisma_data
-from services.emarisma_db_service import get_proyecto_id_by_name, get_subproyecto_id_by_name
+from services.emarisma_db_service import get_proyecto_id_by_name, get_subproyecto_id_by_name, get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre
 import logging
 
 logger = logging.getLogger(__name__)
@@ -31,13 +31,13 @@ class IncidentRequest(BaseModel):
       "user_id": "user123",
       "device_id": "deviceABC",
       "detected_at": "2024-10-14T12:37:00Z",
-      "threat_type": "DDoS",
+      "threat_type": "Alteración de secuencia",
       "threat_description": "Description of the DDoS",
       "severity": "high",
       "actions_taken": "Access revoked, device quarantined",
       "status": "mitigated"
     }
-    Nota: user_id se usa como responsable, detected_at se convierte a dd/MM/yyyy para date, threat_description para descripcion.
+    Nota: user_id se usa como responsable, detected_at se convierte a dd/MM/yyyy para date, threat_description para descripcion, threat_type para nombre de amenaza.
     """
 
 router = APIRouter()
@@ -60,10 +60,16 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
     subproyecto_id = await get_subproyecto_id_by_name(data.subproject_name)
     logger.info(f"IDs obtenidos - Proyecto: {proyecto_id}, Subproyecto: {subproyecto_id}")
     
+    # Obtener tipo_amenaza_instanciada_id por subproyecto y nombre de amenaza (threat_type)
+    logger.info(f"Buscando tipo_amenaza_instanciada_id para subproyecto: {subproyecto_id}, threat_type: {data.threat_type}")
+    tipo_amenaza_id = await get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre(subproyecto_id, data.threat_type)
+    logger.info(f"tipo_amenaza_instanciada_id obtenido: {tipo_amenaza_id}")
+    
     # Construir JSON con datos asociados
     emarisma_data = {
         "proyecto_id": proyecto_id,
-        "subproyecto_id": subproyecto_id
+        "subproyecto_id": subproyecto_id,
+        "tipo_amenaza_instanciada_id": tipo_amenaza_id
     }
     await update_emarisma_data(request_id, emarisma_data)
     logger.info(f"Datos emarisma actualizados para request_id: {request_id}")
