@@ -209,12 +209,19 @@ async def step_obtener_eventos(client: RiskClient, subproject_id: int) -> Dict[s
         "body": r.json() if r.headers.get("content-type", "").startswith("application/json") else r.text
     }
 
-async def step_guardar_gravedad(client: RiskClient) -> Dict[str, Any]:
+async def step_guardar_gravedad(client: RiskClient, data_dict: Dict[str, Any], emarisma_data: Dict[str, Any]) -> Dict[str, Any]:
     settings = load_config()
-    data = settings.new_gravedad
+    gravedad = data_dict['severity']  # Usar severity del request
+
+    # Construir data usando settings pero con gravedad dinámica
+    data = {
+        "gravedad": gravedad,
+        "incidente": settings.new_gravedad['incidente'],
+        "subproyecto": str(emarisma_data['subproyecto_id'])
+    }
 
     if not data:
-        raise ValueError("No se han encontrado datos de evento")
+        raise ValueError("No se han encontrado datos de gravedad")
 
     content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in data.items()])
 
@@ -421,11 +428,11 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     logger.info("Ejecutando step_get_subprojects")
     results.append(await step_get_subprojects(client, emarisma_data['subproyecto_id']))
     logger.info("Ejecutando step_guardar_incidente")
-    results.append(await step_guardar_incidente(client, data['user_id'], data['detected_at'], data['threat_description'], emarisma_data)) # HASTA AQUI FUNCIONA
+    results.append(await step_guardar_incidente(client, data['user_id'], data['detected_at'], data['threat_description'], emarisma_data)) 
     logger.info("Ejecutando step_obtener_eventos")
-    results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id']))
+    results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id'])) # HASTA AQUI FUNCIONA
     logger.info("Ejecutando step_guardar_gravedad")
-    results.append(await step_guardar_gravedad(client))
+    results.append(await step_guardar_gravedad(client, data_dict, emarisma_data))
     logger.info("Ejecutando step_guardar_amenaza")
     results.append(await step_guardar_amenaza(client))
     logger.info("Ejecutando step_cargar_incidente")
