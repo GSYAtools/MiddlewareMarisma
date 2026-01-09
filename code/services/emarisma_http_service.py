@@ -4,7 +4,7 @@ from client.risk_client import RiskClient
 import logging
 from config.loader import load_config
 import urllib.parse
-from services.emarisma_db_service import get_subproyecto_id_by_name
+from services.emarisma_db_service import get_subproyecto_id_by_name, get_incidente_id_by_subproyecto_and_tipo_amenaza
 from datetime import datetime
 
 logger = logging.getLogger("services.steps")
@@ -102,11 +102,11 @@ async def step_get_subprojects(client: RiskClient, subproject_id: int) -> Dict[s
     r.raise_for_status()
     return {"step": "cargar_subproyectos", "subproject_id": subproject_id, "body": r.json()}
 
-async def step_guardar_incidente(client: RiskClient, user_id: str, detected_at: str, threat_description: str, emarisma_data: Dict[str, Any]) -> Dict[str, Any]:
+async def step_guardar_incidente(client: RiskClient, data: Dict[str, Any], emarisma_data: Dict[str, Any]) -> Dict[str, Any]:
     settings = load_config()
     
     # Convertir detected_at a dd/MM/yyyy
-    detected_at_dt = datetime.fromisoformat(detected_at.replace('Z', '+00:00'))
+    detected_at_dt = datetime.fromisoformat(data['detected_at'].replace('Z', '+00:00'))
     date_str = detected_at_dt.strftime('%d/%m/%Y')
     
     # Construir event_data dinámicamente
@@ -114,10 +114,10 @@ async def step_guardar_incidente(client: RiskClient, user_id: str, detected_at: 
         "subproyecto": str(emarisma_data['subproyecto_id']),
         "tipo": settings.new_event['tipo'],
         "typeAction": settings.new_event['typeAction'],
-        "responsable": user_id,
+        "responsable": data['user_id'],
         "date": date_str,
-        "causa": data_dict['cause'],
-        "descripcion": threat_description
+        "causa": data['cause'],
+        "descripcion": data['threat_description']
     }
 
     content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in event_data.items()])
@@ -239,15 +239,16 @@ async def step_guardar_amenaza(client: RiskClient, emarisma_data: Dict[str, Any]
     content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in data.items()])
 
     r = await client.guardar_amenaza(id_amenaza, content=content)
-    r.raise_for_status()
-    return {"step": "guardar_amenaza", "body": r.json()}
+    # No raise for status, as 302 is expected
+    location = r.headers.get("Location")
+    return {"step": "guardar_amenaza", "status": r.status_code, "location": location}
 
-async def step_cargar_incidente(client: RiskClient, incidente_id: int = 18) -> Dict[str, Any]:
+async def step_cargar_incidente(client: RiskClient, incidente_id: int) -> Dict[str, Any]:
     r = await client.cargar_incidente(incidente_id)
     r.raise_for_status()
     return {"step": "cargar_incidente", "body": r.json()}
 
-async def step_obtener_controlesNoImplicados(client: RiskClient, incidente_id: int = 18) -> Dict[str, Any]:
+async def step_obtener_controlesNoImplicados(client: RiskClient, incidente_id: int) -> Dict[str, Any]:
     params = {
         "incidente": str(incidente_id),
         "draw": "2",
@@ -270,7 +271,7 @@ async def step_obtener_controlesNoImplicados(client: RiskClient, incidente_id: i
     r.raise_for_status()
     return {"step": "controles_no_implicados", "body": r.json()}
 
-async def step_obtener_activosNoImplicados(client: RiskClient, incidente_id: int = 18) -> Dict[str, Any]:
+async def step_obtener_activosNoImplicados(client: RiskClient, incidente_id: int) -> Dict[str, Any]:
     params = {
         "incidente": str(incidente_id),
         "draw": "2",
@@ -297,7 +298,7 @@ async def step_obtener_activosNoImplicados(client: RiskClient, incidente_id: int
     r.raise_for_status()
     return {"step": "activos_no_implicados", "body": r.json()}
 
-async def step_obtener_controlesImplicados(client: RiskClient, incidente_id: int = 18) -> Dict[str, Any]:
+async def step_obtener_controlesImplicados(client: RiskClient, incidente_id: int) -> Dict[str, Any]:
     params = {
         "incidente": str(incidente_id),
         "draw": "2",
@@ -324,7 +325,7 @@ async def step_obtener_controlesImplicados(client: RiskClient, incidente_id: int
     #r.raise_for_status()
     return {"step": "controles_implicados", "body": r.json()}
 
-async def step_obtener_activosImplicados(client: RiskClient, incidente_id: int = 18) -> Dict[str, Any]:
+async def step_obtener_activosImplicados(client: RiskClient, incidente_id: int) -> Dict[str, Any]:
     params = {
         "incidente": str(incidente_id),
         "draw": "2",
@@ -381,12 +382,12 @@ async def step_recalcular(client: RiskClient) -> Dict[str, Any]:
     r.raise_for_status()
     return {"step": "recalcular", "body": r.json()}
 
-async def step_ir_a_conclusion(client: RiskClient, id_evento: int = 19) -> Dict[str, Any]:
+async def step_ir_a_conclusion(client: RiskClient, id_evento: int) -> Dict[str, Any]:
     r = await client.ir_a_conclusion(id_evento)
     r.raise_for_status()
     return {"step": "ir_a_conclusion", "status_code": r.status_code}#, "body": r.json()}
 
-async def step_guardar_y_cerrar(client: RiskClient, id_evento: int = 19) -> Dict[str, Any]:
+async def step_guardar_y_cerrar(client: RiskClient, id_evento: int) -> Dict[str, Any]:
     settings = load_config()
     data = settings.new_conclusion
     
@@ -427,35 +428,37 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     logger.info("Ejecutando step_get_projects")
     results.append(await step_get_projects(client))
     logger.info("Ejecutando step_get_subprojects")
-    results.append(await step_get_subprojects(client, emarisma_data['subproyecto_id']))
-    logger.info("Ejecutando step_guardar_incidente")
-    results.append(await step_guardar_incidente(client, data['user_id'], data['detected_at'], data['threat_description'], emarisma_data)) 
-    logger.info("Ejecutando step_obtener_eventos")
-    results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id'])) # HASTA AQUI FUNCIONA
+    results.append(await step_get_subprojects(client, emarisma_data['subproyecto_id'])) # HASTA AQUI FUNCIONA
     logger.info("Ejecutando step_guardar_gravedad")
     results.append(await step_guardar_gravedad(client, data, emarisma_data))
     logger.info("Ejecutando step_guardar_amenaza")
-    results.append(await step_guardar_amenaza(client, emarisma_data)) # esta sin probar
+    results.append(await step_guardar_amenaza(client, emarisma_data)) 
+    logger.info("Obteniendo incidente_id")
+    ids = await get_incidente_id_by_subproyecto_and_tipo_amenaza(emarisma_data['subproyecto_id'], emarisma_data['tipo_amenaza_instanciada_id'], data['user_id'])
+    emarisma_data['incidente_id'] = ids['incidente_id']
+    emarisma_data['evento_id'] = ids['evento_id']
+    logger.info("Ejecutando step_obtener_eventos")
+    results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id'])) # HASTA AQUI SIN PROBAR 
     logger.info("Ejecutando step_cargar_incidente")
-    results.append(await step_cargar_incidente(client))
+    results.append(await step_cargar_incidente(client, emarisma_data['incidente_id']))
     logger.info("Ejecutando step_obtener_controlesNoImplicados")
-    results.append(await step_obtener_controlesNoImplicados(client))
+    results.append(await step_obtener_controlesNoImplicados(client, emarisma_data['incidente_id']))
     logger.info("Ejecutando step_obtener_activosNoImplicados")
-    results.append(await step_obtener_activosNoImplicados(client))
+    results.append(await step_obtener_activosNoImplicados(client, emarisma_data['incidente_id']))
     logger.info("Ejecutando step_obtener_controlesImplicados")
-    results.append(await step_obtener_controlesImplicados(client))
+    results.append(await step_obtener_controlesImplicados(client, emarisma_data['incidente_id']))
     logger.info("Ejecutando step_obtener_activosImplicados")
-    results.append(await step_obtener_activosImplicados(client))
+    results.append(await step_obtener_activosImplicados(client, emarisma_data['incidente_id']))
     logger.info("Ejecutando step_cargar_dimensionesClear")
-    results.append(await step_cargar_dimensionesClear(client))
+    results.append(await step_cargar_dimensionesClear(client, {"activo": "11", "incidente": str(emarisma_data['incidente_id'])}))
     logger.info("Ejecutando step_vincular_activo")
-    results.append(await step_vincular_activo(client))
+    results.append(await step_vincular_activo(client, {"dimension": "143", "activo": "", "incidente": str(emarisma_data['incidente_id']), "porcentaje": "97", "vincular": "true", "activoAux": "11"}))
     logger.info("Ejecutando step_vincular_control")
-    results.append(await step_vincular_control(client))
+    results.append(await step_vincular_control(client, {"control": "1716", "incidente": str(emarisma_data['incidente_id'])}))
     logger.info("Ejecutando step_ir_a_conclusion")
-    results.append(await step_ir_a_conclusion(client))
+    results.append(await step_ir_a_conclusion(client, emarisma_data['evento_id']))
     logger.info("Ejecutando step_guardar_y_cerrar")
-    results.append(await step_guardar_y_cerrar(client))
+    results.append(await step_guardar_y_cerrar(client, emarisma_data['evento_id']))
     logger.info("Ejecutando step_recalcular")
     results.append(await step_recalcular(client))
     logger.info("run_all_flow completado")
