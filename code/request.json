@@ -1,0 +1,13 @@
+{
+  "threat_id": "T789012",
+  "user_id": "user456",
+  "device_id": "device456",
+  "detected_at": "2024-10-15T14:22:00Z",
+  "threat_type": "phishing",
+  "threat_description": "Intento de phishing detectado en el correo",
+  "severity": "medium",
+  "actions_taken": "Bloquear enlace y alertar al usuario",
+  "status": "resolved",
+  "proyecto_name": "Di4SPDS",
+  "subproyecto_name": "SmartHome"
+}

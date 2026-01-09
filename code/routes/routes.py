@@ -17,6 +17,8 @@ class IncidentRequest(BaseModel):
     severity: str
     actions_taken: str
     status: str
+    proyecto_name: str
+    subproyecto_name: str
 
     """
     Ejemplo de JSON para la petición:
@@ -46,10 +48,9 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
     # Primero, guardar la request en la DB interna
     request_id = await save_request(data_dict)
     
-    # Recuperar IDs por nombre desde config
-    settings = load_config()
-    proyecto_id = await get_proyecto_id_by_name(settings.proyecto_name)
-    subproyecto_id = await get_subproyecto_id_by_name(settings.subproyecto_name)
+    # Recuperar IDs por nombre desde la petición
+    proyecto_id = await get_proyecto_id_by_name(data.proyecto_name)
+    subproyecto_id = await get_subproyecto_id_by_name(data.subproyecto_name)
     
     # Construir JSON con datos asociados
     emarisma_data = {

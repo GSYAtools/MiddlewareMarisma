@@ -1,0 +1,13 @@
+{
+  "threat_id": "T123456",
+  "user_id": "user123",
+  "device_id": "device123",
+  "detected_at": "2024-10-14T12:37:00Z",
+  "threat_type": "malware",
+  "threat_description": "Detección de malware en el dispositivo",
+  "severity": "high",
+  "actions_taken": "Quarantine device and notify user",
+  "status": "active",
+  "proyecto_name": "Di4SPDS",
+  "subproyecto_name": "SmartHome"
+}
