@@ -20,9 +20,9 @@ class IncidentRequest(BaseModel):
     severity: str
     actions_taken: str
     status: str
-    proyecto_name: str
-    subproyecto_name: str
-    causa: str
+    project_name: str
+    subproject_name: str
+    cause: str
 
     """
     Ejemplo de JSON para la petición:
@@ -55,9 +55,9 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
     logger.info(f"Request guardada con ID: {request_id}")
     
     # Recuperar IDs por nombre desde la petición
-    logger.info(f"Buscando IDs para proyecto: {data.proyecto_name}, subproyecto: {data.subproyecto_name}")
-    proyecto_id = await get_proyecto_id_by_name(data.proyecto_name)
-    subproyecto_id = await get_subproyecto_id_by_name(data.subproyecto_name)
+    logger.info(f"Buscando IDs para proyecto: {data.project_name}, subproyecto: {data.subproject_name}")
+    proyecto_id = await get_proyecto_id_by_name(data.project_name)
+    subproyecto_id = await get_subproyecto_id_by_name(data.subproject_name)
     logger.info(f"IDs obtenidos - Proyecto: {proyecto_id}, Subproyecto: {subproyecto_id}")
     
     # Construir JSON con datos asociados

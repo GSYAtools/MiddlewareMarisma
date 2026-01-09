@@ -8,7 +8,7 @@
   "severity": "medium",
   "actions_taken": "Bloquear enlace y alertar al usuario",
   "status": "resolved",
-  "proyecto_name": "Di4SPDS",
-  "subproyecto_name": "SmartHome",
-  "causa": "causa provisional"
+  "project_name": "Di4SPDS",
+  "subproject_name": "SmartHome",
+  "cause": "Causado por la falta de actualización del software"
 }

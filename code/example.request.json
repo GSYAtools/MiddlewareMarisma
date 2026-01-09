@@ -8,7 +8,7 @@
   "severity": "high",
   "actions_taken": "Quarantine device and notify user",
   "status": "active",
-  "proyecto_name": "Di4SPDS",
-  "subproyecto_name": "SmartHome",
-  "causa": "causa provisional"
+  "project_name": "Di4SPDS",
+  "subproject_name": "SmartHome",
+  "cause": "Incident cause"
 }
