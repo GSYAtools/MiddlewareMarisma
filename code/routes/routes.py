@@ -6,6 +6,7 @@ import services.emarisma_http_service as steps
 from config.loader import load_config
 from services.internal_db_service import save_request, update_emarisma_data
 from services.emarisma_db_service import get_proyecto_id_by_name, get_subproyecto_id_by_name, get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre
+from client_instance import client
 import logging
 
 logger = logging.getLogger(__name__)
@@ -42,8 +43,8 @@ class IncidentRequest(BaseModel):
 
 router = APIRouter()
 
-def get_client(settings = Depends(load_config)):
-    return RiskClient(settings)
+def get_client():
+    return client
 
 @router.post("/new_incident")
 async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_client)):

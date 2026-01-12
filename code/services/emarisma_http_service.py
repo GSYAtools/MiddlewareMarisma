@@ -6,6 +6,7 @@ from config.loader import load_config
 import urllib.parse
 from services.emarisma_db_service import get_subproyecto_id_by_name, get_incidente_id_by_subproyecto_and_tipo_amenaza
 from datetime import datetime
+import asyncio
 
 logger = logging.getLogger("services.steps")
 
@@ -436,14 +437,27 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     
     #
     # FALTA "PULSAR" EL BOTON DE GUARDAR, REVISAR EN BURPSUITE
-    #
-    #
-    
+    #    
     
     logger.info("Obteniendo incidente_id")
-    ids = await get_incidente_id_by_subproyecto_and_tipo_amenaza(emarisma_data['subproyecto_id'], emarisma_data['tipo_amenaza_instanciada_id'], data['user_id'])
-    emarisma_data['incidente_id'] = ids['incidente_id']
-    emarisma_data['evento_id'] = ids['evento_id']
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            ids = await get_incidente_id_by_subproyecto_and_tipo_amenaza(emarisma_data['subproyecto_id'], emarisma_data['tipo_amenaza_instanciada_id'], data['user_id'])
+            emarisma_data['incidente_id'] = ids['incidente_id']
+            emarisma_data['evento_id'] = ids['evento_id']
+            break
+        except ValueError as e:
+            if "No se encontró incidente" in str(e):
+                if attempt < max_retries - 1:
+                    delay = 2 ** attempt  # Exponential backoff: 1, 2, 4, 8, 16 seconds
+                    logger.warning(f"Incidente no encontrado, reintentando en {delay} segundos (intento {attempt + 1}/{max_retries})")
+                    await asyncio.sleep(delay)
+                else:
+                    logger.error(f"Incidente no encontrado después de {max_retries} intentos")
+                    raise
+            else:
+                raise
     logger.info("Ejecutando step_obtener_eventos")
     results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id'])) # HASTA AQUI SIN PROBAR 
     logger.info("Ejecutando step_cargar_incidente")
