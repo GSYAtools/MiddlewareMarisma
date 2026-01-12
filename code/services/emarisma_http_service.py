@@ -217,7 +217,7 @@ async def step_guardar_gravedad(client: RiskClient, data_dict: Dict[str, Any], e
     # Construir data usando settings pero con gravedad dinámica
     data = {
         "gravedad": gravedad,
-        "incidente": settings.new_gravedad['incidente'],
+        "incidente": str(emarisma_data['incidente_id']),
         "subproyecto": str(emarisma_data['subproyecto_id'])
     }
 
@@ -231,7 +231,7 @@ async def step_guardar_gravedad(client: RiskClient, data_dict: Dict[str, Any], e
 
 async def step_guardar_amenaza(client: RiskClient, emarisma_data: Dict[str, Any]) -> Dict[str, Any]:
     data = {
-        "gravedad": "grave",
+        "gravedad": emarisma_data['severity'],
         "evento": str(emarisma_data['evento_id'])
     }
     id_amenaza = emarisma_data['tipo_amenaza_instanciada_id']
@@ -431,17 +431,18 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     logger.info("Ejecutando step_get_projects")
     results.append(await step_get_projects(client))
     logger.info("Ejecutando step_get_subprojects")
-    results.append(await step_get_subprojects(client, emarisma_data['subproyecto_id'])) # HASTA AQUI FUNCIONA
-    logger.info("Ejecutando step_guardar_gravedad")
-    results.append(await step_guardar_gravedad(client, data, emarisma_data))
-    logger.info("Ejecutando step_guardar_amenaza")
+    results.append(await step_get_subprojects(client, emarisma_data['subproyecto_id']))
+    
+    logger.info("obteniendo incidente_id y evento_id desde la base de datos")
     ids = await get_incidente_id_by_subproyecto_and_tipo_amenaza(emarisma_data['subproyecto_id'], emarisma_data['tipo_amenaza_instanciada_id'], data['user_id'])
     emarisma_data['incidente_id'] = ids['incidente_id']
     emarisma_data['evento_id'] = ids['evento_id']
+    logger.info("Ejecutando step_guardar_gravedad")
+    results.append(await step_guardar_gravedad(client, data, emarisma_data))
+    logger.info("Ejecutando step_guardar_amenaza")
     results.append(await step_guardar_amenaza(client, emarisma_data)) 
-    
     logger.info("Ejecutando step_obtener_eventos")
-    results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id'])) # HASTA AQUI SIN PROBAR 
+    results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id']))  # HASTA AQUI FUNCIONA 
     logger.info("Ejecutando step_cargar_incidente")
     results.append(await step_cargar_incidente(client, emarisma_data['incidente_id']))
     logger.info("Ejecutando step_obtener_controlesNoImplicados")
@@ -453,9 +454,9 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     logger.info("Ejecutando step_obtener_activosImplicados")
     results.append(await step_obtener_activosImplicados(client, emarisma_data['incidente_id']))
     logger.info("Ejecutando step_cargar_dimensionesClear")
-    results.append(await step_cargar_dimensionesClear(client, {"activo": "11", "incidente": str(emarisma_data['incidente_id'])}))
+    results.append(await step_cargar_dimensionesClear(client, {"activo": str(emarisma_data['device_id']), "incidente": str(emarisma_data['incidente_id'])}))
     logger.info("Ejecutando step_vincular_activo")
-    results.append(await step_vincular_activo(client, {"dimension": "143", "activo": "", "incidente": str(emarisma_data['incidente_id']), "porcentaje": "97", "vincular": "true", "activoAux": "11"}))
+    results.append(await step_vincular_activo(client, {"dimension": "143", "activo": "", "incidente": str(emarisma_data['incidente_id']), "porcentaje": "97", "vincular": "true", "activoAux": str(emarisma_data['device_id'])}))
     logger.info("Ejecutando step_vincular_control")
     results.append(await step_vincular_control(client, {"control": "1716", "incidente": str(emarisma_data['incidente_id'])}))
     logger.info("Ejecutando step_ir_a_conclusion")

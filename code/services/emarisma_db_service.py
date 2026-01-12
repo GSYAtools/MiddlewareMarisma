@@ -48,6 +48,7 @@ async def get_db_connection():
 async def get_proyecto_id_by_name(name: str) -> int:
     """
     Obtiene el ID del proyecto por nombre.
+    Retorna None si no se encuentra.
     """
     logger.info(f"Buscando ID del proyecto con nombre: {name}")
     try:
@@ -60,12 +61,13 @@ async def get_proyecto_id_by_name(name: str) -> int:
                 logger.info(f"ID del proyecto encontrado: {proyecto_id}")
                 return proyecto_id
     except Exception as e:
-        logger.warning(f"Error al buscar proyecto '{name}': {e}. Usando ID dummy 1 para testing.")
-        return 1
+        logger.error(f"Error al buscar proyecto '{name}': {e}")
+        return None
 
 async def get_subproyecto_id_by_name(name: str) -> int:
     """
     Obtiene el ID del subproyecto por nombre.
+    Retorna None si no se encuentra.
     """
     logger.info(f"Buscando ID del subproyecto con nombre: {name}")
     try:
@@ -78,14 +80,15 @@ async def get_subproyecto_id_by_name(name: str) -> int:
                 logger.info(f"ID del subproyecto encontrado: {subproyecto_id}")
                 return subproyecto_id
     except Exception as e:
-        logger.warning(f"Error al buscar subproyecto '{name}': {e}. Usando ID dummy 1 para testing.")
-        return 1
+        logger.error(f"Error al buscar subproyecto '{name}': {e}")
+        return None
 
 async def get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre(subproyecto_id: int, nombre: str) -> int:
     """
     Obtiene el tipo_amenaza_instanciada_id de la tabla amenaza_instanciada por subproyecto_id y nombre.
+    Retorna None si no se encuentra.
     """
-    logger.info(f"Buscando tipo_amenaza_instanciada_id para subproyecto_id: {subproyecto_id}, nombre: {nombre}")
+    logger.info(f"Buscando amenaza_instanciada_id para subproyecto_id: {subproyecto_id}, nombre: {nombre}")
     try:
         db_pool = await get_db_pool()
         async with db_pool.acquire() as conn:
@@ -96,11 +99,30 @@ async def get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre(subproyecto_
                 )
                 result = await cursor.fetchone()
                 tipo_amenaza_id = result['tipo_amenaza_instanciada_id'] if result else None
-                logger.info(f"tipo_amenaza_instanciada_id encontrado: {tipo_amenaza_id}")
+                logger.info(f"amenaza_instanciada_id encontrado: {tipo_amenaza_id}")
                 return tipo_amenaza_id
     except Exception as e:
-        logger.warning(f"Error al buscar tipo_amenaza_instanciada_id para subproyecto '{subproyecto_id}', nombre '{nombre}': {e}. Usando ID dummy 690 para testing.")
-        return 690
+        logger.error(f"Error al buscar amenaza_instanciada_id para subproyecto '{subproyecto_id}', nombre '{nombre}': {e}")
+        return None
+
+async def get_activo_id_by_name(name: str) -> int:
+    """
+    Obtiene el ID del activo por nombre.
+    Retorna None si no se encuentra.
+    """
+    logger.info(f"Buscando ID del activo con nombre: {name}")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute("SELECT id FROM activo WHERE nombre = %s AND deleted = 0", (name,))
+                result = await cursor.fetchone()
+                activo_id = result['id'] if result else None
+                logger.info(f"ID del activo encontrado: {activo_id}")
+                return activo_id
+    except Exception as e:
+        logger.error(f"Error al buscar activo '{name}': {e}")
+        return None
 
 async def get_incidente_id_by_subproyecto_and_tipo_amenaza(subproyecto_id: int, tipo_amenaza_instanciada_id: int, user_id: str) -> Dict[str, int]:
     """
