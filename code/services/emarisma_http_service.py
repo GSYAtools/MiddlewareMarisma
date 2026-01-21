@@ -4,7 +4,17 @@ from client.risk_client import RiskClient
 import logging
 from config.loader import load_config
 import urllib.parse
-from services.emarisma_db_service import get_subproyecto_id_by_name, get_incidente_id_by_subproyecto_and_tipo_amenaza
+from services.emarisma_db_service import (
+    get_subproyecto_id_by_name, 
+    get_incidente_id_by_subproyecto_and_tipo_amenaza,
+    get_evento_id_by_subproyecto_and_user,
+    get_incidente_id_by_evento,
+    get_amenaza_instanciada_id,
+    get_activo_amenaza_id,
+    get_dimension_ids_by_activo_amenaza,
+    verificar_evento_existe,
+    verificar_incidente_existe
+)
 from datetime import datetime
 import asyncio
 
@@ -433,16 +443,68 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     logger.info("Ejecutando step_get_subprojects")
     results.append(await step_get_subprojects(client, emarisma_data['subproyecto_id']))
     
-    logger.info("obteniendo incidente_id y evento_id desde la base de datos")
-    ids = await get_incidente_id_by_subproyecto_and_tipo_amenaza(emarisma_data['subproyecto_id'], emarisma_data['tipo_amenaza_instanciada_id'], data['user_id'])
-    emarisma_data['incidente_id'] = ids['incidente_id']
-    emarisma_data['evento_id'] = ids['evento_id']
-    logger.info("Ejecutando step_guardar_gravedad")
-    results.append(await step_guardar_gravedad(client, data, emarisma_data))
-    logger.info("Ejecutando step_guardar_amenaza")
-    results.append(await step_guardar_amenaza(client, emarisma_data)) 
+    logger.info("Ejecutando step_guardar_incidente (crear evento)")
+    results.append(await step_guardar_incidente(client, data, emarisma_data))
+    
+    logger.info("Obteniendo evento_id recién creado desde la base de datos")
+    evento_id = await get_evento_id_by_subproyecto_and_user(emarisma_data['subproyecto_id'], data['user_id'])
+    if not evento_id:
+        raise ValueError(f"No se pudo obtener evento_id después de crear el evento")
+    emarisma_data['evento_id'] = evento_id
+    logger.info(f"Evento ID obtenido: {evento_id}")
+    
+    # Obtener el amenaza_instanciada_id REAL (no el tipo_amenaza_instanciada_id)
+    logger.info("Obteniendo amenaza_instanciada_id real desde la base de datos")
+    amenaza_instanciada_id = await get_amenaza_instanciada_id(
+        emarisma_data['tipo_amenaza_instanciada_id'],  # Convertir tipo → amenaza_instanciada_id real
+        emarisma_data['subproyecto_id']
+    )
+    if not amenaza_instanciada_id:
+        raise ValueError(f"No se pudo obtener amenaza_instanciada_id para tipo {emarisma_data['amenaza_instanciada_id']} y subproyecto {emarisma_data['subproyecto_id']}")
+    logger.info(f"Amenaza instanciada ID real obtenido: {amenaza_instanciada_id}")
+    
+    # VALIDACIÓN: Verificar que el evento existe en la BD
+    logger.info("═══ VALIDACIÓN: Verificando evento en BD ═══")
+    if await verificar_evento_existe(evento_id):
+        logger.info("✓ Evento confirmado en la base de datos")
+    else:
+        logger.error("✗ ALERTA: Evento no encontrado en BD después de crearlo")
+    
+    logger.info("Ejecutando step_guardar_amenaza (esto crea el incidente)")
+    results.append(await step_guardar_amenaza(client, emarisma_data))
+    
+    # VALIDACIÓN: Verificar si se creó el incidente (ahora con amenaza_instanciada_id)
+    logger.info("═══ VALIDACIÓN: Verificando incidente en BD ═══")
+    incidente_validacion = await verificar_incidente_existe(evento_id, amenaza_instanciada_id)
+    if incidente_validacion:
+        logger.info(f"✓ Incidente creado correctamente: ID={incidente_validacion['id']}")
+    else:
+        logger.warning("✗ ALERTA: Incidente NO creado después de step_guardar_amenaza")
+    
+    # El incidente podría no haberse creado todavía, continuemos el flujo HTTP
+    # Ejecutar step_obtener_eventos para cargar la interfaz completa
     logger.info("Ejecutando step_obtener_eventos")
-    results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id']))  # HASTA AQUI FUNCIONA 
+    results.append(await step_obtener_eventos(client, emarisma_data['subproyecto_id']))
+    
+    # Ahora intentemos obtener el incidente_id
+    logger.info("Intentando obtener incidente_id desde la base de datos")
+    incidente_info = await get_incidente_id_by_evento(emarisma_data['evento_id'], amenaza_instanciada_id)
+    if incidente_info:
+        emarisma_data['incidente_id'] = incidente_info['incidente_id']
+        logger.info(f"Incidente ID obtenido: {incidente_info['incidente_id']}")
+        
+        # Ahora ejecutar guardar gravedad
+        logger.info("Ejecutando step_guardar_gravedad")
+        results.append(await step_guardar_gravedad(client, data, emarisma_data))
+    else:
+        # Si aún no existe el incidente, OMITIR step_guardar_gravedad y continuar
+        logger.warning(f"Incidente aún no creado para evento {emarisma_data['evento_id']}")
+        logger.warning("OMITIENDO step_guardar_gravedad porque no hay incidente_id")
+        logger.warning("Continuando con el resto del flujo sin incidente_id...")
+        # Establecer un incidente_id temporal para evitar errores (usaremos 0)
+        emarisma_data['incidente_id'] = 0
+    
+    # Continuar con el resto del flujo (ya ejecutamos obtener_eventos antes)
     logger.info("Ejecutando step_cargar_incidente")
     results.append(await step_cargar_incidente(client, emarisma_data['incidente_id']))
     logger.info("Ejecutando step_obtener_controlesNoImplicados")
@@ -455,8 +517,41 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     results.append(await step_obtener_activosImplicados(client, emarisma_data['incidente_id']))
     logger.info("Ejecutando step_cargar_dimensionesClear")
     results.append(await step_cargar_dimensionesClear(client, {"activo": str(emarisma_data['device_id']), "incidente": str(emarisma_data['incidente_id'])}))
-    logger.info("Ejecutando step_vincular_activo")
-    results.append(await step_vincular_activo(client, {"dimension": "143", "activo": "", "incidente": str(emarisma_data['incidente_id']), "porcentaje": "97", "vincular": "true", "activoAux": str(emarisma_data['device_id'])}))
+    
+    # Obtener dimension_ids dinámicamente desde la base de datos
+    logger.info("Obteniendo dimension_ids desde la base de datos")
+    dimension_ids = []
+    
+    try:
+        amenaza_instanciada_id = await get_amenaza_instanciada_id(emarisma_data['tipo_amenaza_instanciada_id'], emarisma_data['subproyecto_id'])
+        if amenaza_instanciada_id:
+            activo_amenaza_id = await get_activo_amenaza_id(amenaza_instanciada_id, emarisma_data['device_id'])
+            if activo_amenaza_id:
+                dimension_ids = await get_dimension_ids_by_activo_amenaza(activo_amenaza_id)
+                logger.info(f"Se encontraron {len(dimension_ids)} dimensiones: {dimension_ids}")
+            else:
+                logger.warning(f"No se encontró activo_amenaza para amenaza {amenaza_instanciada_id} y activo {emarisma_data['device_id']}. Continuando sin vincular dimensiones.")
+        else:
+            logger.warning(f"No se encontró amenaza_instanciada para tipo {emarisma_data['tipo_amenaza_instanciada_id']} y subproyecto {emarisma_data['subproyecto_id']}. Continuando sin vincular dimensiones.")
+    except Exception as e:
+        logger.error(f"Error al obtener dimension_ids: {e}. Continuando sin vincular dimensiones.")
+    
+    # Vincular activo para cada dimension (solo si se encontraron dimensiones)
+    if dimension_ids:
+        logger.info("Ejecutando step_vincular_activo para cada dimensión")
+        for dimension_id in dimension_ids:
+            logger.info(f"Vinculando dimensión {dimension_id}")
+            results.append(await step_vincular_activo(client, {
+                "dimension": str(dimension_id), 
+                "activo": "", 
+                "incidente": str(emarisma_data['incidente_id']), 
+                "porcentaje": "100", 
+                "vincular": "true", 
+                "activoAux": str(emarisma_data['device_id'])
+            }))
+    else:
+        logger.warning("No hay dimensiones para vincular. Se omite step_vincular_activo.")
+    
     logger.info("Ejecutando step_vincular_control")
     results.append(await step_vincular_control(client, {"control": "1716", "incidente": str(emarisma_data['incidente_id'])}))
     logger.info("Ejecutando step_ir_a_conclusion")
