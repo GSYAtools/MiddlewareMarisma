@@ -1,0 +1,51 @@
+@startuml Middleware Architecture
+
+!define RECTANGLE class
+
+skinparam componentStyle rectangle
+skinparam linetype ortho
+skinparam backgroundColor white
+
+package "API Layer" as api_layer {
+    component [FastAPI\nApplication] as fastapi
+    component [Custom\nMiddleware] as middleware
+    component [Routes\nHandler] as router
+}
+
+package "Services Layer" as services_layer {
+    component [eMarisma HTTP\nService] as http_service
+    component [Risk Client] as risk_client
+    component [eMarisma DB\nService] as db_service
+    component [Internal DB\nService] as internal_db_service
+}
+
+package "Data Layer" as data_layer {
+    database "SQLite\nDatabase" as sqlite_db
+}
+
+cloud "eMarisma External System" as external {
+    component [eMarisma\nWeb Application] as external_emarisma
+    database "MySQL\nDatabase" as mysql_db
+}
+
+' API Layer flow
+fastapi -right-> middleware : Request
+middleware -right-> router : Process
+
+' Router to Services
+router -down-> http_service : Call
+router -down-> db_service : Query
+router -down-> internal_db_service : Store
+
+' Services connections
+http_service -right-> risk_client : Request
+risk_client -right-> external_emarisma : HTTP Call
+risk_client -down-> mysql_db : Direct Query
+
+db_service -down-> mysql_db : Direct Query
+internal_db_service -down-> sqlite_db : Store/Retrieve
+
+' eMarisma internal connection
+external_emarisma -down-> mysql_db : Query/Update
+
+@enduml
