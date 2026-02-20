@@ -133,9 +133,10 @@ async def step_guardar_incidente(client: RiskClient, data: Dict[str, Any], emari
 
     content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in event_data.items()])
     content = "update=Guardar&id=&version=&" + content
+    print(content) # Todo OK
 
     r = await client.guardar_evento(content=content)
-    return {"step": "guardar_incidente", "status": getattr(r, "status_code", 200)}
+    return {"step": "guardar_incidente", "status": r.status_code}#getattr(r, "status_code", 200)}
 
 async def step_obtener_eventos(client: RiskClient, subproject_id: int) -> Dict[str, Any]:
     params = {
@@ -235,6 +236,7 @@ async def step_guardar_gravedad(client: RiskClient, data_dict: Dict[str, Any], e
         raise ValueError("No se han encontrado datos de gravedad")
 
     content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in data.items()])
+    print(content)
 
     r = await client.guardar_gravedad(content=content)
     return {"step": "guardar_gravedad", "status": getattr(r, "status_code", 200)}
@@ -244,14 +246,20 @@ async def step_guardar_amenaza(client: RiskClient, emarisma_data: Dict[str, Any]
         "gravedad": emarisma_data['severity'],
         "evento": str(emarisma_data['evento_id'])
     }
-    id_amenaza = emarisma_data['tipo_amenaza_instanciada_id']
+    #id_amenaza = emarisma_data['tipo_amenaza_instanciada_id']
+    amenaza_instanciada_id = await get_amenaza_instanciada_id(
+        emarisma_data['tipo_amenaza_instanciada_id'],  # Convertir tipo → amenaza_instanciada_id real
+        emarisma_data['subproyecto_id']
+    )
+    print(amenaza_instanciada_id)
 
     if not data:
         raise ValueError("No se han encontrado datos de evento")
 
     content = "&".join([f"{k}={urllib.parse.quote_plus(str(v))}" for k, v in data.items()])
+    print(content)
 
-    r = await client.guardar_amenaza(id_amenaza, content=content)
+    r = await client.guardar_amenaza(amenaza_instanciada_id, content=content)
     # No raise for status, as 302 is expected
     location = r.headers.get("Location")
     return {"step": "guardar_amenaza", "status": r.status_code, "location": location}
@@ -459,6 +467,7 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
         emarisma_data['tipo_amenaza_instanciada_id'],  # Convertir tipo → amenaza_instanciada_id real
         emarisma_data['subproyecto_id']
     )
+    print(amenaza_instanciada_id)
     if not amenaza_instanciada_id:
         raise ValueError(f"No se pudo obtener amenaza_instanciada_id para tipo {emarisma_data['amenaza_instanciada_id']} y subproyecto {emarisma_data['subproyecto_id']}")
     logger.info(f"Amenaza instanciada ID real obtenido: {amenaza_instanciada_id}")
@@ -475,6 +484,8 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     
     # VALIDACIÓN: Verificar si se creó el incidente (ahora con amenaza_instanciada_id)
     logger.info("═══ VALIDACIÓN: Verificando incidente en BD ═══")
+    print(evento_id)
+    print(amenaza_instanciada_id)
     incidente_validacion = await verificar_incidente_existe(evento_id, amenaza_instanciada_id)
     if incidente_validacion:
         logger.info(f"✓ Incidente creado correctamente: ID={incidente_validacion['id']}")
@@ -489,6 +500,7 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     # Ahora intentemos obtener el incidente_id
     logger.info("Intentando obtener incidente_id desde la base de datos")
     incidente_info = await get_incidente_id_by_evento(emarisma_data['evento_id'], amenaza_instanciada_id)
+    print(incidente_info)
     if incidente_info:
         emarisma_data['incidente_id'] = incidente_info['incidente_id']
         logger.info(f"Incidente ID obtenido: {incidente_info['incidente_id']}")
@@ -553,7 +565,7 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
         logger.warning("No hay dimensiones para vincular. Se omite step_vincular_activo.")
     
     logger.info("Ejecutando step_vincular_control")
-    results.append(await step_vincular_control(client, {"control": "1716", "incidente": str(emarisma_data['incidente_id'])}))
+    results.append(await step_vincular_control(client, {"control": "1740", "incidente": str(emarisma_data['incidente_id'])}))
     logger.info("Ejecutando step_ir_a_conclusion")
     results.append(await step_ir_a_conclusion(client, emarisma_data['evento_id']))
     logger.info("Ejecutando step_guardar_y_cerrar")
