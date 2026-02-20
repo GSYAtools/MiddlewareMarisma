@@ -349,12 +349,24 @@ async def get_controls_by_codes_for_amenaza(amenaza_instanciada_id: int, control
     Lanza HTTPException si algún código no corresponde a la amenaza.
     """
     logger.info(f"Buscando controles para amenaza_instanciada_id: {amenaza_instanciada_id}, códigos: {control_codes}")
+    
+    # Validación: la lista de códigos no puede estar vacía
+    if not control_codes:
+        logger.error("La lista de códigos de control está vacía")
+        raise HTTPException(status_code=400, detail="La lista de códigos de control no puede estar vacía")
+    
+    # Validación: amenaza_instanciada_id debe ser positivo
+    if not isinstance(amenaza_instanciada_id, int) or amenaza_instanciada_id <= 0:
+        logger.error(f"ID de amenaza inválido: {amenaza_instanciada_id}")
+        raise HTTPException(status_code=400, detail="ID de amenaza inválido")
+    
     try:
         db_pool = await get_db_pool()
         async with db_pool.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 # Construir condiciones LIKE para todos los códigos usando OR
-                like_conditions = ' OR '.join([f"ci.codigo LIKE %s"] * len(control_codes))
+                # Nota: solo se interpola la cantidad de placeholders, no los valores del usuario
+                like_conditions = ' OR '.join(['ci.codigo LIKE %s'] * len(control_codes))
                 query = f"""
                     SELECT cai.control_instanciado_id, ci.codigo 
                     FROM control_amenaza_instanciado cai 
@@ -362,8 +374,16 @@ async def get_controls_by_codes_for_amenaza(amenaza_instanciada_id: int, control
                     WHERE cai.amenaza_instanciada_id = %s 
                     AND ({like_conditions})
                 """
-                # Agregar % alrededor de cada código para LIKE
-                like_params = [f"%{code}%" for code in control_codes]
+                # Sanitizar y preparar los parámetros para LIKE
+                # Los wildcards % y _ en SQL LIKE tienen significado especial, los escapamos
+                # para buscar literalmente los códigos de control
+                like_params = []
+                for code in control_codes:
+                    # Escapar caracteres especiales de LIKE: % y _
+                    sanitized_code = code.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+                    like_params.append(f"%{sanitized_code}%")
+                
+                # Ejecutar consulta con parámetros totalmente sanitizados
                 await cursor.execute(query, (amenaza_instanciada_id, *like_params))
                 results = await cursor.fetchall()
                 

@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 import os
 import uuid
 from datetime import datetime
+import json
 
 # Ruta de la base de datos SQLite interna
 DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'internal.db')
@@ -40,13 +41,13 @@ async def save_request(json_received: Dict[str, Any], emarisma_data: Dict[str, A
         # Insertar en middleware_requests
         await db.execute(
             'INSERT INTO middleware_requests (id, json_received) VALUES (?, ?)',
-            (request_id, str(json_received))
+            (request_id, json.dumps(json_received, ensure_ascii=False))
         )
         # Insertar o reemplazar en emarisma_data si hay datos
         if emarisma_data:
             await db.execute(
                 'INSERT OR REPLACE INTO emarisma_data (request_id, data) VALUES (?, ?)',
-                (request_id, str(emarisma_data))
+                (request_id, json.dumps(emarisma_data, ensure_ascii=False))
             )
         await db.commit()
     return request_id
@@ -56,7 +57,7 @@ async def update_emarisma_data(request_id: str, emarisma_data: Dict[str, Any]):
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute(
             'INSERT OR REPLACE INTO emarisma_data (request_id, data) VALUES (?, ?)',
-            (request_id, str(emarisma_data))
+            (request_id, json.dumps(emarisma_data, ensure_ascii=False))
         )
         await db.commit()
 
@@ -73,9 +74,9 @@ async def get_request(request_id: str) -> Dict[str, Any]:
         if row:
             return {
                 'id': row[0],
-                'json_received': eval(row[1]),
+                'json_received': json.loads(row[1]),
                 'created_at': row[2],
-                'emarisma_data': eval(row[3]) if row[3] else None
+                'emarisma_data': json.loads(row[3]) if row[3] else None
             }
         return None
 
@@ -91,9 +92,9 @@ async def get_all_requests() -> List[Dict[str, Any]]:
         return [
             {
                 'id': row[0],
-                'json_received': eval(row[1]),
+                'json_received': json.loads(row[1]),
                 'created_at': row[2],
-                'emarisma_data': eval(row[3]) if row[3] else None
+                'emarisma_data': json.loads(row[3]) if row[3] else None
             } for row in rows
         ]
 
