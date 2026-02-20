@@ -1,0 +1,59 @@
+# Servicio systemd para MiddlewareMarisma
+# Permite gestionar el middleware como un servicio del sistema en Linux
+#
+# INSTALACIÓN:
+# 1. Editar WorkingDirectory con la ruta correcta
+# 2. sudo cp middleware-marisma.service /etc/systemd/system/
+# 3. sudo systemctl daemon-reload
+# 4. sudo systemctl enable middleware-marisma
+# 5. sudo systemctl start middleware-marisma
+#
+# GESTIÓN:
+# sudo systemctl status middleware-marisma
+# sudo systemctl restart middleware-marisma
+# sudo systemctl stop middleware-marisma
+# sudo journalctl -u middleware-marisma -f
+
+[Unit]
+Description=MiddlewareMarisma - Security Incident Management
+After=docker.service
+Requires=docker.service
+PartOf=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+# Actualizar esta ruta con la ubicación real de tu proyecto
+WorkingDirectory=/opt/MiddlewareMarisma/code
+
+# Comandos para iniciar el servicio
+ExecStart=/usr/bin/docker-compose up -d
+ExecStartPost=/bin/bash -c 'echo "MiddlewareMarisma iniciado correctamente"'
+
+# Comandos para detener el servicio
+ExecStop=/usr/bin/docker-compose down
+ExecStopPost=/bin/bash -c 'echo "MiddlewareMarisma detenido"'
+
+# Reinicio automático si el servicio falla
+Restart=on-failure
+RestartSec=10s
+
+# Límites de tiempo
+TimeoutStartSec=300
+TimeoutStopSec=60
+
+# Usuario que ejecuta el servicio (cambiar según necesidad)
+# User=middleware
+# Group=docker
+
+# Variables de entorno
+Environment="COMPOSE_HTTP_TIMEOUT=200"
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=middleware-marisma
+
+[Install]
+WantedBy=multi-user.target

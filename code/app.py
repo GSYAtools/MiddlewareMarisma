@@ -35,6 +35,12 @@ app.add_middleware(CustomMiddleware, enable_logging=True)
 # Incluimos las rutas (usa el router definido)
 app.include_router(router)
 
+# Health check endpoint para Docker
+@app.get("/health")
+async def health_check():
+    """Endpoint para verificar que la aplicación está funcionando"""
+    return {"status": "healthy", "service": "MiddlewareMarisma"}
+
 # Lifespan events: creamos un RiskClient compartido si quieres, aquí ejemplo de startup/shutdown global
 @app.on_event("startup")
 async def startup_event():

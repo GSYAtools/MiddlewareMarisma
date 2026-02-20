@@ -1,0 +1,91 @@
+# Configuración de Docker Compose para PRODUCCIÓN
+# Uso: docker-compose -f docker-compose.prod.yml up -d
+
+services:
+  middleware:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: middleware_marisma_prod
+    
+    # Restart siempre, incluso si se detiene manualmente
+    restart: always
+    
+    ports:
+      - "8000:8000"
+    
+    volumes:
+      # Solo archivos necesarios - NO el código fuente
+      - middleware_data:/app/data
+      - ./internal.db:/app/internal.db
+      - ./session.json:/app/session.json
+      - ./config.json:/app/config.json:ro  # Read-only para seguridad
+    
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=warning  # Menos verboso en producción
+      - ENVIRONMENT=production
+    
+    networks:
+      - marisma_production
+    
+    # Health check más estricto para producción
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 20s        # Más frecuente
+      timeout: 5s          # Timeout más corto
+      retries: 5           # Más reintentos antes de marcar como unhealthy
+      start_period: 60s    # Más tiempo inicial
+    
+    # Límites de recursos en producción
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+      
+      # Configuración de replicas (requiere Docker Swarm)
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first  # Nueva instancia antes de matar la vieja
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    
+    # Logging configurado para producción
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+        labels: "production,middleware"
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    
+    # Run as non-root user (añadir usuario en Dockerfile)
+    # user: "1000:1000"
+
+# Volúmenes nombrados para datos persistentes
+volumes:
+  middleware_data:
+    driver: local
+
+# Red dedicada para producción
+networks:
+  marisma_production:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+
+# Configuración adicional para Docker Swarm (alta disponibilidad)
+# Para usar: docker stack deploy -c docker-compose.prod.yml marisma_stack
