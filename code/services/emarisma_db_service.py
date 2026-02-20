@@ -319,3 +319,77 @@ async def get_incidente_id_by_subproyecto_and_tipo_amenaza(subproyecto_id: int, 
     except Exception as e:
         logger.error(f"Error al buscar incidente_id: {e}")
         raise
+
+async def get_first_control_for_amenaza(amenaza_instanciada_id: int) -> int:
+    """
+    Obtiene el primer control disponible para una amenaza instanciada.
+    Retorna None si no se encuentra ningún control.
+    """
+    logger.info(f"Buscando primer control para amenaza_instanciada_id: {amenaza_instanciada_id}")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(
+                    "SELECT control_instanciado_id FROM control_amenaza_instanciado WHERE amenaza_instanciada_id = %s LIMIT 1",
+                    (amenaza_instanciada_id,)
+                )
+                result = await cursor.fetchone()
+                control_id = result['control_instanciado_id'] if result else None
+                logger.info(f"Primer control encontrado: {control_id}")
+                return control_id
+    except Exception as e:
+        logger.error(f"Error al buscar primer control para amenaza {amenaza_instanciada_id}: {e}")
+        return None
+
+async def get_controls_by_codes_for_amenaza(amenaza_instanciada_id: int, control_codes: list[str]) -> list[int]:
+    """
+    Obtiene los control_instanciado_id que corresponden a una lista de códigos y una amenaza instanciada.
+    Retorna lista de control_instanciado_id encontrados.
+    Lanza HTTPException si algún código no corresponde a la amenaza.
+    """
+    logger.info(f"Buscando controles para amenaza_instanciada_id: {amenaza_instanciada_id}, códigos: {control_codes}")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                # Construir condiciones LIKE para todos los códigos usando OR
+                like_conditions = ' OR '.join([f"ci.codigo LIKE %s"] * len(control_codes))
+                query = f"""
+                    SELECT cai.control_instanciado_id, ci.codigo 
+                    FROM control_amenaza_instanciado cai 
+                    JOIN control_instanciado ci ON ci.id = cai.control_instanciado_id 
+                    WHERE cai.amenaza_instanciada_id = %s 
+                    AND ({like_conditions})
+                """
+                # Agregar % alrededor de cada código para LIKE
+                like_params = [f"%{code}%" for code in control_codes]
+                await cursor.execute(query, (amenaza_instanciada_id, *like_params))
+                results = await cursor.fetchall()
+                
+                # Mapear códigos encontrados con los solicitados
+                found_controls = {}
+                for row in results:
+                    # Buscar a qué código solicitado corresponde este resultado
+                    for requested_code in control_codes:
+                        if requested_code in row['codigo']:
+                            found_controls[requested_code] = row['control_instanciado_id']
+                            break
+                
+                control_ids = list(found_controls.values())
+                
+                # Verificar si algún código no fue encontrado
+                missing_codes = set(control_codes) - set(found_controls.keys())
+                if missing_codes:
+                    missing_str = ', '.join(missing_codes)
+                    error_msg = f"Control Not Applicable for Threat {amenaza_instanciada_id}: {missing_str}"
+                    logger.error(error_msg)
+                    raise HTTPException(status_code=400, detail=error_msg)
+                
+                logger.info(f"Controles encontrados: {control_ids} para códigos: {list(found_controls.keys())}")
+                return control_ids
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error al buscar controles para amenaza {amenaza_instanciada_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error al buscar controles: {str(e)}")

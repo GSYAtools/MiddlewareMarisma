@@ -13,7 +13,9 @@ from services.emarisma_db_service import (
     get_activo_amenaza_id,
     get_dimension_ids_by_activo_amenaza,
     verificar_evento_existe,
-    verificar_incidente_existe
+    verificar_incidente_existe,
+    get_first_control_for_amenaza,
+    get_controls_by_codes_for_amenaza
 )
 from datetime import datetime
 import asyncio
@@ -564,8 +566,65 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     else:
         logger.warning("No hay dimensiones para vincular. Se omite step_vincular_activo.")
     
-    logger.info("Ejecutando step_vincular_control")
-    results.append(await step_vincular_control(client, {"control": "1740", "incidente": str(emarisma_data['incidente_id'])}))
+    # Obtener controles dinámicamente
+    logger.info("Obteniendo controles dinámicamente desde request")
+    control_ids = []
+    
+    # Verificar si el campo 'controls' existe y tiene valor en el request
+    controls_field = data.get('controls', '').strip()
+    
+    if not controls_field:
+        # Caso 1: Campo vacío o no existe -> obtener primer control disponible
+        logger.info("Campo 'controls' vacío o inexistente. Obteniendo primer control disponible...")
+        amenaza_instanciada_id = await get_amenaza_instanciada_id(
+            emarisma_data['tipo_amenaza_instanciada_id'],
+            emarisma_data['subproyecto_id']
+        )
+        if amenaza_instanciada_id:
+            first_control = await get_first_control_for_amenaza(amenaza_instanciada_id)
+            if first_control:
+                control_ids.append(first_control)
+                logger.info(f"Primer control obtenido: {first_control}")
+            else:
+                logger.warning(f"No se encontró ningún control para amenaza {amenaza_instanciada_id}")
+        else:
+            logger.warning("No se pudo obtener amenaza_instanciada_id para buscar controles")
+    else:
+        # Caso 2: Hay controles especificados -> separar por ';' y buscar
+        logger.info(f"Campo 'controls' presente: {controls_field}")
+        control_codes = [code.strip() for code in controls_field.split(';') if code.strip()]
+        logger.info(f"Códigos de control solicitados: {control_codes}")
+        
+        amenaza_instanciada_id = await get_amenaza_instanciada_id(
+            emarisma_data['tipo_amenaza_instanciada_id'],
+            emarisma_data['subproyecto_id']
+        )
+        if amenaza_instanciada_id:
+            try:
+                control_ids = await get_controls_by_codes_for_amenaza(
+                    amenaza_instanciada_id,
+                    control_codes
+                )
+                logger.info(f"Controles obtenidos: {control_ids}")
+            except Exception as e:
+                logger.error(f"Error al obtener controles: {e}")
+                raise
+        else:
+            logger.error("No se pudo obtener amenaza_instanciada_id para validar controles")
+            raise ValueError("No se pudo obtener amenaza_instanciada_id")
+    
+    # Vincular cada control obtenido
+    if control_ids:
+        logger.info(f"Ejecutando step_vincular_control para {len(control_ids)} control(es)")
+        for control_id in control_ids:
+            logger.info(f"Vinculando control {control_id}")
+            results.append(await step_vincular_control(client, {
+                "control": str(control_id), 
+                "incidente": str(emarisma_data['incidente_id'])
+            }))
+    else:
+        logger.warning("No se encontraron controles para vincular")
+    
     logger.info("Ejecutando step_ir_a_conclusion")
     results.append(await step_ir_a_conclusion(client, emarisma_data['evento_id']))
     logger.info("Ejecutando step_guardar_y_cerrar")
