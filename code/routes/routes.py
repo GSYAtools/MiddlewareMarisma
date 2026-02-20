@@ -120,4 +120,5 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
 
 @router.get("/retrive_incident/{incident_id}")
 async def retrive_incident(incident_id: str, client: RiskClient = Depends(get_client)):
-    return await steps.run_all_flow(client, incident_id)
+    #return await steps.run_all_flow(client, incident_id) ----- Esto tiene que ser una consulta a la SQLite -----
+    return None
