@@ -1,6 +1,7 @@
 # routes/routes.py
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from typing import Optional
 from client.risk_client import RiskClient
 import services.emarisma_http_service as steps
 from config.loader import load_config
@@ -24,6 +25,7 @@ class IncidentRequest(BaseModel):
     project_name: str
     subproject_name: str
     cause: str
+    controls: Optional[str] = None  # Controles separados por ';', ej. "A.05.01;A.05.02"
 
     """
     Ejemplo de JSON para la petición:

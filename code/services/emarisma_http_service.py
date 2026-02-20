@@ -571,7 +571,7 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     control_ids = []
     
     # Verificar si el campo 'controls' existe y tiene valor en el request
-    controls_field = data.get('controls', '').strip()
+    controls_field = (data.get('controls') or '').strip()
     
     if not controls_field:
         # Caso 1: Campo vacío o no existe -> obtener primer control disponible
