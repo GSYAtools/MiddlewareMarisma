@@ -4,7 +4,6 @@ import asyncio
 from fastapi import HTTPException
 import logging
 from typing import Dict
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -12,32 +11,16 @@ logger = logging.getLogger(__name__)
 pool = None
 db_config_cache = None
 
-
-def _is_db_connection_error(exc: Exception) -> bool:
-    if isinstance(exc, (OSError, TimeoutError, ConnectionError)):
-        return True
-    error_code = exc.args[0] if getattr(exc, "args", None) else None
-    return error_code in {2002, 2003, 2006, 2013, 2055}
-
-
-def _raise_db_unavailable(exc: Exception):
-    logger.error(f"Base de datos eMarisma no disponible: {exc}")
-    raise HTTPException(
-        status_code=503,
-        detail="No hay conexión con la base de datos eMarisma. Intenta de nuevo más tarde."
-    )
-
 def load_db_config():
     """Carga la configuración de la base de datos desde config.json."""
     with open("config.json", "r") as file:
         config = json.load(file)
     return {
-        "host": os.getenv("DB_HOST", config["db_host"]),
-        "port": int(os.getenv("DB_PORT", config["db_port"])),
-        "user": os.getenv("DB_USER", config["db_user"]),
-        "password": os.getenv("DB_PASSWORD", config["db_password"]),
-        "db": os.getenv("DB_NAME", config["db_name"]),
-        "connect_timeout": int(os.getenv("DB_CONNECT_TIMEOUT", config.get("db_connect_timeout", 10))),
+        "host": config["db_host"],
+        "port": config["db_port"],
+        "user": config["db_user"],
+        "password": config["db_password"],
+        "db": config["db_name"]
     }
 
 async def get_db_pool():
@@ -49,39 +32,11 @@ async def get_db_pool():
     if pool is None:
         config = load_db_config()
         loop = asyncio.get_running_loop()
-        try:
-            pool = await aiomysql.create_pool(
-                **config,
-                loop=loop,
-                autocommit=True,
-                pool_recycle=300,
-            )
-        except Exception as e:
-            if _is_db_connection_error(e):
-                fallback_host = os.getenv("DB_HOST_FALLBACK", "host.docker.internal")
-                if config.get("host") != fallback_host:
-                    logger.warning(
-                        "No se pudo conectar a MySQL en %s. Reintentando con host fallback %s",
-                        config.get("host"),
-                        fallback_host,
-                    )
-                    fallback_config = dict(config)
-                    fallback_config["host"] = fallback_host
-                    try:
-                        pool = await aiomysql.create_pool(
-                            **fallback_config,
-                            loop=loop,
-                            autocommit=True,
-                            pool_recycle=300,
-                        )
-                        logger.info("Conexión MySQL establecida usando host fallback %s", fallback_host)
-                        return pool
-                    except Exception as fallback_error:
-                        if _is_db_connection_error(fallback_error):
-                            _raise_db_unavailable(fallback_error)
-                        raise
-                _raise_db_unavailable(e)
-            raise
+        pool = await aiomysql.create_pool(
+            **config,
+            loop=loop,
+            autocommit=True # Autocommit para simplificar las operaciones
+        )
     return pool
 
 async def get_db_connection():
@@ -106,10 +61,6 @@ async def get_proyecto_id_by_name(name: str) -> int:
                 logger.info(f"ID del proyecto encontrado: {proyecto_id}")
                 return proyecto_id
     except Exception as e:
-        if _is_db_connection_error(e):
-            global pool
-            pool = None
-            _raise_db_unavailable(e)
         logger.error(f"Error al buscar proyecto '{name}': {e}")
         return None
 
@@ -129,10 +80,6 @@ async def get_subproyecto_id_by_name(name: str) -> int:
                 logger.info(f"ID del subproyecto encontrado: {subproyecto_id}")
                 return subproyecto_id
     except Exception as e:
-        if _is_db_connection_error(e):
-            global pool
-            pool = None
-            _raise_db_unavailable(e)
         logger.error(f"Error al buscar subproyecto '{name}': {e}")
         return None
 
@@ -155,10 +102,6 @@ async def get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre(subproyecto_
                 logger.info(f"amenaza_instanciada_id encontrado: {tipo_amenaza_id}")
                 return tipo_amenaza_id
     except Exception as e:
-        if _is_db_connection_error(e):
-            global pool
-            pool = None
-            _raise_db_unavailable(e)
         logger.error(f"Error al buscar amenaza_instanciada_id para subproyecto '{subproyecto_id}', nombre '{nombre}': {e}")
         return None
 
@@ -178,10 +121,6 @@ async def get_activo_id_by_name(name: str) -> int:
                 logger.info(f"ID del activo encontrado: {activo_id}")
                 return activo_id
     except Exception as e:
-        if _is_db_connection_error(e):
-            global pool
-            pool = None
-            _raise_db_unavailable(e)
         logger.error(f"Error al buscar activo '{name}': {e}")
         return None
 
@@ -227,48 +166,6 @@ async def get_activo_amenaza_id(amenaza_instanciada_id: int, activo_id: int) -> 
                 return activo_amenaza_id
     except Exception as e:
         logger.error(f"Error al buscar activo_amenaza_id para amenaza {amenaza_instanciada_id} y activo {activo_id}: {e}")
-        return None
-
-async def get_risk_values_by_activo_amenaza(activo_amenaza_id: int) -> Dict[str, float]:
-    """
-    Obtiene los valores de riesgo más recientes desde analisis_riesgo para un activo_amenaza.
-    Retorna None si no encuentra resultados.
-    """
-    logger.info(f"Buscando riesgos en analisis_riesgo para activo_amenaza_id: {activo_amenaza_id}")
-    try:
-        db_pool = await get_db_pool()
-        async with db_pool.acquire() as conn:
-            async with conn.cursor(aiomysql.DictCursor) as cursor:
-                await cursor.execute(
-                    '''
-                    SELECT riesgo_inherente, riesgo, valor_riesgo
-                    FROM analisis_riesgo
-                    WHERE activo_amenaza_id = %s AND deleted = 0
-                    ORDER BY id DESC
-                    LIMIT 1
-                    ''',
-                    (activo_amenaza_id,)
-                )
-                result = await cursor.fetchone()
-                if not result:
-                    logger.warning(
-                        f"No se encontraron riesgos para activo_amenaza_id: {activo_amenaza_id}"
-                    )
-                    return None
-
-                risk_values = {
-                    "riesgo_inherente": float(result["riesgo_inherente"]),
-                    "riesgo": float(result["riesgo"]),
-                    "valor_riesgo": float(result["valor_riesgo"]),
-                }
-                logger.info(
-                    "Riesgos encontrados para activo_amenaza_id %s: %s",
-                    activo_amenaza_id,
-                    risk_values,
-                )
-                return risk_values
-    except Exception as e:
-        logger.error(f"Error al buscar riesgos para activo_amenaza_id {activo_amenaza_id}: {e}")
         return None
 
 async def get_dimension_ids_by_activo_amenaza(activo_amenaza_id: int) -> list[int]:

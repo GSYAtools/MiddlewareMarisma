@@ -5,12 +5,7 @@ from typing import Optional
 from client.risk_client import RiskClient
 import services.emarisma_http_service as steps
 from config.loader import load_config
-from services.internal_db_service import (
-    save_request,
-    update_emarisma_data,
-    get_request,
-    get_request_completed,
-)
+from services.internal_db_service import save_request, update_emarisma_data
 from services.emarisma_db_service import get_proyecto_id_by_name, get_subproyecto_id_by_name, get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre, get_activo_id_by_name
 from client_instance import client
 import logging
@@ -121,21 +116,11 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
     
     # Ejecutar el flujo completo con el JSON de datos asociados
     logger.info("Iniciando flujo completo")
-    await steps.run_all_flow(client, data_dict, emarisma_data, request_id=request_id)
+    await steps.run_all_flow(client, data_dict, emarisma_data)
     logger.info("Flujo completo terminado")
     return {"request_id": request_id}
 
 @router.get("/retrive_incident/{incident_id}")
 async def retrive_incident(incident_id: str, client: RiskClient = Depends(get_client)):
-    request_data = await get_request(incident_id)
-    if not request_data:
-        raise HTTPException(status_code=404, detail=f"No existe request con id '{incident_id}'")
-
-    completed_data = await get_request_completed(incident_id)
-    if not completed_data:
-        raise HTTPException(
-            status_code=409,
-            detail=f"La request '{incident_id}' sigue en estado {request_data.get('status', 'PENDING')}"
-        )
-
-    return completed_data
+    #return await steps.run_all_flow(client, incident_id) ----- Esto tiene que ser una consulta a la SQLite -----
+    return None
