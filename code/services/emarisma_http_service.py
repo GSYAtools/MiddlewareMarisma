@@ -11,12 +11,14 @@ from services.emarisma_db_service import (
     get_incidente_id_by_evento,
     get_amenaza_instanciada_id,
     get_activo_amenaza_id,
+    get_risk_values_by_activo_amenaza,
     get_dimension_ids_by_activo_amenaza,
     verificar_evento_existe,
     verificar_incidente_existe,
     get_first_control_for_amenaza,
     get_controls_by_codes_for_amenaza
 )
+from services.internal_db_service import update_initial_risk_snapshot, mark_request_completed
 from datetime import datetime
 import asyncio
 
@@ -441,9 +443,15 @@ async def step_guardar_y_cerrar(client: RiskClient, id_evento: int) -> Dict[str,
     "redirect": r.headers.get("Location")}
 
 # --- Flow completo ---
-async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+async def run_all_flow(
+    client: RiskClient,
+    data: Dict[str, Any],
+    emarisma_data: Dict[str, Any],
+    request_id: str | None = None,
+) -> List[Dict[str, Any]]:
     logger.info("Iniciando run_all_flow")
     results = []
+    activo_amenaza_id_flow = None
     logger.info("Ejecutando step_login_exist")
     results.append(await step_login_exist(client))
     logger.info("Ejecutando step_authenticate")
@@ -541,6 +549,15 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
         if amenaza_instanciada_id:
             activo_amenaza_id = await get_activo_amenaza_id(amenaza_instanciada_id, emarisma_data['device_id'])
             if activo_amenaza_id:
+                activo_amenaza_id_flow = activo_amenaza_id
+                if request_id:
+                    initial_risk = await get_risk_values_by_activo_amenaza(activo_amenaza_id_flow)
+                    if initial_risk:
+                        await update_initial_risk_snapshot(request_id, initial_risk)
+                        logger.info(
+                            "Snapshot inicial de riesgo guardado para request_id %s",
+                            request_id,
+                        )
                 dimension_ids = await get_dimension_ids_by_activo_amenaza(activo_amenaza_id)
                 logger.info(f"Se encontraron {len(dimension_ids)} dimensiones: {dimension_ids}")
             else:
@@ -631,5 +648,13 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     results.append(await step_guardar_y_cerrar(client, emarisma_data['evento_id']))
     logger.info("Ejecutando step_recalcular")
     results.append(await step_recalcular(client))
+
+    if request_id:
+        final_risk = None
+        if activo_amenaza_id_flow:
+            final_risk = await get_risk_values_by_activo_amenaza(activo_amenaza_id_flow)
+        await mark_request_completed(request_id, final_risk or {}, emarisma_data)
+        logger.info("Request %s marcada como COMPLETED", request_id)
+
     logger.info("run_all_flow completado")
     return results
