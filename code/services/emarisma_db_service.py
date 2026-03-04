@@ -168,6 +168,42 @@ async def get_activo_amenaza_id(amenaza_instanciada_id: int, activo_id: int) -> 
         logger.error(f"Error al buscar activo_amenaza_id para amenaza {amenaza_instanciada_id} y activo {activo_id}: {e}")
         return None
 
+async def get_analisis_riesgo_by_activo_amenaza_id(activo_amenaza_id: int) -> Dict[str, float]:
+    """
+    Obtiene los valores de análisis de riesgo más recientes para un activo_amenaza_id.
+    Retorna None si no se encuentra ningún registro.
+    """
+    logger.info(f"Buscando analisis_riesgo para activo_amenaza_id: {activo_amenaza_id}")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(
+                    """
+                    SELECT riesgo, valor_riesgo, riesgo_inherente
+                    FROM analisis_riesgo
+                    WHERE activo_amenaza_id = %s AND deleted = 0
+                    ORDER BY id DESC
+                    LIMIT 1
+                    """,
+                    (activo_amenaza_id,)
+                )
+                result = await cursor.fetchone()
+                if not result:
+                    logger.warning(f"No se encontró analisis_riesgo para activo_amenaza_id {activo_amenaza_id}")
+                    return None
+
+                analisis = {
+                    "riesgo": float(result["riesgo"]) if result["riesgo"] is not None else None,
+                    "valor_riesgo": float(result["valor_riesgo"]) if result["valor_riesgo"] is not None else None,
+                    "riesgo_inherente": float(result["riesgo_inherente"]) if result["riesgo_inherente"] is not None else None,
+                }
+                logger.info(f"Analisis_riesgo encontrado para activo_amenaza_id {activo_amenaza_id}: {analisis}")
+                return analisis
+    except Exception as e:
+        logger.error(f"Error al buscar analisis_riesgo para activo_amenaza_id {activo_amenaza_id}: {e}")
+        return None
+
 async def get_dimension_ids_by_activo_amenaza(activo_amenaza_id: int) -> list[int]:
     """
     Obtiene todos los dimension_instanciada_id que corresponden a un activo_amenaza_id.

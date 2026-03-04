@@ -5,8 +5,21 @@ from typing import Optional
 from client.risk_client import RiskClient
 import services.emarisma_http_service as steps
 from config.loader import load_config
-from services.internal_db_service import save_request, update_emarisma_data
-from services.emarisma_db_service import get_proyecto_id_by_name, get_subproyecto_id_by_name, get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre, get_activo_id_by_name
+from services.internal_db_service import (
+    save_request,
+    update_request_status,
+    update_request_risk_previo,
+    update_request_risk_nuevo,
+)
+from services.emarisma_db_service import (
+    get_proyecto_id_by_name,
+    get_subproyecto_id_by_name,
+    get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre,
+    get_activo_id_by_name,
+    get_amenaza_instanciada_id,
+    get_activo_amenaza_id,
+    get_analisis_riesgo_by_activo_amenaza_id,
+)
 from client_instance import client
 import logging
 
@@ -111,13 +124,66 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
         "severity": severity_normalized,
         "device_id": activo_id
     }
-    await update_emarisma_data(request_id, emarisma_data)
-    logger.info(f"Datos emarisma actualizados para request_id: {request_id}")
+
+    # Obtener activo_amenaza_id y snapshot PREVIO de analisis_riesgo
+    amenaza_instanciada_id = await get_amenaza_instanciada_id(tipo_amenaza_id, subproyecto_id)
+    activo_amenaza_id = None
+    analisis_previo = None
+
+    if amenaza_instanciada_id:
+        activo_amenaza_id = await get_activo_amenaza_id(amenaza_instanciada_id, activo_id)
+        if activo_amenaza_id:
+            analisis_previo = await get_analisis_riesgo_by_activo_amenaza_id(activo_amenaza_id)
+        else:
+            logger.warning(
+                f"No se encontró activo_amenaza_id para amenaza_instanciada_id={amenaza_instanciada_id} y activo_id={activo_id}"
+            )
+    else:
+        logger.warning(
+            f"No se encontró amenaza_instanciada_id para tipo_amenaza_id={tipo_amenaza_id} y subproyecto_id={subproyecto_id}"
+        )
+
+    emarisma_data["activo_amenaza_id"] = activo_amenaza_id
+
+    await update_request_risk_previo(
+        request_id,
+        riesgo_inherente_previo=analisis_previo["riesgo_inherente"] if analisis_previo else None,
+        riesgo_previo=analisis_previo["riesgo"] if analisis_previo else None,
+        valor_riesgo_previo=analisis_previo["valor_riesgo"] if analisis_previo else None,
+    )
+    logger.info(f"Valores previos de riesgo guardados para request_id: {request_id}")
+
+    # Máquina de estados: pending cuando se lanza el flujo
+    await update_request_status(request_id, "pending")
+    logger.info(f"Estado request_id={request_id} actualizado a pending")
     
     # Ejecutar el flujo completo con el JSON de datos asociados
     logger.info("Iniciando flujo completo")
-    await steps.run_all_flow(client, data_dict, emarisma_data)
-    logger.info("Flujo completo terminado")
+    flow_error = None
+    try:
+        await steps.run_all_flow(client, data_dict, emarisma_data)
+        logger.info("Flujo completo terminado")
+    except Exception as e:
+        flow_error = e
+        logger.error(f"Error durante el flujo completo: {e}")
+    finally:
+        if activo_amenaza_id:
+            analisis_actual = await get_analisis_riesgo_by_activo_amenaza_id(activo_amenaza_id)
+            if flow_error is None:
+                await update_request_risk_nuevo(
+                    request_id,
+                    riesgo_inherente_nuevo=analisis_actual["riesgo_inherente"] if analisis_actual else None,
+                    riesgo_nuevo=analisis_actual["riesgo"] if analisis_actual else None,
+                    valor_riesgo_nuevo=analisis_actual["valor_riesgo"] if analisis_actual else None,
+                    status="completed",
+                )
+                logger.info(f"Valores nuevos de riesgo guardados y estado completed para request_id: {request_id}")
+            else:
+                logger.warning(f"Flujo fallido para request_id={request_id}; se mantiene estado pending")
+
+    if flow_error:
+        raise flow_error
+
     return {"request_id": request_id}
 
 @router.get("/retrive_incident/{incident_id}")
