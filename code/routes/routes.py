@@ -22,6 +22,8 @@ from services.emarisma_db_service import (
 )
 from client_instance import client
 import logging
+import asyncio
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -61,14 +63,87 @@ router = APIRouter()
 def get_client():
     return client
 
+async def process_incident_flow(
+    request_id: int,
+    client: RiskClient,
+    data_dict: dict,
+    emarisma_data: dict,
+    activo_amenaza_id: int,
+    analisis_previo: dict
+):
+    """
+    Procesa el flujo completo de incidente en segundo plano.
+    Ejecuta el flujo, espera a que cambien los valores de riesgo y actualiza la BD.
+    """
+    logger.info(f"Iniciando procesamiento en segundo plano para request_id={request_id}")
+    flow_error = None
+    
+    try:
+        await steps.run_all_flow(client, data_dict, emarisma_data)
+        logger.info(f"Flujo completo terminado para request_id={request_id}")
+    except Exception as e:
+        flow_error = e
+        logger.error(f"Error durante el flujo completo para request_id={request_id}: {e}")
+    
+    # Polling para detectar cambios en los valores de riesgo
+    if activo_amenaza_id and flow_error is None:
+        timeout = 120  # segundos
+        poll_interval = 2  # segundos entre lecturas
+        start_time = time.time()
+        analisis_actual = None
+        valores_cambiaron = False
+        
+        logger.info(f"Iniciando polling para detectar cambios en riesgo (timeout: {timeout}s) para request_id={request_id}")
+        
+        while time.time() - start_time < timeout:
+            analisis_actual = await get_analisis_riesgo_by_activo_amenaza_id(activo_amenaza_id)
+            
+            # Comparar valores previos con actuales
+            if analisis_previo and analisis_actual:
+                if (analisis_previo.get("riesgo_inherente") != analisis_actual.get("riesgo_inherente") or
+                    analisis_previo.get("riesgo") != analisis_actual.get("riesgo") or
+                    analisis_previo.get("valor_riesgo") != analisis_actual.get("valor_riesgo")):
+                    valores_cambiaron = True
+                    elapsed = time.time() - start_time
+                    logger.info(f"Valores de riesgo cambiaron después de {elapsed:.2f}s para request_id={request_id}")
+                    break
+            elif not analisis_previo and analisis_actual:
+                # Si no había valores previos pero ahora sí hay, considerar como cambio
+                valores_cambiaron = True
+                logger.info(f"Valores de riesgo detectados (no existían previamente) para request_id={request_id}")
+                break
+            
+            # Esperar antes de la siguiente lectura
+            await asyncio.sleep(poll_interval)
+        
+        if not valores_cambiaron:
+            elapsed = time.time() - start_time
+            logger.warning(f"Timeout de {timeout}s alcanzado. Valores no cambiaron después de {elapsed:.2f}s para request_id={request_id}")
+        
+        # Guardar los valores nuevos (hayan cambiado o no)
+        try:
+            await update_request_risk_nuevo(
+                request_id,
+                riesgo_inherente_nuevo=analisis_actual.get("riesgo_inherente") if analisis_actual else None,
+                riesgo_nuevo=analisis_actual.get("riesgo") if analisis_actual else None,
+                valor_riesgo_nuevo=analisis_actual.get("valor_riesgo") if analisis_actual else None,
+                status="completed",
+            )
+            logger.info(f"Valores nuevos de riesgo guardados y estado completed para request_id={request_id}")
+        except Exception as e:
+            logger.error(f"Error al guardar valores nuevos para request_id={request_id}: {e}")
+    elif flow_error:
+        logger.warning(f"Flujo fallido para request_id={request_id}; se mantiene estado pending")
+    
+    logger.info(f"Procesamiento en segundo plano completado para request_id={request_id}")
+
 @router.post("/new_incident")
 async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_client)):
     logger.info(f"Recibida petición new_incident: {data.dict()}")
     # Convertir a dict para guardar
     data_dict = data.dict()
-    # Primero, guardar la request en la DB interna
-    request_id = await save_request(data_dict)
-    logger.info(f"Request guardada con ID: {request_id}")
+    
+    # === FASE 1: OBTENER TODOS LOS IDs Y CAPTURAR ANÁLISIS PREVIO (ANTES DE CUALQUIER MODIFICACIÓN) ===
     
     # 1. Recuperar proyecto_id y validar
     logger.info(f"Buscando ID para proyecto: {data.project_name}")
@@ -116,16 +191,8 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
         raise HTTPException(status_code=404, detail=f"La amenaza '{data.threat_type}' no existe para el subproyecto '{data.subproject_name}'")
     logger.info(f"Amenaza instanciada ID obtenido: {tipo_amenaza_id}")
     
-    # Construir JSON con datos asociados (usar severity normalizado)
-    emarisma_data = {
-        "proyecto_id": proyecto_id,
-        "subproyecto_id": subproyecto_id,
-        "tipo_amenaza_instanciada_id": tipo_amenaza_id,
-        "severity": severity_normalized,
-        "device_id": activo_id
-    }
-
-    # Obtener activo_amenaza_id y snapshot PREVIO de analisis_riesgo
+    # 6. CRÍTICO: Obtener activo_amenaza_id y CAPTURAR ANÁLISIS PREVIO INMEDIATAMENTE
+    logger.info("=== CAPTURANDO SNAPSHOT PREVIO DE RIESGO (ANTES DE CUALQUIER MODIFICACIÓN) ===")
     amenaza_instanciada_id = await get_amenaza_instanciada_id(tipo_amenaza_id, subproyecto_id)
     activo_amenaza_id = None
     analisis_previo = None
@@ -134,6 +201,7 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
         activo_amenaza_id = await get_activo_amenaza_id(amenaza_instanciada_id, activo_id)
         if activo_amenaza_id:
             analisis_previo = await get_analisis_riesgo_by_activo_amenaza_id(activo_amenaza_id)
+            logger.info(f"Snapshot previo capturado para activo_amenaza_id={activo_amenaza_id}: {analisis_previo}")
         else:
             logger.warning(
                 f"No se encontró activo_amenaza_id para amenaza_instanciada_id={amenaza_instanciada_id} y activo_id={activo_id}"
@@ -142,14 +210,28 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
         logger.warning(
             f"No se encontró amenaza_instanciada_id para tipo_amenaza_id={tipo_amenaza_id} y subproyecto_id={subproyecto_id}"
         )
-
-    emarisma_data["activo_amenaza_id"] = activo_amenaza_id
+    
+    # === FASE 2: GUARDAR REQUEST Y PREPARAR DATOS ===
+    
+    # Ahora sí, guardar la request en la DB interna
+    request_id = await save_request(data_dict)
+    logger.info(f"Request guardada con ID: {request_id}")
+    
+    # Construir JSON con datos asociados
+    emarisma_data = {
+        "proyecto_id": proyecto_id,
+        "subproyecto_id": subproyecto_id,
+        "tipo_amenaza_instanciada_id": tipo_amenaza_id,
+        "severity": severity_normalized,
+        "device_id": activo_id,
+        "activo_amenaza_id": activo_amenaza_id
+    }
 
     await update_request_risk_previo(
         request_id,
-        riesgo_inherente_previo=analisis_previo["riesgo_inherente"] if analisis_previo else None,
-        riesgo_previo=analisis_previo["riesgo"] if analisis_previo else None,
-        valor_riesgo_previo=analisis_previo["valor_riesgo"] if analisis_previo else None,
+        riesgo_inherente_previo=analisis_previo.get("riesgo_inherente") if analisis_previo else None,
+        riesgo_previo=analisis_previo.get("riesgo") if analisis_previo else None,
+        valor_riesgo_previo=analisis_previo.get("valor_riesgo") if analisis_previo else None,
     )
     logger.info(f"Valores previos de riesgo guardados para request_id: {request_id}")
 
@@ -157,33 +239,20 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
     await update_request_status(request_id, "pending")
     logger.info(f"Estado request_id={request_id} actualizado a pending")
     
-    # Ejecutar el flujo completo con el JSON de datos asociados
-    logger.info("Iniciando flujo completo")
-    flow_error = None
-    try:
-        await steps.run_all_flow(client, data_dict, emarisma_data)
-        logger.info("Flujo completo terminado")
-    except Exception as e:
-        flow_error = e
-        logger.error(f"Error durante el flujo completo: {e}")
-    finally:
-        if activo_amenaza_id:
-            analisis_actual = await get_analisis_riesgo_by_activo_amenaza_id(activo_amenaza_id)
-            if flow_error is None:
-                await update_request_risk_nuevo(
-                    request_id,
-                    riesgo_inherente_nuevo=analisis_actual["riesgo_inherente"] if analisis_actual else None,
-                    riesgo_nuevo=analisis_actual["riesgo"] if analisis_actual else None,
-                    valor_riesgo_nuevo=analisis_actual["valor_riesgo"] if analisis_actual else None,
-                    status="completed",
-                )
-                logger.info(f"Valores nuevos de riesgo guardados y estado completed para request_id: {request_id}")
-            else:
-                logger.warning(f"Flujo fallido para request_id={request_id}; se mantiene estado pending")
-
-    if flow_error:
-        raise flow_error
-
+    # Lanzar el procesamiento en segundo plano
+    asyncio.create_task(
+        process_incident_flow(
+            request_id=request_id,
+            client=client,
+            data_dict=data_dict,
+            emarisma_data=emarisma_data,
+            activo_amenaza_id=activo_amenaza_id,
+            analisis_previo=analisis_previo
+        )
+    )
+    logger.info(f"Tarea en segundo plano creada para request_id={request_id}")
+    
+    # Devolver inmediatamente el request_id sin esperar
     return {"request_id": request_id}
 
 @router.get("/retrive_incident/{incident_id}")

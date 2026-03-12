@@ -1,9 +1,9 @@
 {
   "threat_id": "T789012",
   "user_id": "user456",
-  "device_id": "Protocolo Bluetooth",
+  "device_id": "Protocolo Wi-Fi",
   "detected_at": "2025-10-15T14:22:00Z",
-  "threat_type": "Man in the middle",
+  "threat_type": "Loss of support services",
   "threat_description": "Interceptacion de comunicaciones",
   "severity": "leve",
   "actions_taken": "Bloquear enlace y alertar al usuario",
@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Causado por la falta de actualización del software",
-  "controls": "A.05.01;A.05.02"
+  "controls": "A.05.01;A.05.03"
 }

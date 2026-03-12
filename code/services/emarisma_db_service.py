@@ -94,11 +94,11 @@ async def get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre(subproyecto_
         async with db_pool.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(
-                    "SELECT tipo_amenaza_instanciada_id FROM amenaza_instanciada WHERE subproyecto_id = %s AND nombre = %s AND deleted = 0",
+                    "SELECT id FROM amenaza_instanciada WHERE subproyecto_id = %s AND nombre = %s AND deleted = 0",
                     (subproyecto_id, nombre)
                 )
                 result = await cursor.fetchone()
-                tipo_amenaza_id = result['tipo_amenaza_instanciada_id'] if result else None
+                tipo_amenaza_id = result['id'] if result else None
                 logger.info(f"amenaza_instanciada_id encontrado: {tipo_amenaza_id}")
                 return tipo_amenaza_id
     except Exception as e:

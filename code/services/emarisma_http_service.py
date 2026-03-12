@@ -2,6 +2,7 @@
 from typing import Any, Dict, List
 from client.risk_client import RiskClient
 import logging
+import httpx
 from config.loader import load_config
 import urllib.parse
 from services.emarisma_db_service import (
@@ -530,25 +531,56 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     logger.info("Ejecutando step_obtener_activosImplicados")
     results.append(await step_obtener_activosImplicados(client, emarisma_data['incidente_id']))
     logger.info("Ejecutando step_cargar_dimensionesClear")
-    results.append(await step_cargar_dimensionesClear(client, {"activo": str(emarisma_data['device_id']), "incidente": str(emarisma_data['incidente_id'])}))
+    dimensiones_response = await step_cargar_dimensionesClear(client, {"activo": str(emarisma_data['device_id']), "incidente": str(emarisma_data['incidente_id'])})
+    results.append(dimensiones_response)
     
-    # Obtener dimension_ids dinámicamente desde la base de datos
-    logger.info("Obteniendo dimension_ids desde la base de datos")
+    # Extraer dimension_ids desde la respuesta del endpoint
+    logger.info("Obteniendo dimension_ids desde la respuesta de cargar_dimensionesClear")
+    logger.info(f"Respuesta completa de dimensiones: {dimensiones_response}")
     dimension_ids = []
     
     try:
-        amenaza_instanciada_id = await get_amenaza_instanciada_id(emarisma_data['tipo_amenaza_instanciada_id'], emarisma_data['subproyecto_id'])
-        if amenaza_instanciada_id:
-            activo_amenaza_id = await get_activo_amenaza_id(amenaza_instanciada_id, emarisma_data['device_id'])
-            if activo_amenaza_id:
-                dimension_ids = await get_dimension_ids_by_activo_amenaza(activo_amenaza_id)
-                logger.info(f"Se encontraron {len(dimension_ids)} dimensiones: {dimension_ids}")
-            else:
-                logger.warning(f"No se encontró activo_amenaza para amenaza {amenaza_instanciada_id} y activo {emarisma_data['device_id']}. Continuando sin vincular dimensiones.")
+        # Parsear la respuesta JSON para obtener las dimensiones
+        dimensiones_data = dimensiones_response.get('body', {})
+        
+        if isinstance(dimensiones_data, dict) and 'data' in dimensiones_data:
+            # Si la respuesta tiene estructura {'data': [...]}
+            for dim in dimensiones_data['data']:
+                if isinstance(dim, dict) and 'id' in dim:
+                    dimension_ids.append(dim['id'])
+                elif isinstance(dim, int):
+                    dimension_ids.append(dim)
+            logger.info(f"Se encontraron {len(dimension_ids)} dimensiones desde el endpoint: {dimension_ids}")
+        elif isinstance(dimensiones_data, list):
+            # Si la respuesta es directamente una lista
+            for dim in dimensiones_data:
+                if isinstance(dim, dict) and 'id' in dim:
+                    dimension_ids.append(dim['id'])
+                elif isinstance(dim, int):
+                    dimension_ids.append(dim)
+            logger.info(f"Se encontraron {len(dimension_ids)} dimensiones desde el endpoint: {dimension_ids}")
         else:
-            logger.warning(f"No se encontró amenaza_instanciada para tipo {emarisma_data['tipo_amenaza_instanciada_id']} y subproyecto {emarisma_data['subproyecto_id']}. Continuando sin vincular dimensiones.")
+            # Fallback: consultar desde la base de datos
+            logger.warning(f"No se pudieron extraer dimensiones de la respuesta. Estructura: {type(dimensiones_data)}. Fallback a BD.")
+            amenaza_instanciada_id = await get_amenaza_instanciada_id(
+                emarisma_data['tipo_amenaza_instanciada_id'],
+                emarisma_data['subproyecto_id']
+            )
+            if amenaza_instanciada_id:
+                activo_amenaza_id = await get_activo_amenaza_id(amenaza_instanciada_id, emarisma_data['device_id'])
+                if activo_amenaza_id:
+                    dimension_ids = await get_dimension_ids_by_activo_amenaza(activo_amenaza_id)
+                    logger.info(f"Se encontraron {len(dimension_ids)} dimensiones desde BD: {dimension_ids}")
+                else:
+                    logger.warning(
+                        f"No se encontró activo_amenaza_id para amenaza_instanciada_id={amenaza_instanciada_id} y activo_id={emarisma_data['device_id']}"
+                    )
+            else:
+                logger.warning(
+                    f"No se pudo obtener amenaza_instanciada_id para tipo {emarisma_data['tipo_amenaza_instanciada_id']} y subproyecto {emarisma_data['subproyecto_id']}"
+                )
     except Exception as e:
-        logger.error(f"Error al obtener dimension_ids: {e}. Continuando sin vincular dimensiones.")
+        logger.error(f"Error al extraer dimension_ids: {e}. Continuando sin vincular dimensiones.")
     
     # Vincular activo para cada dimension (solo si se encontraron dimensiones)
     if dimension_ids:
@@ -630,6 +662,12 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     logger.info("Ejecutando step_guardar_y_cerrar")
     results.append(await step_guardar_y_cerrar(client, emarisma_data['evento_id']))
     logger.info("Ejecutando step_recalcular")
-    results.append(await step_recalcular(client))
+
+    try:
+        results.append(await step_recalcular(client))
+    except httpx.ReadTimeout:
+        logger.error("Timeout durante recalculo de riesgo")
+
     logger.info("run_all_flow completado")
     return results
+

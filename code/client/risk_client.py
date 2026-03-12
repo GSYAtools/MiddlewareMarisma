@@ -220,4 +220,5 @@ class RiskClient:
             "X-Requested-With": "XMLHttpRequest",
             "Accept": "*/*"
         }
+
         return await self.post(full_path, data=None, extra_headers=headers)
