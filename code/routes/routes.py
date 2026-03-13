@@ -10,6 +10,7 @@ from services.internal_db_service import (
     update_request_status,
     update_request_risk_previo,
     update_request_risk_nuevo,
+    get_request,
 )
 from services.emarisma_db_service import (
     get_proyecto_id_by_name,
@@ -255,5 +256,52 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
 
 @router.get("/retrive_incident/{incident_id}")
 async def retrive_incident(incident_id: str, client: RiskClient = Depends(get_client)):
-    #return await steps.run_all_flow(client, incident_id) ----- Esto tiene que ser una consulta a la SQLite -----
-    return None
+    """
+    Retrieves the status and risk analysis of an incident by its UUID.
+    
+    Returns:
+    - If pending: A message indicating the incident is still being processed
+    - If completed: The previous and new risk analysis values
+    - If not found: 404 error with message about incorrect ID
+    """
+    logger.info(f"Retrieving incident status: {incident_id}")
+    
+    request_data = await get_request(incident_id)
+    if not request_data:
+        logger.error(f"Incident not found: {incident_id}")
+        raise HTTPException(status_code=404, detail="Incorrect incident ID. The incident does not exist.")
+    
+    status = request_data['status']
+    logger.info(f"Incident status retrieved for {incident_id}: {status}")
+    
+    if status == "pending":
+        return {
+            "incident_id": incident_id,
+            "status": "pending",
+            "message": "The incident is still being processed. Please try again later."
+        }
+    
+    elif status == "completed":
+        return {
+            "incident_id": incident_id,
+            "status": "completed",
+            "risk_analysis": {
+                "previous": {
+                    "riesgo_inherente": request_data['riesgo_inherente_previo'],
+                    "riesgo": request_data['riesgo_previo'],
+                    "valor_riesgo": request_data['valor_riesgo_previo']
+                },
+                "current": {
+                    "riesgo_inherente": request_data['riesgo_inherente_nuevo'],
+                    "riesgo": request_data['riesgo_nuevo'],
+                    "valor_riesgo": request_data['valor_riesgo_nuevo']
+                }
+            }
+        }
+    
+    else:
+        return {
+            "incident_id": incident_id,
+            "status": status,
+            "message": f"Incident status: {status}"
+        }

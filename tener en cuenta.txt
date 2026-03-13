@@ -5,3 +5,9 @@
 uvicorn app:app --reload --host 0.0.0.0 --port 8000
 
 Invoke-WebRequest -Uri "http://localhost:8000/new_incident" -Method POST -ContentType "application/json" -InFile request.json -UseBasicParsing
+
+
+SOLICITAR DATOS
+
+$response = Invoke-WebRequest -Uri "http://localhost:8000/retrive_incident/e68ad13e-8120-4651-8bb2-0b300ad99ee8" -Method GET -UseBasicParsing; Write-Host $response.Content
+
