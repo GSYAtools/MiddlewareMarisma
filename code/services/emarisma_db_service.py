@@ -85,7 +85,9 @@ async def get_subproyecto_id_by_name(name: str) -> int:
 
 async def get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre(subproyecto_id: int, nombre: str) -> int:
     """
-    Obtiene el tipo_amenaza_instanciada_id de la tabla amenaza_instanciada por subproyecto_id y nombre.
+    Obtiene el amenaza_instanciada_id de la tabla amenaza_instanciada por subproyecto_id y nombre.
+    
+    Este es el método recomendado cuando se conoce el nombre de la amenaza.
     Retorna None si no se encuentra.
     """
     logger.info(f"Buscando amenaza_instanciada_id para subproyecto_id: {subproyecto_id}, nombre: {nombre}")
@@ -127,6 +129,9 @@ async def get_activo_id_by_name(name: str) -> int:
 async def get_amenaza_instanciada_id(tipo_amenaza_instanciada_id: int, subproyecto_id: int) -> int:
     """
     Obtiene el amenaza_instanciada_id desde tipo_amenaza_instanciada_id y subproyecto_id.
+    
+    NOTE: Prefer get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre() when you have the threat name.
+    Use this function only when tipo_amenaza_instanciada_id is already available from another source.
     Retorna None si no se encuentra.
     """
     logger.info(f"Buscando amenaza_instanciada_id para tipo_amenaza_instanciada_id: {tipo_amenaza_instanciada_id}, subproyecto_id: {subproyecto_id}")
@@ -335,11 +340,10 @@ async def get_incidente_id_by_subproyecto_and_tipo_amenaza(subproyecto_id: int, 
                     raise ValueError(f"No se encontró evento para subproyecto {subproyecto_id} y usuario {user_id}")
                 logger.info(f"Evento ID encontrado: {evento_id}")
 
-                # Obtener amenaza_instanciada_id
-                amenaza_instanciada_id = await get_amenaza_instanciada_id(tipo_amenaza_instanciada_id, subproyecto_id)
-                if not amenaza_instanciada_id:
-                    raise ValueError(f"No se encontró amenaza_instanciada para tipo {tipo_amenaza_instanciada_id} y subproyecto {subproyecto_id}")
-                logger.info(f"Amenaza instanciada ID encontrada: {amenaza_instanciada_id}")
+                # Nota: tipo_amenaza_instanciada_id is actually amenaza_instanciada_id
+                # No need to call get_amenaza_instanciada_id anymore
+                logger.info(f"Amenaza instanciada ID encontrada: {tipo_amenaza_instanciada_id}")
+                amenaza_instanciada_id = tipo_amenaza_instanciada_id
 
                 # Obtener incidente_id
                 await cursor.execute(

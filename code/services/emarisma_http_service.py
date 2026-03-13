@@ -10,7 +10,6 @@ from services.emarisma_db_service import (
     get_incidente_id_by_subproyecto_and_tipo_amenaza,
     get_evento_id_by_subproyecto_and_user,
     get_incidente_id_by_evento,
-    get_amenaza_instanciada_id,
     get_activo_amenaza_id,
     get_dimension_ids_by_activo_amenaza,
     verificar_evento_existe,
@@ -249,12 +248,9 @@ async def step_guardar_amenaza(client: RiskClient, emarisma_data: Dict[str, Any]
         "gravedad": emarisma_data['severity'],
         "evento": str(emarisma_data['evento_id'])
     }
-    #id_amenaza = emarisma_data['tipo_amenaza_instanciada_id']
-    amenaza_instanciada_id = await get_amenaza_instanciada_id(
-        emarisma_data['tipo_amenaza_instanciada_id'],  # Convertir tipo → amenaza_instanciada_id real
-        emarisma_data['subproyecto_id']
-    )
-    print(amenaza_instanciada_id)
+    # tipo_amenaza_instanciada_id is already amenaza_instanciada_id (comes from get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre)
+    amenaza_instanciada_id = emarisma_data['tipo_amenaza_instanciada_id']
+    logger.info(f"Usando amenaza_instanciada_id: {amenaza_instanciada_id}")
 
     if not data:
         raise ValueError("No se han encontrado datos de evento")
@@ -464,16 +460,11 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     emarisma_data['evento_id'] = evento_id
     logger.info(f"Evento ID obtenido: {evento_id}")
     
-    # Obtener el amenaza_instanciada_id REAL (no el tipo_amenaza_instanciada_id)
-    logger.info("Obteniendo amenaza_instanciada_id real desde la base de datos")
-    amenaza_instanciada_id = await get_amenaza_instanciada_id(
-        emarisma_data['tipo_amenaza_instanciada_id'],  # Convertir tipo → amenaza_instanciada_id real
-        emarisma_data['subproyecto_id']
-    )
-    print(amenaza_instanciada_id)
+    # tipo_amenaza_instanciada_id is already amenaza_instanciada_id (comes from get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre)
+    amenaza_instanciada_id = emarisma_data['tipo_amenaza_instanciada_id']
     if not amenaza_instanciada_id:
-        raise ValueError(f"No se pudo obtener amenaza_instanciada_id para tipo {emarisma_data['amenaza_instanciada_id']} y subproyecto {emarisma_data['subproyecto_id']}")
-    logger.info(f"Amenaza instanciada ID real obtenido: {amenaza_instanciada_id}")
+        raise ValueError(f"No se pudo obtener amenaza_instanciada_id para subproyecto {emarisma_data['subproyecto_id']}")
+    logger.info(f"Amenaza instanciada ID obtenido: {amenaza_instanciada_id}")
     
     # VALIDACIÓN: Verificar que el evento existe en la BD
     logger.info("═══ VALIDACIÓN: Verificando evento en BD ═══")
@@ -562,10 +553,8 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
         else:
             # Fallback: consultar desde la base de datos
             logger.warning(f"No se pudieron extraer dimensiones de la respuesta. Estructura: {type(dimensiones_data)}. Fallback a BD.")
-            amenaza_instanciada_id = await get_amenaza_instanciada_id(
-                emarisma_data['tipo_amenaza_instanciada_id'],
-                emarisma_data['subproyecto_id']
-            )
+            # tipo_amenaza_instanciada_id is already amenaza_instanciada_id
+            amenaza_instanciada_id = emarisma_data['tipo_amenaza_instanciada_id']
             if amenaza_instanciada_id:
                 activo_amenaza_id = await get_activo_amenaza_id(amenaza_instanciada_id, emarisma_data['device_id'])
                 if activo_amenaza_id:
@@ -608,10 +597,8 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
     if not controls_field:
         # Caso 1: Campo vacío o no existe -> obtener primer control disponible
         logger.info("Campo 'controls' vacío o inexistente. Obteniendo primer control disponible...")
-        amenaza_instanciada_id = await get_amenaza_instanciada_id(
-            emarisma_data['tipo_amenaza_instanciada_id'],
-            emarisma_data['subproyecto_id']
-        )
+        # tipo_amenaza_instanciada_id is already amenaza_instanciada_id
+        amenaza_instanciada_id = emarisma_data['tipo_amenaza_instanciada_id']
         if amenaza_instanciada_id:
             first_control = await get_first_control_for_amenaza(amenaza_instanciada_id)
             if first_control:
@@ -627,10 +614,8 @@ async def run_all_flow(client: RiskClient, data: Dict[str, Any], emarisma_data: 
         control_codes = [code.strip() for code in controls_field.split(';') if code.strip()]
         logger.info(f"Códigos de control solicitados: {control_codes}")
         
-        amenaza_instanciada_id = await get_amenaza_instanciada_id(
-            emarisma_data['tipo_amenaza_instanciada_id'],
-            emarisma_data['subproyecto_id']
-        )
+        # tipo_amenaza_instanciada_id is already amenaza_instanciada_id
+        amenaza_instanciada_id = emarisma_data['tipo_amenaza_instanciada_id']
         if amenaza_instanciada_id:
             try:
                 control_ids = await get_controls_by_codes_for_amenaza(

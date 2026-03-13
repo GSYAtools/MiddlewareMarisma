@@ -16,7 +16,6 @@ from services.emarisma_db_service import (
     get_subproyecto_id_by_name,
     get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre,
     get_activo_id_by_name,
-    get_amenaza_instanciada_id,
     get_activo_amenaza_id,
     get_analisis_riesgo_by_activo_amenaza_id,
 )
@@ -185,15 +184,14 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
     
     # 5. Obtener amenaza_instanciada_id y validar
     logger.info(f"Buscando amenaza_instanciada_id para subproyecto: {subproyecto_id}, threat_type: {data.threat_type}")
-    tipo_amenaza_id = await get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre(subproyecto_id, data.threat_type)
-    if tipo_amenaza_id is None:
+    amenaza_instanciada_id = await get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre(subproyecto_id, data.threat_type)
+    if amenaza_instanciada_id is None:
         logger.error(f"Amenaza instanciada no encontrada para threat_type: {data.threat_type}")
         raise HTTPException(status_code=404, detail=f"La amenaza '{data.threat_type}' no existe para el subproyecto '{data.subproject_name}'")
-    logger.info(f"Amenaza instanciada ID obtenido: {tipo_amenaza_id}")
+    logger.info(f"Amenaza instanciada ID obtenido: {amenaza_instanciada_id}")
     
     # 6. CRÍTICO: Obtener activo_amenaza_id y CAPTURAR ANÁLISIS PREVIO INMEDIATAMENTE
     logger.info("=== CAPTURANDO SNAPSHOT PREVIO DE RIESGO (ANTES DE CUALQUIER MODIFICACIÓN) ===")
-    amenaza_instanciada_id = await get_amenaza_instanciada_id(tipo_amenaza_id, subproyecto_id)
     activo_amenaza_id = None
     analisis_previo = None
 
@@ -208,7 +206,7 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
             )
     else:
         logger.warning(
-            f"No se encontró amenaza_instanciada_id para tipo_amenaza_id={tipo_amenaza_id} y subproyecto_id={subproyecto_id}"
+            f"No se encontró amenaza_instanciada_id para amenaza_instanciada_id={amenaza_instanciada_id} y subproyecto_id={subproyecto_id}"
         )
     
     # === FASE 2: GUARDAR REQUEST Y PREPARAR DATOS ===
@@ -221,7 +219,7 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
     emarisma_data = {
         "proyecto_id": proyecto_id,
         "subproyecto_id": subproyecto_id,
-        "tipo_amenaza_instanciada_id": tipo_amenaza_id,
+        "tipo_amenaza_instanciada_id": amenaza_instanciada_id,
         "severity": severity_normalized,
         "device_id": activo_id,
         "activo_amenaza_id": activo_amenaza_id
