@@ -17,10 +17,14 @@ from services.emarisma_db_service import (
     get_subproyecto_id_by_name,
     get_tipo_amenaza_instanciada_id_by_subproyecto_and_nombre,
     get_activo_id_by_name,
+    get_activo_id_by_codigo,
     get_activo_amenaza_id,
     get_analisis_riesgo_by_activo_amenaza_id,
     get_all_subproyectos,
     get_activos_by_subproyecto,
+    get_amenazas_by_activo,
+    get_controles_by_amenaza,
+    get_amenaza_id_by_codigo,
 )
 from client_instance import client
 import logging
@@ -344,4 +348,67 @@ async def get_assets_by_subproject(subproject_name: str):
         "subproject_name": subproject_name,
         "total_assets": len(activos),
         "assets": activos
+    }
+
+@router.get("/threats/{subproject_name}/{asset_id}")
+async def get_threats_by_asset(subproject_name: str, asset_id: int):
+    """
+    Get all threats affecting a specific asset within a subproject.
+    Uses asset ID.
+    
+    Returns:
+    - If subproject and asset exist: A list of threats (id, nombre) affecting the asset
+    - If subproject not found: 404 error
+    - If asset not found in subproject: 404 error
+    """
+    logger.info(f"Fetching threats for asset ID {asset_id} in subproject '{subproject_name}'")
+    
+    # Get subproject ID from name
+    subproyecto_id = await get_subproyecto_id_by_name(subproject_name)
+    if subproyecto_id is None:
+        logger.error(f"Subproject not found with name: {subproject_name}")
+        raise HTTPException(status_code=404, detail=f"No subproject found with name '{subproject_name}'")
+    
+    # Get threats for the asset in this subproject
+    amenazas = await get_amenazas_by_activo(subproyecto_id, asset_id)
+    if not amenazas:
+        logger.warning(f"No threats found for asset ID {asset_id} in subproject '{subproject_name}'")
+    
+    logger.info(f"Retrieved {len(amenazas)} threats for asset ID {asset_id} in subproject '{subproject_name}'")
+    
+    return {
+        "subproject_name": subproject_name,
+        "asset_id": asset_id,
+        "total_threats": len(amenazas),
+        "threats": amenazas
+    }
+
+@router.get("/controls/{subproject_name}/{asset_id}/{threat_id}")
+async def get_controls_by_threat(subproject_name: str, asset_id: int, threat_id: int):
+    """
+    Get all controls available for a specific threat affecting an asset in a subproject.
+    Uses asset ID and threat ID.
+    
+    Returns:
+    - If all entities exist: A list of controls (id, codigo, nombre) that can mitigate the threat
+    - If any entity not found: 404 error
+    """
+    logger.info(f"Fetching controls for threat ID {threat_id} affecting asset ID {asset_id} in subproject '{subproject_name}'")
+    
+    # Get subproject ID from name
+    subproyecto_id = await get_subproyecto_id_by_name(subproject_name)
+    if subproyecto_id is None:
+        logger.error(f"Subproject not found with name: {subproject_name}")
+        raise HTTPException(status_code=404, detail=f"No subproject found with name '{subproject_name}'")
+    
+    # Get controls for this threat
+    controles = await get_controles_by_amenaza(threat_id)
+    logger.info(f"Retrieved {len(controles)} controls for threat ID {threat_id}")
+    
+    return {
+        "subproject_name": subproject_name,
+        "asset_id": asset_id,
+        "threat_id": threat_id,
+        "total_controls": len(controles),
+        "controls": controles
     }

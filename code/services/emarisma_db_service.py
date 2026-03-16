@@ -466,7 +466,7 @@ async def get_activos_by_subproyecto(subproyecto_id: int) -> list[dict]:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(
                     """
-                    SELECT DISTINCT a.id, a.nombre
+                    SELECT DISTINCT a.id, a.nombre, a.codigo
                     FROM activo a
                     INNER JOIN activo_auditoria aa ON a.id = aa.activo_id
                     WHERE aa.subproyecto_id = %s AND a.deleted = 0 AND aa.deleted = 0
@@ -502,3 +502,125 @@ async def get_all_subproyectos() -> list[str]:
     except Exception as e:
         logger.error(f"Error al obtener subproyectos: {e}")
         return []
+
+async def get_amenazas_by_activo(subproyecto_id: int, activo_id: int) -> list[dict]:
+    """
+    Obtiene la lista de amenazas que afectan a un activo específico dentro de un subproyecto.
+    Retorna lista vacía si no se encuentran amenazas.
+    """
+    logger.info(f"Buscando amenazas para activo_id: {activo_id}, subproyecto_id: {subproyecto_id}")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(
+                    """
+                    SELECT DISTINCT ai.id, ai.nombre
+                    FROM amenaza_instanciada ai
+                    INNER JOIN activo_amenaza aa ON ai.id = aa.amenaza_instanciada_id
+                    WHERE aa.activo_id = %s AND ai.subproyecto_id = %s AND ai.deleted = 0 AND aa.deleted = 0
+                    ORDER BY ai.nombre
+                    """,
+                    (activo_id, subproyecto_id)
+                )
+                results = await cursor.fetchall()
+                amenazas = [dict(row) for row in results]
+                logger.info(f"Amenazas encontradas para activo {activo_id} en subproyecto {subproyecto_id}: {len(amenazas)}")
+                return amenazas
+    except Exception as e:
+        logger.error(f"Error al buscar amenazas para activo {activo_id} en subproyecto {subproyecto_id}: {e}")
+        return []
+
+async def get_activo_id_by_name(nombre: str) -> int:
+    """
+    Obtiene el ID del activo por su nombre.
+    Retorna None si no se encuentra.
+    """
+    logger.info(f"Buscando ID del activo con nombre: {nombre}")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(
+                    "SELECT id FROM activo WHERE nombre = %s AND deleted = 0",
+                    (nombre,)
+                )
+                result = await cursor.fetchone()
+                activo_id = result['id'] if result else None
+                logger.info(f"ID del activo encontrado: {activo_id}")
+                return activo_id
+    except Exception as e:
+        logger.error(f"Error al buscar activo '{nombre}': {e}")
+        return None
+
+async def get_controles_by_amenaza(amenaza_instanciada_id: int) -> list[dict]:
+    """
+    Obtiene la lista de controles asociados a una amenaza instanciada.
+    Retorna lista vacía si no se encuentran controles.
+    """
+    logger.info(f"Buscando controles para amenaza_instanciada_id: {amenaza_instanciada_id}")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(
+                    """
+                    SELECT DISTINCT ci.id, ci.codigo, ci.nombre
+                    FROM control_instanciado ci
+                    INNER JOIN control_amenaza_instanciado cai ON ci.id = cai.control_instanciado_id
+                    WHERE cai.amenaza_instanciada_id = %s AND ci.deleted = 0 AND cai.deleted = 0
+                    ORDER BY ci.codigo
+                    """,
+                    (amenaza_instanciada_id,)
+                )
+                results = await cursor.fetchall()
+                controles = [dict(row) for row in results]
+                logger.info(f"Controles encontrados para amenaza {amenaza_instanciada_id}: {len(controles)}")
+                return controles
+    except Exception as e:
+        logger.error(f"Error al buscar controles para amenaza {amenaza_instanciada_id}: {e}")
+        return []
+
+async def get_activo_id_by_codigo(codigo: str) -> int:
+    """
+    Obtiene el ID del activo por su código.
+    Retorna None si no se encuentra.
+    """
+    logger.info(f"Buscando ID del activo con código: {codigo}")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(
+                    "SELECT id FROM activo WHERE codigo = %s AND deleted = 0",
+                    (codigo,)
+                )
+                result = await cursor.fetchone()
+                activo_id = result['id'] if result else None
+                logger.info(f"ID del activo encontrado: {activo_id}")
+                return activo_id
+    except Exception as e:
+        logger.error(f"Error al buscar activo con código '{codigo}': {e}")
+        return None
+
+async def get_amenaza_id_by_codigo(subproyecto_id: int, codigo: str) -> int:
+    """
+    Obtiene el ID de la amenaza instanciada por su código dentro de un subproyecto.
+    Retorna None si no se encuentra.
+    """
+    logger.info(f"Buscando ID de amenaza con código: {codigo} en subproyecto {subproyecto_id}")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(
+                    "SELECT id FROM amenaza_instanciada WHERE codigo = %s AND subproyecto_id = %s AND deleted = 0",
+                    (codigo, subproyecto_id)
+                )
+                result = await cursor.fetchone()
+                amenaza_id = result['id'] if result else None
+                logger.info(f"ID de amenaza encontrado: {amenaza_id}")
+                return amenaza_id
+    except Exception as e:
+        logger.error(f"Error al buscar amenaza con código '{codigo}' en subproyecto {subproyecto_id}: {e}")
+        return None

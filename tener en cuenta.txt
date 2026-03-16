@@ -4,17 +4,26 @@
 
 uvicorn app:app --reload --host 0.0.0.0 --port 8000
 
-Invoke-WebRequest -Uri "http://localhost:8000/new_incident" -Method POST -ContentType "application/json" -InFile request.json -UseBasicParsing
+INGESTAR NUEVO INCIDENTE (DEVUELVE UUID)
 
+Invoke-WebRequest -Uri "http://localhost:8000/new_incident" -Method POST -ContentType "application/json" -InFile request.json -UseBasicParsing
 
 SOLICITAR DATOS
 
-Invoke-WebRequest -Uri "http://localhost:8000/retrive_incident/e68ad13e-8120-4651-8bb2-0b300ad99ee8" -Method GET -UseBasicParsing; Write-Host $response.Content
+Invoke-WebRequest -Uri "http://localhost:8000/retrive_incident/[INCIDEN_UUID]" -Method GET -UseBasicParsing; Write-Host $response.Content
 
-OBTENER LISTA DE SUBPROYECTOS
+OBTENER LISTA DE SUBPROYECTO
 
 Invoke-RestMethod -Uri "http://localhost:8000/subprojects" -Method Get; $response | ConvertTo-Json -Depth 10
 
-OBTENER LA LISTA DE ACTIVOS DE UN SUBPROYECTOS
+OBTENER LA LISTA DE ACTIVOS DE UN SUBPROYECTO
 
 Invoke-RestMethod -Uri "http://localhost:8000/assets/SmartHome" -Method Get | ConvertTo-Json -Depth 10
+
+OBTENER LA LISTA DE AMENAZAS DE UN ACTIVO EN UN SUBPROYECTO
+
+Invoke-RestMethod -Uri "http://localhost:8000/threats/SmartHome/[ASSET_ID]" -Method Get | ConvertTo-Json -Depth 10
+
+OBTENER LA LISTA DE CONTROLES PARA UNA AMENAZA DE UN ACTIVO EN UN SUBPROYECTO
+
+Invoke-RestMethod -Uri "http://localhost:8000/controls/SmartHome/3/[THREAT_ID]" -Method Get | ConvertTo-Json -Depth 10
