@@ -307,11 +307,11 @@ async def retrive_incident(incident_id: str, client: RiskClient = Depends(get_cl
             "message": f"Incident status: {status}"
         }
 
-@router.get("/subproyectos")
-async def listar_subproyectos():
+@router.get("/subprojects")
+async def list_subprojects():
     """
-    Obtiene la lista de nombres de todos los subproyectos disponibles.
+    Get the list of names of all available subprojects.
     """
-    logger.info("Obteniendo lista de subproyectos")
-    subproyectos = await get_all_subproyectos()
-    return subproyectos
+    logger.info("Fetching list of subprojects")
+    subprojects = await get_all_subproyectos()
+    return subprojects
