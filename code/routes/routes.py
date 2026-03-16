@@ -19,6 +19,7 @@ from services.emarisma_db_service import (
     get_activo_id_by_name,
     get_activo_amenaza_id,
     get_analisis_riesgo_by_activo_amenaza_id,
+    get_all_subproyectos,
 )
 from client_instance import client
 import logging
@@ -305,3 +306,12 @@ async def retrive_incident(incident_id: str, client: RiskClient = Depends(get_cl
             "status": status,
             "message": f"Incident status: {status}"
         }
+
+@router.get("/subproyectos")
+async def listar_subproyectos():
+    """
+    Obtiene la lista de nombres de todos los subproyectos disponibles.
+    """
+    logger.info("Obteniendo lista de subproyectos")
+    subproyectos = await get_all_subproyectos()
+    return subproyectos

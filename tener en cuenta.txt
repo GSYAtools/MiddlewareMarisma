@@ -11,3 +11,6 @@ SOLICITAR DATOS
 
 $response = Invoke-WebRequest -Uri "http://localhost:8000/retrive_incident/e68ad13e-8120-4651-8bb2-0b300ad99ee8" -Method GET -UseBasicParsing; Write-Host $response.Content
 
+OBTENER LISTA DE SUBPROYECTOS
+
+$response = Invoke-RestMethod -Uri "http://localhost:8000/subproyectos" -Method Get; $response | ConvertTo-Json -Depth 10

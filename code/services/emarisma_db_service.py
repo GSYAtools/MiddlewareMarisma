@@ -453,3 +453,24 @@ async def get_controls_by_codes_for_amenaza(amenaza_instanciada_id: int, control
     except Exception as e:
         logger.error(f"Error al buscar controles para amenaza {amenaza_instanciada_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Error al buscar controles: {str(e)}")
+
+async def get_all_subproyectos() -> list[str]:
+    """
+    Obtiene la lista de nombres de todos los subproyectos.
+    Retorna lista vacía si ocurre un error.
+    """
+    logger.info("Obteniendo lista de nombres de subproyectos")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(
+                    "SELECT nombre FROM subproyecto WHERE deleted = 0 ORDER BY nombre"
+                )
+                results = await cursor.fetchall()
+                nombres = [row['nombre'] for row in results]
+                logger.info(f"Total de subproyectos encontrados: {len(nombres)}")
+                return nombres
+    except Exception as e:
+        logger.error(f"Error al obtener subproyectos: {e}")
+        return []
