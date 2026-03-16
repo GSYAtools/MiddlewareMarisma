@@ -5,7 +5,7 @@
   "detected_at": "2025-10-15T14:15:00Z",
   "threat_type": "Physical damage",
   "threat_description": "Router dañado por sobretensión durante tormenta",
-  "severity": "media",
+  "severity": "grave",
   "actions_taken": "Reemplazar router y instalar protector de voltaje",
   "status": "resolved",
   "project_name": "SmartHome",

@@ -5,7 +5,7 @@
   "detected_at": "2025-10-15T21:30:00Z",
   "threat_type": "DDoS attempt",
   "threat_description": "Intento de ataque de negación de servicio desde dispositivo IoT comprometido",
-  "severity": "media",
+  "severity": "leve",
   "actions_taken": "Aislar dispositivo comprometido y limpiar infección",
   "status": "resolved",
   "project_name": "SmartHome",

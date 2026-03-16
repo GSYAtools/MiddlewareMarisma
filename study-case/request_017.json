@@ -5,7 +5,7 @@
   "detected_at": "2025-10-15T22:15:00Z",
   "threat_type": "Reverse shell",
   "threat_description": "Shell reverso detectado en conexión de cámara de vigilancia",
-  "severity": "crítica",
+  "severity": "grave",
   "actions_taken": "Reiniciar cámara con factory reset y reinstalar firmware oficial",
   "status": "critical",
   "project_name": "SmartHome",

@@ -5,7 +5,7 @@
   "detected_at": "2025-10-15T18:30:00Z",
   "threat_type": "Unauthorized access",
   "threat_description": "Panel de administración del router accesible sin autenticación",
-  "severity": "crítica",
+  "severity": "leve",
   "actions_taken": "Cambiar contraseña por defecto y desactivar acceso remoto",
   "status": "resolved",
   "project_name": "SmartHome",

@@ -5,7 +5,7 @@
   "detected_at": "2025-10-15T17:45:00Z",
   "threat_type": "Loss of support services",
   "threat_description": "Licencia de antivirus vencida sin actualización",
-  "severity": "alta",
+  "severity": "grave",
   "actions_taken": "Renovar licencia y actualizar definiciones de virus",
   "status": "resolved",
   "project_name": "SmartHome",

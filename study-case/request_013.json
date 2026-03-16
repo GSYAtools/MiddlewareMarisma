@@ -5,7 +5,7 @@
   "detected_at": "2025-10-15T19:15:00Z",
   "threat_type": "Unauthorized modification",
   "threat_description": "Modificación de datos de sensores detectada en base de datos",
-  "severity": "alta",
+  "severity": "grave",
   "actions_taken": "Implementar integridad de datos e investigar origen del cambio",
   "status": "in_progress",
   "project_name": "SmartHome",

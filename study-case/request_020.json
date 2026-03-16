@@ -5,7 +5,7 @@
   "detected_at": "2025-10-16T00:30:00Z",
   "threat_type": "Insecure configuration",
   "threat_description": "Panel de control expuesto a internet sin firewall adecuado",
-  "severity": "crítica",
+  "severity": "leve",
   "actions_taken": "Implementar VPN obligatorio y firewall de aplicación web",
   "status": "critical",
   "project_name": "SmartHome",

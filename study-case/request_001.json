@@ -5,7 +5,7 @@
   "detected_at": "2025-10-15T08:30:00Z",
   "threat_type": "Unauthorized access",
   "threat_description": "Intento de acceso no autorizado a cámara de vigilancia",
-  "severity": "alta",
+  "severity": "grave",
   "actions_taken": "Desactivar cámara y alertar al administrador",
   "status": "resolved",
   "project_name": "SmartHome",

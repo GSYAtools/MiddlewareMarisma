@@ -5,7 +5,7 @@
   "detected_at": "2025-10-15T16:20:00Z",
   "threat_type": "Man in the Middle",
   "threat_description": "Posible ataque MITM en transmisión de datos de sensores",
-  "severity": "alta",
+  "severity": "grave",
   "actions_taken": "Implementar certificados SSL/TLS en todas las comunicaciones",
   "status": "in_progress",
   "project_name": "SmartHome",

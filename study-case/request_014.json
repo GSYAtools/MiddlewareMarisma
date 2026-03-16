@@ -5,7 +5,7 @@
   "detected_at": "2025-10-15T20:00:00Z",
   "threat_type": "Data leakage",
   "threat_description": "Fotos compartidas accidentalmente en red de tiempo real",
-  "severity": "alta",
+  "severity": "leve",
   "actions_taken": "Eliminar fotos expuestas y cambiar permisos de acceso compartido",
   "status": "resolved",
   "project_name": "SmartHome",

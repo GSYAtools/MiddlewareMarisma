@@ -5,7 +5,7 @@
   "detected_at": "2025-10-15T10:45:00Z",
   "threat_type": "Interception",
   "threat_description": "Posible interceptación de comunicaciones Wi-Fi sin encriptación",
-  "severity": "alta",
+  "severity": "grave",
   "actions_taken": "Activar WPA3 en router y cambiar contraseña",
   "status": "resolved",
   "project_name": "SmartHome",

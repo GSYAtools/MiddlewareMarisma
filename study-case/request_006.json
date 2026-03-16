@@ -5,7 +5,7 @@
   "detected_at": "2025-10-15T13:30:00Z",
   "threat_type": "Data leakage",
   "threat_description": "Transmisión de datos de micrófono sin consentimiento",
-  "severity": "alta",
+  "severity": "leve",
   "actions_taken": "Desactivar micrófono y realizar auditoría de privacidad",
   "status": "resolved",
   "project_name": "SmartHome",
