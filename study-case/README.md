@@ -117,7 +117,7 @@ Cada incidente se actualiza antes de ser ingestado:
   "severity": "alta",
   "actions_taken": "...",
   "status": "resolved",
-  "project_name": "SmartHome",
+  "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "...",
   "controls": "A.05.01;A.05.03;A.06.01"

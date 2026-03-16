@@ -8,7 +8,7 @@
   "severity": "grave",
   "actions_taken": "Renovar licencia y actualizar definiciones de virus",
   "status": "resolved",
-  "project_name": "SmartHome",
+  "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Falta de monitoreo de renovación de licencias",
   "controls": "A.16.01;A.16.02"

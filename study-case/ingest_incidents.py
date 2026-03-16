@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Script para ingestar incidentes de forma aleatoria durante 24 horas.
 Selecciona 10 de 20 incidentes y los ingesta en momentos aleatorios.
@@ -9,17 +10,24 @@ import json
 import random
 import time
 import os
+import threading
 from datetime import datetime, timedelta
 from pathlib import Path
 import requests
 import logging
+import sys
 
-# Configurar logging
+# Asegurar UTF-8 en Windows
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+# Configurar logging con UTF-8
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('ingest_incidents.log'),
+        logging.FileHandler('ingest_incidents.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -28,8 +36,8 @@ logger = logging.getLogger(__name__)
 # Configuración
 API_ENDPOINT = "http://localhost:8000/new_incident"
 STUDY_CASE_DIR = Path(__file__).parent
-DURATION_HOURS = 24
-NUM_INCIDENTS_TO_INGEST = 10
+DURATION_HOURS = 0.05
+NUM_INCIDENTS_TO_INGEST = 2
 MAX_INCIDENTS = 20
 
 class IncidentIngester:
@@ -41,6 +49,8 @@ class IncidentIngester:
         self.retrieved_incidents = []    # Guardar incidentes recuperados
         self.ingested_count = 0
         self.failed_count = 0
+        self.count_lock = threading.Lock()  # Lock para sincronización de contadores
+        self.active_threads = []  # Guardar referencias a hilos activos
         
     def load_incidents(self):
         """Carga todos los archivos de incidentes disponibles."""
@@ -124,7 +134,8 @@ class IncidentIngester:
                     incident_id = response_data.get('incident_id', 'Unknown')
                     # Guardar el ID para recuperarlo luego
                     if incident_id != 'Unknown':
-                        self.ingested_incident_ids.append(incident_id)
+                        with self.count_lock:
+                            self.ingested_incident_ids.append(incident_id)
                 except:
                     incident_id = 'Unknown'
                 
@@ -134,14 +145,16 @@ class IncidentIngester:
                     f"Amenaza={incident.get('threat_id')}, "
                     f"Tipo={incident.get('threat_type')}"
                 )
-                self.ingested_count += 1
+                with self.count_lock:
+                    self.ingested_count += 1
                 return True
             else:
                 logger.error(
                     f"✗ Error al ingestar incidente {incident.get('threat_id')}: "
                     f"Status {response.status_code} - {response.text}"
                 )
-                self.failed_count += 1
+                with self.count_lock:
+                    self.failed_count += 1
                 return False
                 
         except requests.exceptions.ConnectionError:
@@ -149,21 +162,43 @@ class IncidentIngester:
                 f"✗ Error de conexión al ingestar {incident.get('threat_id')}: "
                 f"No se puede conectar a {self.api_endpoint}"
             )
-            self.failed_count += 1
+            with self.count_lock:
+                self.failed_count += 1
             return False
         except requests.exceptions.Timeout:
             logger.error(
                 f"✗ Timeout al ingestar {incident.get('threat_id')}: "
                 f"Solicitud tardó demasiado"
             )
-            self.failed_count += 1
+            with self.count_lock:
+                self.failed_count += 1
             return False
         except Exception as e:
             logger.error(
                 f"✗ Error inesperado al ingestar {incident.get('threat_id')}: {e}"
             )
-            self.failed_count += 1
+            with self.count_lock:
+                self.failed_count += 1
             return False
+    
+    def _ingest_incident_scheduled(self, delay_seconds, incident, idx, total):
+        """
+        Función para ser ejecutada en un hilo: espera delay_seconds y luego ingesta el incidente.
+        Se ejecuta de forma asíncrona sin bloquear el hilo principal.
+        """
+        threat_id = incident.get('threat_id', 'Unknown')
+        
+        try:
+            # Esperar el tiempo programado
+            logger.info(f"[{idx}/{total}] ⏱️  Hilo iniciado: {threat_id} se lanzará en {delay_seconds:.1f}s")
+            time.sleep(delay_seconds)
+            
+            # Ingestar en el momento programado
+            logger.info(f"[{idx}/{total}] 🚀 Lanzando incidente: {threat_id}")
+            self.ingest_incident(incident)
+            
+        except Exception as e:
+            logger.error(f"Error en hilo de ingestión para {threat_id}: {e}")
     
     def retrieve_incident_with_retry(self, incident_id, max_retries=30, retry_delay=2):
         """
@@ -530,9 +565,11 @@ class IncidentIngester:
         except Exception as e:
             logger.error(f"✗ Error al generar reporte: {e}")
             return None
-        """Ejecuta el ciclo de 24 horas de ingestión."""
+    
+    def run(self):
+        """Ejecuta el ciclo de ingestión usando hilos para no bloquear."""
         logger.info("=" * 70)
-        logger.info("INICIANDO INGESTIÓN DE INCIDENTES (24 HORAS)")
+        logger.info("INICIANDO INGESTIÓN DE INCIDENTES (MULTIHILO)")
         logger.info("=" * 70)
         
         start_time = datetime.now()
@@ -554,37 +591,34 @@ class IncidentIngester:
         scheduled_incidents = self.generate_random_timestamps()
         logger.info("")
         
-        # Ingestar incidentes
-        logger.info("Iniciando ingestión de incidentes...")
+        # Ingestar incidentes usando hilos
+        logger.info("Creando hilos para lanzar incidentes en el momento programado...")
         logger.info("-" * 70)
         
         try:
+            # Crear un hilo para cada incidente
+            threads = []
             for idx, (delay, incident) in enumerate(scheduled_incidents, 1):
-                # Calcular cuánto tiempo esperar
-                wait_time = delay
-                threat_id = incident.get('threat_id', 'Unknown')
-                
-                logger.info(f"\n[{idx}/{len(scheduled_incidents)}] Esperando {wait_time:.0f} segundos antes de ingestar {threat_id}...")
-                
-                # Esperar con updates de progreso cada 10 segundos
-                elapsed = 0
-                while elapsed < wait_time:
-                    remaining = wait_time - elapsed
-                    if remaining > 10:
-                        time.sleep(10)
-                        elapsed += 10
-                        logger.debug(f"  {threat_id}: Faltan {remaining - 10:.0f} segundos...")
-                    else:
-                        time.sleep(remaining)
-                        elapsed = wait_time
-                
-                # Ingestar
-                logger.info(f"\n[{idx}/{len(scheduled_incidents)}] Ingestando incidente: {threat_id}")
-                self.ingest_incident(incident)
+                thread = threading.Thread(
+                    target=self._ingest_incident_scheduled,
+                    args=(delay, incident, idx, len(scheduled_incidents)),
+                    name=f"ingestion-{idx}-{incident.get('threat_id', 'unknown')}"
+                )
+                thread.daemon = False  # No es daemon para que espere a terminar
+                thread.start()
+                threads.append(thread)
+                logger.info(f"[{idx}/{len(scheduled_incidents)}] Hilo creado para: {incident.get('threat_id', 'Unknown')}")
             
-            # Resumen final
+            logger.info("\n" + "-" * 70)
+            logger.info(f"Se crearon {len(threads)} hilos. Esperando a que terminen...")
+            logger.info("-" * 70 + "\n")
+            
+            # Esperar a que todos los hilos terminen
+            for thread in threads:
+                thread.join()
+            
             logger.info("\n" + "=" * 70)
-            logger.info("CICLO DE INGESTIÓN COMPLETADO")
+            logger.info("Todos los hilos han terminado.")
             logger.info("=" * 70)
             logger.info(f"Incidentes ingestados exitosamente: {self.ingested_count}")
             logger.info(f"Incidentes con error: {self.failed_count}")

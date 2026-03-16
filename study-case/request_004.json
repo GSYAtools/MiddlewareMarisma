@@ -8,7 +8,7 @@
   "severity": "leve",
   "actions_taken": "Desconectar dispositivo y reinstalar firmware",
   "status": "in_progress",
-  "project_name": "SmartHome",
+  "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Firmware desactualizado con vulnerabilidades conocidas",
   "controls": "A.08.01;A.08.02;A.09.01"
