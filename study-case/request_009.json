@@ -1,0 +1,15 @@
+{
+  "threat_id": "T009",
+  "user_id": "admin_02",
+  "device_id": "Datos transmitidos por los dispositivos",
+  "detected_at": "2025-10-15T16:20:00Z",
+  "threat_type": "Man in the Middle",
+  "threat_description": "Posible ataque MITM en transmisión de datos de sensores",
+  "severity": "alta",
+  "actions_taken": "Implementar certificados SSL/TLS en todas las comunicaciones",
+  "status": "in_progress",
+  "project_name": "SmartHome",
+  "subproject_name": "SmartHome",
+  "cause": "Falta de encriptación end-to-end en comunicaciones",
+  "controls": "A.07.01;A.07.02;A.07.03"
+}

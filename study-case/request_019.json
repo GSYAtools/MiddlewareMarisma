@@ -1,0 +1,15 @@
+{
+  "threat_id": "T019",
+  "user_id": "user_smart_19",
+  "device_id": "Termostato Wi-Fi",
+  "detected_at": "2025-10-15T23:45:00Z",
+  "threat_type": "Privilege escalation",
+  "threat_description": "Escalación de privilegios detectada en termostato inteligente",
+  "severity": "alta",
+  "actions_taken": "Apagar dispositivo y restaurar desde backup seguro",
+  "status": "resolved",
+  "project_name": "SmartHome",
+  "subproject_name": "SmartHome",
+  "cause": "Fallo en validación de permisos en firmware",
+  "controls": "A.24.01;A.24.02;A.24.03"
+}

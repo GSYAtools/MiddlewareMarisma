@@ -1,0 +1,15 @@
+{
+  "threat_id": "T004",
+  "user_id": "user_smart_4",
+  "device_id": "Bombilla Wi-Fi",
+  "detected_at": "2025-10-15T11:20:00Z",
+  "threat_type": "Malware",
+  "threat_description": "Detección de tráfico sospechoso proveniente de bombilla inteligente",
+  "severity": "alta",
+  "actions_taken": "Desconectar dispositivo y reinstalar firmware",
+  "status": "in_progress",
+  "project_name": "SmartHome",
+  "subproject_name": "SmartHome",
+  "cause": "Firmware desactualizado con vulnerabilidades conocidas",
+  "controls": "A.08.01;A.08.02;A.09.01"
+}

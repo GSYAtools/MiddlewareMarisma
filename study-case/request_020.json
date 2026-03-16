@@ -1,0 +1,15 @@
+{
+  "threat_id": "T020",
+  "user_id": "audit_team",
+  "device_id": "Home Assistant Web Control Panel",
+  "detected_at": "2025-10-16T00:30:00Z",
+  "threat_type": "Insecure configuration",
+  "threat_description": "Panel de control expuesto a internet sin firewall adecuado",
+  "severity": "crítica",
+  "actions_taken": "Implementar VPN obligatorio y firewall de aplicación web",
+  "status": "critical",
+  "project_name": "SmartHome",
+  "subproject_name": "SmartHome",
+  "cause": "Falta de segmentización de red y acceso remoto sin restricciones",
+  "controls": "A.25.01;A.25.02;A.25.03"
+}

@@ -1,0 +1,15 @@
+{
+  "threat_id": "T018",
+  "user_id": "manager_02",
+  "device_id": "Bombilla Wi-Fi",
+  "detected_at": "2025-10-15T23:00:00Z",
+  "threat_type": "Loss of support services",
+  "threat_description": "Servidor de control de bombilla inteligente descontinuado",
+  "severity": "media",
+  "actions_taken": "Migrar a alternativa compatible y actualizar dispositivo",
+  "status": "in_progress",
+  "project_name": "SmartHome",
+  "subproject_name": "SmartHome",
+  "cause": "Fabricante discontinuó servicio de control",
+  "controls": "A.23.01;A.23.02"
+}

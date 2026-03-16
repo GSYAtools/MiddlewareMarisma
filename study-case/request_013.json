@@ -1,0 +1,15 @@
+{
+  "threat_id": "T013",
+  "user_id": "inspector_01",
+  "device_id": "Datos procesados por los dispositivos",
+  "detected_at": "2025-10-15T19:15:00Z",
+  "threat_type": "Unauthorized modification",
+  "threat_description": "Modificación de datos de sensores detectada en base de datos",
+  "severity": "alta",
+  "actions_taken": "Implementar integridad de datos e investigar origen del cambio",
+  "status": "in_progress",
+  "project_name": "SmartHome",
+  "subproject_name": "SmartHome",
+  "cause": "Falta de controles de integridad de datos en BD",
+  "controls": "A.18.01;A.18.02;A.18.03"
+}

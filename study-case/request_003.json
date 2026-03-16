@@ -1,0 +1,15 @@
+{
+  "threat_id": "T003",
+  "user_id": "user_smart_3",
+  "device_id": "Protocolo Wi-Fi",
+  "detected_at": "2025-10-15T10:45:00Z",
+  "threat_type": "Interception",
+  "threat_description": "Posible interceptación de comunicaciones Wi-Fi sin encriptación",
+  "severity": "alta",
+  "actions_taken": "Activar WPA3 en router y cambiar contraseña",
+  "status": "resolved",
+  "project_name": "SmartHome",
+  "subproject_name": "SmartHome",
+  "cause": "Router sin encriptación habilitada",
+  "controls": "A.06.02;A.06.03;A.07.01"
+}

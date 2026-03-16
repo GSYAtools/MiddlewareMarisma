@@ -1,0 +1,15 @@
+{
+  "threat_id": "T015",
+  "user_id": "user_smart_15",
+  "device_id": "Algoritmo de toma de decisiones domésticas",
+  "detected_at": "2025-10-15T20:45:00Z",
+  "threat_type": "Logic bomb",
+  "threat_description": "Código malicioso detectado en sistema de automatización",
+  "severity": "crítica",
+  "actions_taken": "Desactivar sistema de automatización y análisis de malware",
+  "status": "critical",
+  "project_name": "SmartHome",
+  "subproject_name": "SmartHome",
+  "cause": "Actualización de firmware comprometida",
+  "controls": "A.20.01;A.20.02;A.20.03"
+}

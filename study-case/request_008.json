@@ -1,0 +1,15 @@
+{
+  "threat_id": "T008",
+  "user_id": "user_smart_8",
+  "device_id": "Protocolo Bluetooth",
+  "detected_at": "2025-10-15T15:45:00Z",
+  "threat_type": "Interception",
+  "threat_description": "Comunicación Bluetooth sin aparear correctamente detectada",
+  "severity": "leve",
+  "actions_taken": "Rehabilitar emparejamiento seguro de dispositivos",
+  "status": "resolved",
+  "project_name": "SmartHome",
+  "subproject_name": "SmartHome",
+  "cause": "Dispositivo acoplado a red insegura",
+  "controls": "A.06.01;A.06.04"
+}

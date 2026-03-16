@@ -1,0 +1,15 @@
+{
+  "threat_id": "T001",
+  "user_id": "admin",
+  "device_id": "Cámara WiFi",
+  "detected_at": "2025-10-15T08:30:00Z",
+  "threat_type": "Unauthorized access",
+  "threat_description": "Intento de acceso no autorizado a cámara de vigilancia",
+  "severity": "alta",
+  "actions_taken": "Desactivar cámara y alertar al administrador",
+  "status": "resolved",
+  "project_name": "SmartHome",
+  "subproject_name": "SmartHome",
+  "cause": "Falta de contraseña robusta",
+  "controls": "A.05.01;A.05.03;A.06.01"
+}

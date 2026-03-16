@@ -1,0 +1,15 @@
+{
+  "threat_id": "T014",
+  "user_id": "user_smart_14",
+  "device_id": "Fotos familiares almacenados en el carrusel del Asistente Inteligente",
+  "detected_at": "2025-10-15T20:00:00Z",
+  "threat_type": "Data leakage",
+  "threat_description": "Fotos compartidas accidentalmente en red de tiempo real",
+  "severity": "alta",
+  "actions_taken": "Eliminar fotos expuestas y cambiar permisos de acceso compartido",
+  "status": "resolved",
+  "project_name": "SmartHome",
+  "subproject_name": "SmartHome",
+  "cause": "Configuración de privacidad mal configurada en servicio en la nube",
+  "controls": "A.11.01;A.19.01;A.19.02"
+}
