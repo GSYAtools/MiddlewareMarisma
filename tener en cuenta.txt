@@ -9,8 +9,12 @@ Invoke-WebRequest -Uri "http://localhost:8000/new_incident" -Method POST -Conten
 
 SOLICITAR DATOS
 
-$response = Invoke-WebRequest -Uri "http://localhost:8000/retrive_incident/e68ad13e-8120-4651-8bb2-0b300ad99ee8" -Method GET -UseBasicParsing; Write-Host $response.Content
+Invoke-WebRequest -Uri "http://localhost:8000/retrive_incident/e68ad13e-8120-4651-8bb2-0b300ad99ee8" -Method GET -UseBasicParsing; Write-Host $response.Content
 
 OBTENER LISTA DE SUBPROYECTOS
 
-$response = Invoke-RestMethod -Uri "http://localhost:8000/subprojects" -Method Get; $response | ConvertTo-Json -Depth 10
+Invoke-RestMethod -Uri "http://localhost:8000/subprojects" -Method Get; $response | ConvertTo-Json -Depth 10
+
+OBTENER LA LISTA DE ACTIVOS DE UN SUBPROYECTOS
+
+Invoke-RestMethod -Uri "http://localhost:8000/assets/SmartHome" -Method Get | ConvertTo-Json -Depth 10

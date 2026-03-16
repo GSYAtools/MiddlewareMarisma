@@ -454,6 +454,34 @@ async def get_controls_by_codes_for_amenaza(amenaza_instanciada_id: int, control
         logger.error(f"Error al buscar controles para amenaza {amenaza_instanciada_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Error al buscar controles: {str(e)}")
 
+async def get_activos_by_subproyecto(subproyecto_id: int) -> list[dict]:
+    """
+    Obtiene la lista completa de activos asociados a un subproyecto.
+    Retorna lista vacía si no se encuentran activos para ese subproyecto.
+    """
+    logger.info(f"Buscando activos para subproyecto_id: {subproyecto_id}")
+    try:
+        db_pool = await get_db_pool()
+        async with db_pool.acquire() as conn:
+            async with conn.cursor(aiomysql.DictCursor) as cursor:
+                await cursor.execute(
+                    """
+                    SELECT DISTINCT a.id, a.nombre
+                    FROM activo a
+                    INNER JOIN activo_auditoria aa ON a.id = aa.activo_id
+                    WHERE aa.subproyecto_id = %s AND a.deleted = 0 AND aa.deleted = 0
+                    ORDER BY a.nombre
+                    """,
+                    (subproyecto_id,)
+                )
+                results = await cursor.fetchall()
+                activos = [dict(row) for row in results]
+                logger.info(f"Activos encontrados para subproyecto {subproyecto_id}: {len(activos)}")
+                return activos
+    except Exception as e:
+        logger.error(f"Error al buscar activos para subproyecto {subproyecto_id}: {e}")
+        return []
+
 async def get_all_subproyectos() -> list[str]:
     """
     Obtiene la lista de nombres de todos los subproyectos.

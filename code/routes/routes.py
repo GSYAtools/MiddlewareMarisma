@@ -20,6 +20,7 @@ from services.emarisma_db_service import (
     get_activo_amenaza_id,
     get_analisis_riesgo_by_activo_amenaza_id,
     get_all_subproyectos,
+    get_activos_by_subproyecto,
 )
 from client_instance import client
 import logging
@@ -315,3 +316,32 @@ async def list_subprojects():
     logger.info("Fetching list of subprojects")
     subprojects = await get_all_subproyectos()
     return subprojects
+
+@router.get("/assets/{subproject_name}")
+async def get_assets_by_subproject(subproject_name: str):
+    """
+    Get all assets (activos) belonging to a subproject by its name.
+    
+    Returns:
+    - If subproject exists: A list of all assets with their details (id, nombre, descripcion, tipo_activo_instanciado_id)
+    - If subproject not found: 404 error with message about incorrect subproject name
+    """
+    logger.info(f"Fetching assets for subproject: {subproject_name}")
+    
+    # Get subproject ID from name
+    subproyecto_id = await get_subproyecto_id_by_name(subproject_name)
+    if subproyecto_id is None:
+        logger.error(f"Subproject not found with name: {subproject_name}")
+        raise HTTPException(status_code=404, detail=f"No subproject found with name '{subproject_name}'")
+    
+    logger.info(f"Subproject ID obtained: {subproyecto_id}")
+    
+    # Get assets for the subproject
+    activos = await get_activos_by_subproyecto(subproyecto_id)
+    logger.info(f"Retrieved {len(activos)} assets for subproject '{subproject_name}' (ID: {subproyecto_id})")
+    
+    return {
+        "subproject_name": subproject_name,
+        "total_assets": len(activos),
+        "assets": activos
+    }
