@@ -14,7 +14,7 @@ Invoke-WebRequest -Uri "http://localhost:8000/retrive_incident/[INCIDEN_UUID]" -
 
 OBTENER LISTA DE SUBPROYECTO
 
-Invoke-RestMethod -Uri "http://localhost:8000/subprojects" -Method Get; $response | ConvertTo-Json -Depth 10
+Invoke-RestMethod -Uri "http://localhost:8000/subprojects" -Method Get
 
 OBTENER LA LISTA DE ACTIVOS DE UN SUBPROYECTO
 
@@ -26,4 +26,4 @@ Invoke-RestMethod -Uri "http://localhost:8000/threats/SmartHome/[ASSET_ID]" -Met
 
 OBTENER LA LISTA DE CONTROLES PARA UNA AMENAZA DE UN ACTIVO EN UN SUBPROYECTO
 
-Invoke-RestMethod -Uri "http://localhost:8000/controls/SmartHome/3/[THREAT_ID]" -Method Get | ConvertTo-Json -Depth 10
+Invoke-RestMethod -Uri "http://localhost:8000/controls/SmartHome/[ASSET_ID]/[THREAT_ID]" -Method Get | ConvertTo-Json -Depth 10

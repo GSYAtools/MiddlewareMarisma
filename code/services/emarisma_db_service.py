@@ -466,7 +466,7 @@ async def get_activos_by_subproyecto(subproyecto_id: int) -> list[dict]:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(
                     """
-                    SELECT DISTINCT a.id, a.nombre, a.codigo
+                    SELECT DISTINCT a.id, a.nombre
                     FROM activo a
                     INNER JOIN activo_auditoria aa ON a.id = aa.activo_id
                     WHERE aa.subproyecto_id = %s AND a.deleted = 0 AND aa.deleted = 0
@@ -565,7 +565,7 @@ async def get_controles_by_amenaza(amenaza_instanciada_id: int) -> list[dict]:
             async with conn.cursor(aiomysql.DictCursor) as cursor:
                 await cursor.execute(
                     """
-                    SELECT DISTINCT ci.id, ci.codigo, ci.nombre
+                    SELECT DISTINCT ci.codigo, ci.nombre
                     FROM control_instanciado ci
                     INNER JOIN control_amenaza_instanciado cai ON ci.id = cai.control_instanciado_id
                     WHERE cai.amenaza_instanciada_id = %s AND ci.deleted = 0 AND cai.deleted = 0
