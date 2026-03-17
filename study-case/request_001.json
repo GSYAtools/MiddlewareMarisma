@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Falta de contraseña robusta",
-  "controls": "A.05.01;A.05.03;A.06.01"
+  "controls": "A.05.01;A.05.03;A.06.03"
 }

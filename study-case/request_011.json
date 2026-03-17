@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Falta de monitoreo de renovación de licencias",
-  "controls": "A.16.01;A.16.02"
+  "controls": "A.08.19;A.08.24"
 }

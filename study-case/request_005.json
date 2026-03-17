@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Fuerza bruta contra panel de control",
-  "controls": "A.10.01;A.10.02;A.10.03"
+  "controls": "A.08.10;A.08.13;A.08.18;A.08.34"
 }

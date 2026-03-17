@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Fallo en validación de permisos en firmware",
-  "controls": "A.24.01;A.24.02;A.24.03"
+  "controls": "A.05.36;A.08.09"
 }

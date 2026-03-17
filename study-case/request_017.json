@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Vulnerabilidad zero-day en cámara IP",
-  "controls": "A.22.01;A.22.02;A.22.03"
+  "controls": "A.06.03;A.08.02"
 }

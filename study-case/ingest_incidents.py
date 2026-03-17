@@ -131,7 +131,8 @@ class IncidentIngester:
             if response.status_code == 200:
                 try:
                     response_data = response.json()
-                    incident_id = response_data.get('incident_id', 'Unknown')
+                    print("............Response data: ", response_data)
+                    incident_id = response_data.get('request_id', 'Unknown')
                     # Guardar el ID para recuperarlo luego
                     if incident_id != 'Unknown':
                         with self.count_lock:
@@ -145,6 +146,7 @@ class IncidentIngester:
                     f"Amenaza={incident.get('threat_id')}, "
                     f"Tipo={incident.get('threat_type')}"
                 )
+        
                 with self.count_lock:
                     self.ingested_count += 1
                 return True

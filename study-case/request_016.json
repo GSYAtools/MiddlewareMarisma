@@ -3,7 +3,7 @@
   "user_id": "user_smart_16",
   "device_id": "Red Doméstica",
   "detected_at": "2025-10-15T21:30:00Z",
-  "threat_type": "DDoS",
+  "threat_type": "Information gathering",
   "threat_description": "Intento de ataque de negación de servicio desde dispositivo IoT comprometido",
   "severity": "leve",
   "actions_taken": "Aislar dispositivo comprometido y limpiar infección",
@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Dispositivo IoT botnet sin actualización",
-  "controls": "A.21.01;A.21.02;A.21.03"
+  "controls": "A.05.25;A.08.24"
 }

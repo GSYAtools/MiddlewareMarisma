@@ -139,7 +139,8 @@ async def process_incident_flow(
         except Exception as e:
             logger.error(f"Error al guardar valores nuevos para request_id={request_id}: {e}")
     elif flow_error:
-        logger.warning(f"Flujo fallido para request_id={request_id}; se mantiene estado pending")
+        await update_request_status(request_id, "failed")
+        logger.error(f"Flujo fallido para request_id={request_id}; estado actualizado a failed")
     
     logger.info(f"Procesamiento en segundo plano completado para request_id={request_id}")
 
@@ -260,8 +261,8 @@ async def new_incident(data: IncidentRequest, client: RiskClient = Depends(get_c
     # Devolver inmediatamente el request_id sin esperar
     return {"request_id": request_id}
 
-@router.get("/retrive_incident/{incident_id}")
-async def retrive_incident(incident_id: str, client: RiskClient = Depends(get_client)):
+@router.get("/retrive_incident/{request_id}")
+async def retrive_incident(request_id: str, client: RiskClient = Depends(get_client)):
     """
     Retrieves the status and risk analysis of an incident by its UUID.
     
@@ -270,26 +271,26 @@ async def retrive_incident(incident_id: str, client: RiskClient = Depends(get_cl
     - If completed: The previous and new risk analysis values
     - If not found: 404 error with message about incorrect ID
     """
-    logger.info(f"Retrieving incident status: {incident_id}")
+    logger.info(f"Retrieving incident status: {request_id}")
     
-    request_data = await get_request(incident_id)
+    request_data = await get_request(request_id)
     if not request_data:
-        logger.error(f"Incident not found: {incident_id}")
+        logger.error(f"Incident not found: {request_id}")
         raise HTTPException(status_code=404, detail="Incorrect incident ID. The incident does not exist.")
     
     status = request_data['status']
-    logger.info(f"Incident status retrieved for {incident_id}: {status}")
+    logger.info(f"Incident status retrieved for {request_id}: {status}")
     
     if status == "pending":
         return {
-            "incident_id": incident_id,
+            "incident_id": request_id,
             "status": "pending",
             "message": "The incident is still being processed. Please try again later."
         }
     
     elif status == "completed":
         return {
-            "incident_id": incident_id,
+            "incident_id": request_id,
             "status": "completed",
             "risk_analysis": {
                 "previous": {
@@ -307,7 +308,7 @@ async def retrive_incident(incident_id: str, client: RiskClient = Depends(get_cl
     
     else:
         return {
-            "incident_id": incident_id,
+            "incident_id": request_id,
             "status": status,
             "message": f"Incident status: {status}"
         }

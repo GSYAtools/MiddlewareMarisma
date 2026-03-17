@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Falta de controles de integridad de datos en BD",
-  "controls": "A.18.01;A.18.02;A.18.03"
+  "controls": "A.07.08;A.08.13"
 }

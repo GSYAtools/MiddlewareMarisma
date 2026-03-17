@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Falta de protección contra picos de voltaje",
-  "controls": "A.13.01;A.13.02"
+  "controls": "A.08.16;A.08.34"
 }

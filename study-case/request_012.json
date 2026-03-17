@@ -3,7 +3,7 @@
   "user_id": "user_smart_12",
   "device_id": "Router doméstico",
   "detected_at": "2025-10-15T18:30:00Z",
-  "threat_type": "Attacks on privacy",
+  "threat_type": "DDoS",
   "threat_description": "Panel de administración del router accesible sin autenticación",
   "severity": "leve",
   "actions_taken": "Cambiar contraseña por defecto y desactivar acceso remoto",
@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Uso de credenciales por defecto del fabricante",
-  "controls": "A.05.01;A.05.02;A.17.01"
+  "controls": "A.05.01;A.05.02;A.07.01"
 }

@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Router sin encriptación habilitada",
-  "controls": "A.06.02;A.06.03;A.07.01"
+  "controls": "A.07.04;A.07.11;A.08.16"
 }

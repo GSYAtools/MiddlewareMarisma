@@ -3,7 +3,7 @@
   "user_id": "user_smart_10",
   "device_id": "Home Assistant Data Analytics and Visualisation",
   "detected_at": "2025-10-15T17:00:00Z",
-  "threat_type": "Data / Sensitive information leakage",
+  "threat_type": "Software vulnerabilities",
   "threat_description": "Base de datos de analytics con credenciales expuestas en código",
   "severity": "leve",
   "actions_taken": "Rotación inmediata de credenciales y auditoría de acceso",
@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Credenciales hardcodeadas en repositorio público",
-  "controls": "A.14.01;A.14.02;A.15.01"
+  "controls": "A.05.27;A.07.08"
 }

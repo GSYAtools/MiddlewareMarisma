@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Configuración de privacidad inadecuada en dispositivo",
-  "controls": "A.11.01;A.11.02;A.12.01"
+  "controls": "A.06.02;A.07.12"
 }

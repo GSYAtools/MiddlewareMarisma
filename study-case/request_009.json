@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Falta de encriptación end-to-end en comunicaciones",
-  "controls": "A.07.01;A.07.02;A.07.03"
+  "controls": "A.07.04;A.08.04;A.08.08"
 }
