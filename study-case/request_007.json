@@ -3,7 +3,7 @@
   "user_id": "tech_support",
   "device_id": "Red Doméstica",
   "detected_at": "2025-10-15T14:15:00Z",
-  "threat_type": "Device destruction (sabotage)",
+  "threat_type": "Network Outage",
   "threat_description": "Router dañado por sobretensión durante tormenta",
   "severity": "grave",
   "actions_taken": "Reemplazar router y instalar protector de voltaje",
@@ -11,5 +11,5 @@
   "project_name": "Di4SPDS",
   "subproject_name": "SmartHome",
   "cause": "Falta de protección contra picos de voltaje",
-  "controls": "A.08.16;A.08.34"
+  "controls": "A.08.16;A.08.27"
 }

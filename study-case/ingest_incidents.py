@@ -207,7 +207,7 @@ class IncidentIngester:
         Recupera un incidente usando /retrieve_incident.
         Si está en estado 'pending', reintentas hasta que esté 'completed'.
         """
-        retrieve_endpoint = f"http://localhost:8000/retrieve_incident/{incident_id}"
+        retrieve_endpoint = f"http://localhost:8000/retrive_incident/{incident_id}"
         retries = 0
         
         while retries < max_retries:
