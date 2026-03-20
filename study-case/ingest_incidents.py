@@ -131,7 +131,6 @@ class IncidentIngester:
             if response.status_code == 200:
                 try:
                     response_data = response.json()
-                    print("............Response data: ", response_data)
                     incident_id = response_data.get('request_id', 'Unknown')
                     # Guardar el ID para recuperarlo luego
                     if incident_id != 'Unknown':
