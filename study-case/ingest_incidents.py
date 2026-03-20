@@ -36,8 +36,8 @@ logger = logging.getLogger(__name__)
 # Configuración
 API_ENDPOINT = "http://localhost:8000/new_incident"
 STUDY_CASE_DIR = Path(__file__).parent
-DURATION_HOURS = 0.05
-NUM_INCIDENTS_TO_INGEST = 2
+DURATION_HOURS = 24
+NUM_INCIDENTS_TO_INGEST = 10
 MAX_INCIDENTS = 20
 
 class IncidentIngester:
