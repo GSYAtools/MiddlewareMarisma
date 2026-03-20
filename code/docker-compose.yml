@@ -10,7 +10,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./internal.db:/app/internal.db
+      - ./data:/app/data
       - ./session.json:/app/session.json
       - ./config.json:/app/config.json
     environment:

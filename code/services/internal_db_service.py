@@ -4,7 +4,10 @@ import os
 import uuid
 import json
 
-DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'internal.db')
+DB_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
+DB_PATH = os.path.join(DB_DIR, 'internal.db')
+
+os.makedirs(DB_DIR, exist_ok=True)
 
 
 async def init_db():
