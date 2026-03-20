@@ -304,11 +304,29 @@ class IncidentIngester:
             severity = incident.get('severity', 'unknown')
             threat_type = incident.get('threat_type', 'unknown')
             status = incident.get('status', 'unknown')
-            
+
             severities[severity] = severities.get(severity, 0) + 1
             threat_types[threat_type] = threat_types.get(threat_type, 0) + 1
             statuses[status] = statuses.get(status, 0) + 1
-        
+
+        status_items = ''.join([f"<li><strong>{st}</strong>: {count} incidentes</li>" for st, count in sorted(statuses.items())])
+        incident_rows = []
+        for incident in self.retrieved_incidents:
+            severity = incident.get('severity', 'unknown')
+            status = incident.get('status', 'unknown')
+            incident_rows.append(f"""
+                    <tr>
+                        <td>{incident.get('incident_id', 'N/A')}</td>
+                        <td>{incident.get('threat_id', 'N/A')}</td>
+                        <td>{incident.get('threat_type', 'N/A')}</td>
+                        <td><div class=\"severity-{severity}\">{incident.get('severity', 'N/A')}</div></td>
+                        <td><span class=\"status-{status.lower().replace(' ', '_')}\">{incident.get('status', 'N/A')}</span></td>
+                        <td>{incident.get('detected_at', 'N/A')}</td>
+                        <td>{incident.get('subproject_name', 'N/A')}</td>
+                    </tr>
+                    """)
+        incident_rows = ''.join(incident_rows)
+
         # Generar HTML
         html_report = f"""
 <!DOCTYPE html>
@@ -521,7 +539,7 @@ class IncidentIngester:
                 <div class="summary-item">
                     <h4>Por Estado</h4>
                     <ul>
-                        {''.join([f"<li><strong>{st}</strong>: {count} incidentes</li>" for st, count in sorted(statuses.items())])}
+                        {status_items}
                     </ul>
                 </div>
             </div>
@@ -542,17 +560,7 @@ class IncidentIngester:
                     </tr>
                 </thead>
                 <tbody>
-                    {''.join([f"""
-                    <tr>
-                        <td>{incident.get('incident_id', 'N/A')}</td>
-                        <td>{incident.get('threat_id', 'N/A')}</td>
-                        <td>{incident.get('threat_type', 'N/A')}</td>
-                        <td><div class="severity-{incident.get('severity', 'unknown')}">{incident.get('severity', 'N/A')}</div></td>
-                        <td><span class="status-{incident.get('status', 'unknown').lower().replace(' ', '_')}">{incident.get('status', 'N/A')}</span></td>
-                        <td>{incident.get('detected_at', 'N/A')}</td>
-                        <td>{incident.get('subproject_name', 'N/A')}</td>
-                    </tr>
-                    """ for incident in self.retrieved_incidents])}
+                    {incident_rows}
                 </tbody>
             </table>
         </div>
