@@ -1,50 +1,29 @@
+version: "3.9"
+
 services:
   middleware:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: middleware_marisma
-    
-    # Auto-restart: reinicia automáticamente si el contenedor falla
-    # "unless-stopped" reinicia siempre excepto cuando se detiene manualmente
     restart: unless-stopped
-    
     ports:
       - "8000:8000"
-    
     volumes:
-      # Persistir base de datos SQLite interna
       - ./internal.db:/app/internal.db
-      # Persistir sesión
       - ./session.json:/app/session.json
-      # Persistir configuración (opcional, si quieres modificarla sin rebuild)
       - ./config.json:/app/config.json
-    
     environment:
-      # Variables de entorno (opcional - puedes usar .env file)
-      - PYTHONUNBUFFERED=1
-      - LOG_LEVEL=info
-    
-    networks:
-      - marisma_network
-    
-    # Healthcheck adicional a nivel de docker-compose
+      PYTHONUNBUFFERED: "1"
+      LOG_LEVEL: "info"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    
-    # Límites de recursos (opcional pero recomendado)
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
+    networks:
+      - marisma_network
 
 networks:
   marisma_network:
