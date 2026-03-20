@@ -51,6 +51,7 @@ class IncidentIngester:
         self.failed_count = 0
         self.count_lock = threading.Lock()  # Lock para sincronización de contadores
         self.active_threads = []  # Guardar referencias a hilos activos
+        self.stop_event = threading.Event()  # Control para detener hilos con seguridad
         
     def load_incidents(self):
         """Carga todos los archivos de incidentes disponibles."""
@@ -117,6 +118,10 @@ class IncidentIngester:
         """
         Ingesta un incidente actualizando el campo 'detected_at' con la hora actual.
         """
+        if self.stop_event.is_set():
+            logger.info(f"✱ Se solicitó detener la ingestión antes de enviar: {incident.get('threat_id', 'Unknown')}")
+            return False
+
         try:
             # Actualizar 'detected_at' con la fecha/hora actual en formato ISO
             incident['detected_at'] = datetime.now().isoformat() + 'Z'
@@ -188,16 +193,22 @@ class IncidentIngester:
         Se ejecuta de forma asíncrona sin bloquear el hilo principal.
         """
         threat_id = incident.get('threat_id', 'Unknown')
-        
+
         try:
-            # Esperar el tiempo programado
+            # Esperar el tiempo programado y ser interrumpible con stop_event
             logger.info(f"[{idx}/{total}] ⏱️  Hilo iniciado: {threat_id} se lanzará en {delay_seconds:.1f}s")
-            time.sleep(delay_seconds)
-            
+            if self.stop_event.wait(delay_seconds):
+                logger.info(f"[{idx}/{total}] ⏱️  Detenido antes de lanzar: {threat_id}")
+                return
+
+            if self.stop_event.is_set():
+                logger.info(f"[{idx}/{total}] ⏱️  Detenido al comenzar la ingestión: {threat_id}")
+                return
+
             # Ingestar en el momento programado
             logger.info(f"[{idx}/{total}] 🚀 Lanzando incidente: {threat_id}")
             self.ingest_incident(incident)
-            
+
         except Exception as e:
             logger.error(f"Error en hilo de ingestión para {threat_id}: {e}")
     
@@ -645,12 +656,20 @@ class IncidentIngester:
             return True
             
         except KeyboardInterrupt:
-            logger.warning("\n\n⚠ Ingestión interrumpida por el usuario")
+            logger.warning("\n\n⚠ Ingestión interrumpida por el usuario (Ctrl-C detectado)")
+            self.stop_event.set()
+            logger.info("Esperando que los hilos en ejecución terminen...")
+            for thread in threads:
+                thread.join()
+            logger.info("Todos los hilos terminaron tras Ctrl-C")
             logger.info(f"Incidentes ingestados: {self.ingested_count}")
             logger.info(f"Incidentes con error: {self.failed_count}")
             return False
         except Exception as e:
             logger.error(f"\n✗ Error fatal durante la ejecución: {e}")
+            self.stop_event.set()
+            for thread in threads:
+                thread.join()
             return False
 
 def main():
