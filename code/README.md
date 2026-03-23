@@ -1,8 +1,8 @@
-# MiddlewareMarisma 🔐
+# MiddlewareMarisma
 
 Middleware para gestión automatizada de incidentes de seguridad con integración a eMarisma.
 
-## 📋 Tabla de Contenidos
+## Tabla de Contenidos
 
 - [Características](#características)
 - [Inicio Rápido con Docker](#-inicio-rápido-con-docker-recomendado)
@@ -11,7 +11,7 @@ Middleware para gestión automatizada de incidentes de seguridad con integració
 - [Documentación](#-documentación)
 - [API Endpoints](#-api-endpoints)
 
-## ✨ Características
+## Características
 
 - ✅ Gestión automatizada de incidentes de seguridad
 - ✅ Integración con eMarisma (gestión de riesgos)
@@ -22,7 +22,7 @@ Middleware para gestión automatizada de incidentes de seguridad con integració
 - ✅ API REST con FastAPI
 - ✅ Controles dinámicos basados en amenazas
 
-## 🐳 Inicio Rápido con Docker (Recomendado)
+## Inicio Rápido con Docker (Recomendado)
 
 ### Requisitos
 - Docker 20.10+
@@ -89,7 +89,7 @@ Ver [DOCKER.md](DOCKER.md) para documentación detallada sobre:
 - Backups
 - Y más...
 
-## 💻 Instalación Manual
+## Instalación Manual
 
 ### Requisitos
 - Python 3.11+
@@ -143,7 +143,7 @@ uvicorn app:app --reload --host 0.0.0.0 --port 8000
 uvicorn app:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
-## 🚀 Uso
+## Uso
 
 ### Crear un Incidente
 
@@ -177,7 +177,7 @@ curl -X POST http://localhost:8000/new_incident \
 - Si está **vacío o no existe**: Se usa el primer control disponible para la amenaza
 - Si está **presente**: Se validan y vinculan todos los controles especificados (separados por `;`)
 
-## 📡 API Endpoints
+## API Endpoints
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
@@ -207,7 +207,7 @@ code/
     └── internal_db_service.py    # Base de datos interna
 ```
 
-## 🔐 Seguridad
+## Seguridad
 
 - ✅ Todas las consultas SQL están parametrizadas (protección contra SQL injection)
 - ✅ Uso de `json.dumps/loads` en lugar de `eval()` (prevención de ejecución de código)
@@ -215,7 +215,7 @@ code/
 - ✅ Validación de entradas en endpoints
 - ⚠️ **IMPORTANTE**: No versionar `config.json` ni `.env` con credenciales reales
 
-## 🛡️ Auto-Restart y Alta Disponibilidad
+## Auto-Restart y Alta Disponibilidad
 
 Con Docker, el servicio:
 - ✅ Se reinicia automáticamente si falla
